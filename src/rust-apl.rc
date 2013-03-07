@@ -8,4 +8,9 @@
 
 extern mod std;
 
+pub mod tokenizer;
+
+#[cfg(test)]
+mod tests;
+
 mod apl;
