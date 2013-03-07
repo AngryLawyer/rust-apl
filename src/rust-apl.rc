@@ -1,0 +1,11 @@
+#[link(name = "apl",
+       vers = "0.0.1",
+       uuid = "94e0c4b0-8709-11e2-9e96-0800200c9a66",
+       url = "http://www.angry-lawyer.com")];
+
+#[comment = "SDL bindings"];
+#[license = "LGPL"];
+
+extern mod std;
+
+mod apl;

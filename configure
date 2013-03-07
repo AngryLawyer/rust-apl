@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SRCDIR="$(cd $(dirname $0) && pwd)"
+
+sed -e "s#%VPATH%#${SRCDIR}#" $PLATFORM_COMMANDS ${SRCDIR}/Makefile.in > Makefile
+
+mkdir bin
