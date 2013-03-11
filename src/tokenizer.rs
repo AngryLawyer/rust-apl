@@ -5,44 +5,151 @@ pub struct TokenData {
 }
 
 pub enum Token {
-    Number(TokenData)
+    pub Number(TokenData)
 }
 
-struct Tokenizer {
+struct CharReader {
     source: ~str,
     next: uint,
-    current_token: ~[char],
     current_char: option::Option<char>,
     row: uint,
     col: uint
 }
 
-impl Tokenizer {
-    static fn new(input_string: ~str) -> Tokenizer {
-        Tokenizer {
+impl CharReader {
+
+    static fn new(input_string: ~str) -> CharReader {
+        CharReader {
             source: input_string,
             next: 0,
-            current_token: ~[],
             current_char: option::None,
             row: 0,
             col: 0
         }
     }
 
-    pub fn read_next_token(&mut self) -> result::Result<Token, ~str> {
-        self.read_char();
-        result::Err(~"Undefined")
-    }
-
     fn read_char(&mut self) {
         if self.next < self.source.len() {
             let str::CharRange {ch, next} = str::char_range_at(self.source, self.next);
             self.next = next;
+            self.row += 1;
             self.current_char = option::Some(ch);
         } else {
             self.current_char = option::None;
         }
     }
 
+    fn wind_past_whitespace(&mut self) {
+        self.read_char();
+        loop {
+            match self.current_char {
+                option::Some(' ') => {
+                    self.read_char();
+                },
+                _ => {
+                    break;
+                }
+            }
+        }
+    }
 }
 
+struct Tokenizer {
+    char_reader: @mut CharReader,
+}
+
+impl Tokenizer {
+    static fn new(input_string: ~str) -> Tokenizer {
+        let char_reader = CharReader::new(input_string);
+        Tokenizer {
+            char_reader: @mut char_reader
+        }
+    }
+
+    pub fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        self.char_reader.wind_past_whitespace();
+        match self.char_reader.current_char {
+            option::Some(first_char) => {
+                if NumberTokenizer::is_valid_number_start(first_char) {
+                    let mut tokenizer = NumberTokenizer::new(self.char_reader);
+                    return tokenizer.read_next_token()
+                }
+                result::Err(~"No valid token found")
+            },
+            option::None => {
+                result::Err(~"End of file")
+            }
+        }
+    }
+
+}
+
+struct NumberTokenizer {
+    char_reader: @mut CharReader,
+    period_encountered: bool,
+    first_character: bool
+}
+
+impl NumberTokenizer {
+
+    static fn is_valid_number_start(char: char) -> bool {
+        //Needs to be either upper dash, period, or 0-9
+        (char >= '0' && char <= '9') || char == '.' || char == '¯'
+    }
+
+    static fn new(char_reader: @mut CharReader) -> NumberTokenizer {
+        NumberTokenizer {
+            char_reader: char_reader,
+            period_encountered: false,
+            first_character: true
+        }
+    }
+
+    fn is_period(&self) -> bool {
+        match self.char_reader.current_char {
+            option::Some('.') => true,
+            _ => false
+        }
+    }
+
+    fn is_number(&self) -> bool {
+        match self.char_reader.current_char {
+            option::Some(maybe_number) => {
+                maybe_number >= '0' && maybe_number <= '9'
+            },
+            _ => false
+        }
+    }
+
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        let mut token: ~[char] = ~[];
+        loop {
+            if self.first_character {
+                self.first_character = false;
+                if self.is_period() {
+                    self.period_encountered = true;
+                }
+                token.push(option::unwrap(self.char_reader.current_char));
+            } else if self.is_period() {
+                if self.period_encountered {
+                    return result::Err(~"Invalid number");
+                } else {
+                    self.period_encountered = true;
+                    token.push(option::unwrap(self.char_reader.current_char));
+                }
+            } else if self.is_number() {
+                token.push(option::unwrap(self.char_reader.current_char));
+            } else {
+                if (token[token.len() - 1] == '.') {
+                    return result::Err(~"Invalid number");
+                }
+                return result::Ok(Number(TokenData {
+                    string: str::from_chars(token),
+                    row: 0,
+                    col: 0
+                }));
+            }
+            self.char_reader.read_char();
+        }
+    }
+}

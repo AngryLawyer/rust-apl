@@ -5,35 +5,52 @@ mod tokenizer {
     use tokenizer::Tokenizer;
 
     #[test]
-    fn test_tokenize_one() {
+    fn test_tokenize_number() {
         //Numbers
         for ([~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"]).each |number| {
             let mut tokenizer = Tokenizer::new(copy *number);
             match tokenizer.read_next_token() {
                 result::Ok(tokenizer::Number(tokenData)) => {
+                    io::println(fmt!("Read %s expected %s ", tokenData.string, *number));
+
                     //Pass
                     fail_unless!(tokenData.string == *number);
                     fail_unless!(tokenData.row == 0);
                     fail_unless!(tokenData.col == 0);
                 },
-                _ => {
-                    fail!(~"Expected number");
+                result::Err(msg) => {
+                    fail!(fmt!("Expected number - %s", msg));
                 }
             }
         }
         //Offset number
-        /*let mut tokenizer = Tokenizer::new(~" 123");
+        let mut tokenizer = Tokenizer::new(~" 123");
+        let expected = ~"123";
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
                 //Pass
-                fail_unless!(tokenData.string == ~"123");
-                fail_unless!(tokenData.row == 0);
-                fail_unless!(tokenData.col == 1);
+                io::println(fmt!("Read %s expected %s ", tokenData.string, expected));
+                fail_unless!(tokenData.string == expected);
+                /*fail_unless!(tokenData.row == 0);
+                fail_unless!(tokenData.col == 1);*/
             },
-            _ => {
-                fail!(~"Expected number");
+            result::Err(msg) => {
+                fail!(fmt!("Expected number - %s", msg));
             }
-        }*/
+        }
+
+        //Invalid numbers
+        for ([~".3.21", ~"3.2.1", ~"1.", ~"."]).each |number| {
+            let mut tokenizer = Tokenizer::new(copy *number);
+            match tokenizer.read_next_token() {
+                result::Ok(tokenizer::Number(tokenData)) => {
+                    fail!(fmt!("Unexpectedly read %s from source %s",tokenData.string, *number));
+                },
+                result::Err(msg) => {
+                    io::println(fmt!("Correctly got error %s from %s", msg, *number));
+                }
+            }
+        }
 
 
         //Strings
