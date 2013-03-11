@@ -11,7 +11,6 @@ mod tokenizer {
     }
 
     fn test_tokenize_number() {
-        //Numbers
         for ([~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"]).each |number| {
             let mut tokenizer = Tokenizer::new(copy *number);
             match tokenizer.read_next_token() {
@@ -32,7 +31,7 @@ mod tokenizer {
             }
         }
         //Offset number
-        let mut tokenizer = Tokenizer::new(~" 123");
+        let mut tokenizer = Tokenizer::new(~" 123⍝ lol");
         let expected = ~"123";
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
@@ -105,9 +104,9 @@ mod tokenizer {
         let string = ~"⎕SI";*/
     }
 
+    //TODO: Check against /r/n and /r
     fn test_tokenize_newlines() {
-        //Numbers
-        for ([~"\n", ~"  \n", ~"\n\n"]).each |newline| {
+        for ([~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"/r", ~"/r/n"]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
             match tokenizer.read_next_token() {
                 result::Ok(tokenizer::Newline(tokenData)) => {

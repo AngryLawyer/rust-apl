@@ -41,7 +41,6 @@ impl CharReader {
     }
 
     fn wind_past_whitespace(&mut self) {
-        self.read_char();
         loop {
             match self.current_char {
                 option::Some(' ') => {
@@ -51,6 +50,27 @@ impl CharReader {
                     break;
                 }
             }
+        }
+    }
+    
+    fn wind_past_comments(&mut self) {
+        match self.current_char {
+            option::Some('⍝') => {
+                loop {
+                    match self.current_char {
+                        option::Some(char) => {
+                            if char == '\n' || char == '\r' {
+                                break;
+                            }
+                            self.read_char()
+                        },
+                        option::None => {
+                            break;
+                        }
+                    }
+                }
+            },
+            _ => () 
         }
     }
 }
@@ -68,7 +88,9 @@ impl Tokenizer {
     }
 
     pub fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        self.char_reader.read_char();
         self.char_reader.wind_past_whitespace();
+        self.char_reader.wind_past_comments();
         match self.char_reader.current_char {
             option::Some(first_char) => {
                 if NewlineTokenizer::is_valid_newline_start(first_char) {
