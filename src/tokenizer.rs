@@ -5,7 +5,8 @@ pub struct TokenData {
 }
 
 pub enum Token {
-    pub Number(TokenData)
+    pub Number(TokenData),
+    pub Newline(TokenData)
 }
 
 struct CharReader {
@@ -70,6 +71,10 @@ impl Tokenizer {
         self.char_reader.wind_past_whitespace();
         match self.char_reader.current_char {
             option::Some(first_char) => {
+                if NewlineTokenizer::is_valid_newline_start(first_char) {
+                    let mut tokenizer = NewlineTokenizer::new(self.char_reader);
+                    return tokenizer.read_next_token()
+                }
                 if NumberTokenizer::is_valid_number_start(first_char) {
                     let mut tokenizer = NumberTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
@@ -151,5 +156,37 @@ impl NumberTokenizer {
             }
             self.char_reader.read_char();
         }
+    }
+}
+
+struct NewlineTokenizer {
+    char_reader: @mut CharReader
+}
+
+impl NewlineTokenizer {
+
+    static fn is_valid_newline_start(char: char) -> bool {
+        char == '\n'
+    }
+
+    static fn new(char_reader: @mut CharReader) -> NewlineTokenizer {
+        NewlineTokenizer {
+            char_reader: char_reader
+        }
+    }
+
+    fn is_newline(&self) -> bool {
+        match self.char_reader.current_char {
+            option::Some('\n') => true,
+            _ => false
+        }
+    }
+
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        return result::Ok(Newline(TokenData {
+            string: ~"\n",
+            row: 0,
+            col: 0
+        }));
     }
 }
