@@ -8,6 +8,7 @@ mod tokenizer {
     fn test_tokenize() {
         test_tokenize_number();
         test_tokenize_newlines();
+        test_tokenize_strings();
     }
 
     fn test_tokenize_number() {
@@ -104,7 +105,6 @@ mod tokenizer {
         let string = ~"⎕SI";*/
     }
 
-    //TODO: Check against /r/n and /r
     fn test_tokenize_newlines() {
         for ([~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"\r", ~"\r\n", ~"\r\r"]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
@@ -117,6 +117,37 @@ mod tokenizer {
                 },
                 result::Err(msg) => {
                     fail!(fmt!("Expected newline - %s", msg));
+                },
+                _ => {
+                    fail!(~"Unexpected token type");
+                }
+            }
+        }
+    }
+
+    fn test_tokenize_strings() {
+        //Standard strings
+        for ([(~"'Hello'", ~"Hello"),
+              (~" 'Alreet there' ", ~"Alreet there"),
+              (~"\"Double quotes\"", ~"Double quotes"),
+              (~"'Anything ⍝ lol'", ~"Anything ⍝ lol"),
+              (~"'Inner \"\" quotes'", ~"Inner \"\" quotes"),
+              (~"\"Inner '' quotes\"", ~"Inner '' quotes"),
+              (~"'Escaped '' quote'", ~"Escaped ' quote"),
+              (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote")
+              ]).each |&(string, result)| {
+            let mut tokenizer = Tokenizer::new(string);
+            match tokenizer.read_next_token() {
+                result::Ok(tokenizer::String(tokenData)) => {
+                    io::println(fmt!("Read %s expected %s ", tokenData.string, result));
+
+                    //Pass
+                    fail_unless!(tokenData.string == result);
+                    fail_unless!(tokenData.row == 0);
+                    fail_unless!(tokenData.col == 0);
+                },
+                result::Err(msg) => {
+                    fail!(fmt!("Expected string - %s", msg));
                 },
                 _ => {
                     fail!(~"Unexpected token type");

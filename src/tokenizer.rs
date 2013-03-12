@@ -6,7 +6,8 @@ pub struct TokenData {
 
 pub enum Token {
     pub Number(TokenData),
-    pub Newline(TokenData)
+    pub Newline(TokenData),
+    pub String(TokenData)
 }
 
 struct CharReader {
@@ -239,4 +240,11 @@ impl NewlineTokenizer {
             }
         }
     }
+}
+
+struct StringTokenizer {
+    char_reader: @mut CharReader
+}
+
+impl StringTokenizer {
 }
