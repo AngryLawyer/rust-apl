@@ -182,33 +182,61 @@ impl NumberTokenizer {
 }
 
 struct NewlineTokenizer {
-    char_reader: @mut CharReader
+    char_reader: @mut CharReader,
+    initial_next: uint, //TODO: Make this cache thing an object
+    initial_char: option::Option<char>,
+    initial_row: uint,
+    initial_col: uint
 }
 
 impl NewlineTokenizer {
 
     static fn is_valid_newline_start(char: char) -> bool {
-        char == '\n'
+        char == '\n' || char == '\r'
     }
 
     static fn new(char_reader: @mut CharReader) -> NewlineTokenizer {
         NewlineTokenizer {
-            char_reader: char_reader
-        }
-    }
-
-    fn is_newline(&self) -> bool {
-        match self.char_reader.current_char {
-            option::Some('\n') => true,
-            _ => false
+            char_reader: char_reader,
+            initial_next: char_reader.next,
+            initial_char: char_reader.current_char,
+            initial_row: char_reader.row,
+            initial_col: char_reader.col
         }
     }
 
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
-        return result::Ok(Newline(TokenData {
-            string: ~"\n",
-            row: 0,
-            col: 0
-        }));
+        match self.initial_char {
+            option::Some('\r') => {
+                self.char_reader.read_char();
+                match self.char_reader.current_char {
+                    option::Some('\n') => {
+                        return result::Ok(Newline(TokenData {
+                            string: ~"\r\n",
+                            row: 0,
+                            col: 0
+                        }));
+                    },
+                    _ => {
+                        self.char_reader.next = self.initial_next;
+                        self.char_reader.current_char = self.initial_char;
+                        self.char_reader.row = self.initial_row;
+                        self.char_reader.col = self.initial_col;
+                        return result::Ok(Newline(TokenData {
+                            string: ~"\r",
+                            row: 0,
+                            col: 0
+                        }));
+                    }
+                }
+            },
+            _ => {
+                return result::Ok(Newline(TokenData {
+                    string: ~"\n",
+                    row: 0,
+                    col: 0
+                }));
+            }
+        }
     }
 }

@@ -106,7 +106,7 @@ mod tokenizer {
 
     //TODO: Check against /r/n and /r
     fn test_tokenize_newlines() {
-        for ([~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"/r", ~"/r/n"]).each |newline| {
+        for ([~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"\r", ~"\r\n", ~"\r\r"]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
             match tokenizer.read_next_token() {
                 result::Ok(tokenizer::Newline(tokenData)) => {
