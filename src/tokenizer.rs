@@ -10,6 +10,13 @@ pub enum Token {
     pub String(TokenData)
 }
 
+struct Backtrack {
+    initial_next: uint,
+    initial_char: option::Option<char>,
+    initial_row: uint,
+    initial_col: uint
+}
+
 struct CharReader {
     source: ~str,
     next: uint,
@@ -73,6 +80,22 @@ impl CharReader {
             },
             _ => () 
         }
+    }
+
+    fn create_backtrack(&self) -> Backtrack {
+        Backtrack {
+            initial_next: self.next,
+            initial_char: self.current_char,
+            initial_row: self.row,
+            initial_col: self.col
+        }
+    }
+
+    fn backtrack(&mut self, backtrack: &Backtrack) {
+        self.next = backtrack.initial_next;
+        self.current_char = backtrack.initial_char;
+        self.row = backtrack.initial_row;
+        self.col = backtrack.initial_col;
     }
 }
 
@@ -184,10 +207,7 @@ impl NumberTokenizer {
 
 struct NewlineTokenizer {
     char_reader: @mut CharReader,
-    initial_next: uint, //TODO: Make this cache thing an object
-    initial_char: option::Option<char>,
-    initial_row: uint,
-    initial_col: uint
+    backtrack: Backtrack
 }
 
 impl NewlineTokenizer {
@@ -199,15 +219,12 @@ impl NewlineTokenizer {
     static fn new(char_reader: @mut CharReader) -> NewlineTokenizer {
         NewlineTokenizer {
             char_reader: char_reader,
-            initial_next: char_reader.next,
-            initial_char: char_reader.current_char,
-            initial_row: char_reader.row,
-            initial_col: char_reader.col
+            backtrack: char_reader.create_backtrack()
         }
     }
 
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
-        match self.initial_char {
+        match self.char_reader.current_char {
             option::Some('\r') => {
                 self.char_reader.read_char();
                 match self.char_reader.current_char {
@@ -219,10 +236,7 @@ impl NewlineTokenizer {
                         }));
                     },
                     _ => {
-                        self.char_reader.next = self.initial_next;
-                        self.char_reader.current_char = self.initial_char;
-                        self.char_reader.row = self.initial_row;
-                        self.char_reader.col = self.initial_col;
+                        self.char_reader.backtrack(&self.backtrack);
                         return result::Ok(Newline(TokenData {
                             string: ~"\r",
                             row: 0,

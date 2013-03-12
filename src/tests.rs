@@ -134,7 +134,9 @@ mod tokenizer {
               (~"'Inner \"\" quotes'", ~"Inner \"\" quotes"),
               (~"\"Inner '' quotes\"", ~"Inner '' quotes"),
               (~"'Escaped '' quote'", ~"Escaped ' quote"),
-              (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote")
+              (~"\"Escaped \"\" quote\"", ~"Escaped \" quote"),
+              (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote"),
+              (~"'Not Escaped \"\" quote'", ~"Not Escaped \"\" quote")
               ]).each |&(string, result)| {
             let mut tokenizer = Tokenizer::new(string);
             match tokenizer.read_next_token() {
