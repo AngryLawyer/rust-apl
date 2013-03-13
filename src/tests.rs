@@ -67,17 +67,7 @@ mod tokenizer {
                 }
             }
         }
-
-        /*//Operators
-        let string = ~"⍒";
-        let string = ~"÷";
-
-        //Primitive Operators
-
-        //Comments
-        let string = ~"⍝";
-        let string = ~"⍝ lol";
-
+        /*
         //Function definition
         let string = ~"∇Function";
         let string = ~"∇Function B";
@@ -222,7 +212,9 @@ mod tokenizer {
               ~"⍬",
               ~"⋄", //FIXME: A type of newline?
               ~"∇", //FIXME: Function definition?
-              ~"⍫"
+              ~"⍫",
+              ~"(",
+              ~")"
               ]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
             match tokenizer.read_next_token() {
