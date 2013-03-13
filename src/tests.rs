@@ -68,11 +68,7 @@ mod tokenizer {
             }
         }
 
-
-        //Strings
-        /*let string = ~"'This is a string'";
-
-        //Operators
+        /*//Operators
         let string = ~"⍒";
         let string = ~"÷";
 
@@ -157,5 +153,96 @@ mod tokenizer {
                 }
             }
         }
+    }
+
+    #[test]
+    fn test_tokenize_primitives() {
+        for ([~"+", 
+              ~"−",
+              ~"×",
+              ~"÷",
+              ~"⌈",
+              ~"⌉",
+              ~"∣",
+              ~"⍳",
+              ~"?",
+              ~"⋆",
+              ~"⍟",
+              ~"○",
+              ~"!",
+              ~"⌹",
+              ~"<",
+              ~"≤",
+              ~"=",
+              ~"≥",
+              ~">",
+              ~"≠",
+              ~"≡",
+              ~"≢",
+              ~"∊",
+              ~"⍷",
+              ~"∪",
+              ~"∩",
+              ~"~",
+              ~"∨",
+              ~"∧",
+              ~"⍱",
+              ~"⍲",
+              ~"⍴",
+              ~",",
+              ~"⍪",
+              ~"⌽",
+              ~"⊖",
+              ~"⍉",
+              ~"↑",
+              ~"↓",
+              ~"⊂",
+              ~"⊃",
+              ~"⌷",
+              ~"⍋",
+              ~"⍒",
+              ~"⊤",
+              ~"⊥",
+              ~"⍺",
+              ~"⍕",
+              ~"⍎",
+              ~"⊣",
+              ~"⊢",
+              ~"▯",
+              ~"⍞",
+              ~"/",
+              ~"⌿",
+              ~"\\",
+              ~"⍀",
+              ~"⌿",
+              ~"∘.",
+              ~"¨",
+              ~"[", //FIXME: Check that this should be parsed here
+              ~"]",
+              ~"⍬",
+              ~"⋄", //FIXME: A type of newline?
+              ~"∇", //FIXME: Function definition?
+              ~"⍫"
+              ]).each |newline| {
+            let mut tokenizer = Tokenizer::new(copy *newline);
+            match tokenizer.read_next_token() {
+                result::Ok(tokenizer::Primitive(tokenData)) => {
+                    //FIXME: Check it's the same primitive!
+                    //Pass
+                    fail_unless!(tokenData.row == 0);
+                    fail_unless!(tokenData.col == 0);
+                },
+                result::Err(msg) => {
+                    fail!(fmt!("Expected primitive - %s", msg));
+                },
+                _ => {
+                    fail!(~"Unexpected token type");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_tokenize_brackets() {
     }
 }
