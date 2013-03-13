@@ -125,6 +125,10 @@ impl Tokenizer {
                     let mut tokenizer = NumberTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
                 }
+                if StringTokenizer::is_valid_string_start(first_char) {
+                    let mut tokenizer = StringTokenizer::new(self.char_reader);
+                    return tokenizer.read_next_token()
+                }
                 result::Err(~"No valid token found")
             },
             option::None => {
@@ -261,4 +265,51 @@ struct StringTokenizer {
 }
 
 impl StringTokenizer {
+
+    static fn is_valid_string_start(char: char) -> bool {
+        char == '\'' || char == '"'
+    }
+
+    static fn new(char_reader: @mut CharReader) -> StringTokenizer {
+        StringTokenizer {
+            char_reader: char_reader
+        }
+    }
+
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        let mut token: ~[char] = ~[];
+        let opening_character = option::unwrap(self.char_reader.current_char);
+        self.char_reader.read_char();
+
+        loop {
+            match self.char_reader.current_char {
+                option::Some(char) if opening_character == char => {
+                    //Lookahead
+                    let backtrack = self.char_reader.create_backtrack();
+                    self.char_reader.read_char();
+                    match self.char_reader.current_char {
+                        option::Some(char) if opening_character == char => {
+                            //It's a quote - continue
+                            token.push(char);
+                        },
+                        _ => {
+                            self.char_reader.backtrack(&backtrack);
+                            return result::Ok(String(TokenData {
+                                string: str::from_chars(token),
+                                row: 0,
+                                col: 0
+                            }));
+                        }
+                    }
+                },
+                option::Some(char) => {
+                    token.push(char);
+                },
+                option::None => {
+                    return result::Err(~"Unexpected end of file");
+                }
+            };
+            self.char_reader.read_char();
+        }
+    }
 }
