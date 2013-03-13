@@ -131,7 +131,6 @@ mod tokenizer {
     fn test_tokenize_strings() {
         //Standard strings
         for ([(~"'Hello'", ~"Hello"),
-              (~" 'Alreet there' ", ~"Alreet there"),
               (~"\"Double quotes\"", ~"Double quotes"),
               (~"'Anything ⍝ lol'", ~"Anything ⍝ lol"),
               (~"'Inner \"\" quotes'", ~"Inner \"\" quotes"),
