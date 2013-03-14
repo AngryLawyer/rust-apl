@@ -208,7 +208,8 @@ mod tokenizer {
               ~"∇", //FIXME: Function definition?
               ~"⍫",
               ~"(",
-              ~")" //FIXME: Assignment is missing!
+              ~")", //FIXME: Assignment is missing!
+              ~"←"
               ]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
             match tokenizer.read_next_token() {
