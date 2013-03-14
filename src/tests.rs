@@ -9,12 +9,6 @@ mod tokenizer {
     use tokenizer;
     use tokenizer::Tokenizer;
 
-    fn test_tokenize() {
-        test_tokenize_number();
-        test_tokenize_newlines();
-        test_tokenize_strings();
-    }
-
     #[test]
     fn test_tokenize_number() {
         for ([~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"]).each |number| {
@@ -214,7 +208,7 @@ mod tokenizer {
               ~"∇", //FIXME: Function definition?
               ~"⍫",
               ~"(",
-              ~")"
+              ~")" //FIXME: Assignment is missing!
               ]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
             match tokenizer.read_next_token() {

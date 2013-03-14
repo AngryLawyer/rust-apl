@@ -118,6 +118,7 @@ impl Tokenizer {
         self.char_reader.wind_past_comments();
         match self.char_reader.current_char {
             option::Some(first_char) => {
+                //FIXME: Make Tokenizer a trait, turn this into two lines of code!
                 if NewlineTokenizer::is_valid_newline_start(first_char) {
                     let mut tokenizer = NewlineTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
@@ -128,6 +129,10 @@ impl Tokenizer {
                 }
                 if StringTokenizer::is_valid_string_start(first_char) {
                     let mut tokenizer = StringTokenizer::new(self.char_reader);
+                    return tokenizer.read_next_token()
+                }
+                if PrimitiveTokenizer::is_valid_primitive_start(first_char) {
+                    let mut tokenizer = PrimitiveTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
                 }
                 result::Err(~"No valid token found")
@@ -313,4 +318,49 @@ impl StringTokenizer {
             self.char_reader.read_char();
         }
     }
+}
+
+struct PrimitiveTokenizer {
+    char_reader: @mut CharReader
+}
+
+impl PrimitiveTokenizer {
+
+    static fn is_valid_primitive_start(char: char) -> bool {
+        vec::contains(~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','⌿','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←'], char)
+    }
+
+    static fn new(char_reader: @mut CharReader) -> PrimitiveTokenizer {
+        PrimitiveTokenizer {
+            char_reader: char_reader
+        }
+    }
+
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        let opening_character = option::unwrap(self.char_reader.current_char);
+        if opening_character == '∘' {
+            let backtrack = self.char_reader.create_backtrack();
+            self.char_reader.read_char();
+            match self.char_reader.current_char {
+                option::Some('.') => {
+                    result::Ok(Primitive(TokenData {
+                        string: ~"∘.",
+                        row: 0,
+                        col: 0
+                    }))
+                },
+                _ => {
+                    self.char_reader.backtrack(&backtrack);
+                    result::Err(~"Invalid Primitive")
+                }
+            }
+        } else {
+            result::Ok(Primitive(TokenData {
+                string: str::from_char(opening_character),
+                row: 0,
+                col: 0
+            }))
+        }
+    }
+
 }
