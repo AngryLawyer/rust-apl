@@ -11,6 +11,8 @@ extern mod std;
 pub mod tokenizer;
 
 #[cfg(test)]
-mod tests;
+mod test_tokenizer;
+#[cfg(test)]
+mod test_utils;
 
 mod apl;
