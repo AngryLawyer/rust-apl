@@ -164,7 +164,7 @@ impl Tokenizer {
                     let mut tokenizer = VariableTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
                 }
-                result::Err(~"No valid token found")
+                result::Err(fmt!("No valid token found starting with %c" first_char))
             },
             option::None => {
                 result::Ok(EndOfFile)
@@ -399,7 +399,7 @@ struct PrimitiveTokenizer {
 impl PrimitiveTokenizer {
 
     static fn is_valid_primitive_start(char: char) -> bool {
-        vec::contains(~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','⌿','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}'], &char)
+        vec::contains(~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','⌿','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵'], &char)
     }
 
     static fn new(char_reader: @mut CharReader) -> PrimitiveTokenizer {

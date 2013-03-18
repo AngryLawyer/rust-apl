@@ -9,6 +9,7 @@ mod tokenizer {
     use tokenizer;
     use tokenizer::Tokenizer;
 
+    #[test]
     fn test_tokenize_number() {
         for ([~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"]).each |number| {
             let mut tokenizer = Tokenizer::new(copy *number);
@@ -62,6 +63,7 @@ mod tokenizer {
         }
     }
 
+    #[test]
     fn test_tokenize_newlines() {
         for ([~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"\r", ~"\r\n", ~"\r\r"]).each |newline| {
             let mut tokenizer = Tokenizer::new(copy *newline);
@@ -81,6 +83,7 @@ mod tokenizer {
         }
     }
 
+    #[test]
     fn test_tokenize_strings() {
         //Standard strings
         for ([(~"'Hello'", ~"Hello"),
@@ -112,6 +115,7 @@ mod tokenizer {
         }
     }
 
+    #[test]
     fn test_tokenize_primitives() {
         for ([~"+", 
               ~"−",
@@ -184,7 +188,8 @@ mod tokenizer {
               ~")",
               ~"←",
               ~"{",
-              ~"}"
+              ~"}",
+              ~"⍵"
               ]).each |&prim| {
             let mut tokenizer = Tokenizer::new(copy prim);
             match tokenizer.read_next_token() {
@@ -203,6 +208,7 @@ mod tokenizer {
         }
     }
 
+    #[test]
     fn test_tokenize_variables() {
         //Standard Variables 
         for ([(~"Hello", ~"Hello"),
@@ -231,7 +237,7 @@ mod tokenizer {
 
     #[test]
     fn test_tokenize_multiple() {
-        let string = ~"x←1 2 3 4+1 2 3 4 ⍝Vector Addition\nx";
+        let string = ~"life←{↑1 ⍵∨.∧3 4=+/,¯1 0 1∘.⊖¯1 0 1∘.⌽⊂⍵}";
         let mut tokenizer = Tokenizer::new(string);
         let mut tokens = ~[];
         loop {
@@ -254,7 +260,7 @@ mod tokenizer {
         for tokens.each |token| {
             tokenizer::print_token(copy *token);
         }
-        test_assert(tokens.len() == 13, fmt!("Expected 13 tokens, got %u", tokens.len()));
+        test_assert(tokens.len() == 27, fmt!("Expected 27 tokens, got %u", tokens.len()));
     }
 }
 /*
