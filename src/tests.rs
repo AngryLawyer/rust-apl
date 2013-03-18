@@ -61,30 +61,6 @@ mod tokenizer {
                 }
             }
         }
-        /*
-        //Function definition
-        let string = ~"∇Function";
-        let string = ~"∇Function B";
-        let string = ~"∇A Function B";
-        let string = ~"∇A Function B;VAR";
-
-        //Close function
-        let string = ~"∇";
-
-        //Variables
-        let string = ~"⍙var";
-        let string = ~"∆var";
-        let string = ~"var";
-
-        //Control
-        let string = ~":If";
-        let string = ~":Return";
-
-        //Label
-        let string = ~"LABEL:";
-        //Todo- array indexing
-        //System variables
-        let string = ~"⎕SI";*/
     }
 
     #[test]
@@ -213,18 +189,16 @@ mod tokenizer {
               ~"←",
               ~"{",
               ~"}"
-              ]).each |prim| {
-            let mut tokenizer = Tokenizer::new(copy *prim);
+              ]).each |&prim| {
+            let mut tokenizer = Tokenizer::new(copy prim);
             match tokenizer.read_next_token() {
                 result::Ok(tokenizer::Primitive(tokenData)) => {
-                    //FIXME: Check it's the same primitive!
-                    test_assert(tokenData.string == *prim, fmt!("Read %s expected %s ", tokenData.string, *prim));
-                    //Pass
+                    test_assert(tokenData.string == prim, fmt!("Read %s expected %s ", tokenData.string, prim));
                     fail_unless!(tokenData.row == 0);
                     fail_unless!(tokenData.col == 0);
                 },
                 result::Err(msg) => {
-                    fail!(fmt!("Expected primitive for %s - %s", *prim, msg));
+                    fail!(fmt!("Expected primitive for %s - %s", prim, msg));
                 },
                 _ => {
                     fail!(~"Unexpected token type");
@@ -234,6 +208,38 @@ mod tokenizer {
     }
 
     #[test]
-    fn test_tokenize_brackets() {
+    fn test_tokenize_variables() {
+        //Standard Variables 
+        for ([(~"Hello", ~"Hello"),
+              (~"hi",~"hi"),
+              (~"HOLA⍝comment",~"HOLA"),
+              (~"∆delta", ~"∆delta"),
+              (~"⍙delta", ~"⍙delta")]).each |&(string, result)| {
+            let mut tokenizer = Tokenizer::new(string);
+            match tokenizer.read_next_token() {
+                result::Ok(tokenizer::Variable(tokenData)) => {
+                    test_assert(tokenData.string == result, fmt!("Read %s expected %s ", tokenData.string, result));
+
+                    //Pass
+                    fail_unless!(tokenData.row == 0);
+                    fail_unless!(tokenData.col == 0);
+                },
+                result::Err(msg) => {
+                    fail!(fmt!("Expected variable for %s - %s", tokenizer.char_reader.source, msg));
+                },
+                _ => {
+                    fail!(~"Unexpected token type");
+                }
+            }
+        }
     }
 }
+/*
+TODO:
+//Control
+let string = ~":If";
+let string = ~":Return";
+//Label
+let string = ~"LABEL:";
+//System variables
+let string = ~"⎕SI";*/

@@ -8,7 +8,8 @@ pub enum Token {
     pub Number(TokenData),
     pub Newline(TokenData),
     pub String(TokenData),
-    pub Primitive(TokenData)
+    pub Primitive(TokenData),
+    pub Variable(TokenData)
 }
 
 struct Backtrack {
@@ -317,6 +318,27 @@ impl StringTokenizer {
             };
             self.char_reader.read_char();
         }
+    }
+}
+
+struct VariableTokenizer {
+    char_reader: @mut CharReader
+}
+
+impl VariableTokenizer {
+
+    static fn is_valid_variable_start(char: char) -> bool {
+        char == '∆' || char == '⍙' || char >= 'A' || char <= 'z'
+    }
+
+    static fn new(char_reader: @mut CharReader) -> VariableTokenizer {
+        VariableTokenizer {
+            char_reader: char_reader
+        }
+    }
+
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        return result::Err(~"Not yet implemented");
     }
 }
 
