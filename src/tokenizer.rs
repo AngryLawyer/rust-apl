@@ -136,6 +136,10 @@ impl Tokenizer {
                     let mut tokenizer = PrimitiveTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
                 }
+                if VariableTokenizer::is_valid_variable_start(first_char) {
+                    let mut tokenizer = VariableTokenizer::new(self.char_reader);
+                    return tokenizer.read_next_token()
+                }
                 result::Err(~"No valid token found")
             },
             option::None => {
@@ -328,7 +332,7 @@ struct VariableTokenizer {
 impl VariableTokenizer {
 
     static fn is_valid_variable_start(char: char) -> bool {
-        char == '∆' || char == '⍙' || char >= 'A' || char <= 'z'
+        char == '∆' || char == '⍙' || (char >= 'A' && char <= 'z')
     }
 
     static fn new(char_reader: @mut CharReader) -> VariableTokenizer {
@@ -338,7 +342,28 @@ impl VariableTokenizer {
     }
 
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
-        return result::Err(~"Not yet implemented");
+        let mut token: ~[char] = ~[];
+
+        loop {
+            match self.char_reader.current_char {
+                option::Some(char) => {
+                    if VariableTokenizer::is_valid_variable_start(char) {
+                        token.push(char);
+                    } else {
+                        break;
+                    }
+                },
+                option::None => {
+                    break;
+                }
+            };
+            self.char_reader.read_char();
+        }
+        return result::Ok(Variable(TokenData {
+            string: str::from_chars(token),
+            row: 0,
+            col: 0
+        }));
     }
 }
 
