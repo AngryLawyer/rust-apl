@@ -9,7 +9,8 @@ pub enum Token {
     pub Newline(TokenData),
     pub String(TokenData),
     pub Primitive(TokenData),
-    pub Variable(TokenData)
+    pub Variable(TokenData),
+    pub EndOfFile()
 }
 
 struct Backtrack {
@@ -25,6 +26,29 @@ struct CharReader {
     current_char: option::Option<char>,
     row: uint,
     col: uint
+}
+
+pub fn print_token(token: Token) {
+    match token {
+        Number(data) => {
+            io::println(fmt!("NUMBER: %s", data.string));
+        },
+        Newline(data) => {
+            io::println(~"NEWLINE");
+        },
+        String(data) => {
+            io::println(fmt!("STRING: %s", data.string));
+        },
+        Primitive(data) => {
+            io::println(fmt!("PRIMITIVE: %s", data.string));
+        },
+        Variable(data) => {
+            io::println(fmt!("VARIABLE: %s", data.string));
+        },
+        EndOfFile => {
+            io::println(~"EOF");
+        }
+    }
 }
 
 impl CharReader {
@@ -107,14 +131,14 @@ struct Tokenizer {
 
 impl Tokenizer {
     static fn new(input_string: ~str) -> Tokenizer {
-        let char_reader = CharReader::new(input_string);
+        let mut char_reader = CharReader::new(input_string);
+        char_reader.read_char();
         Tokenizer {
             char_reader: @mut char_reader
         }
     }
 
     pub fn read_next_token(&mut self) -> result::Result<Token, ~str> {
-        self.char_reader.read_char();
         self.char_reader.wind_past_whitespace();
         self.char_reader.wind_past_comments();
         match self.char_reader.current_char {
@@ -143,7 +167,7 @@ impl Tokenizer {
                 result::Err(~"No valid token found")
             },
             option::None => {
-                result::Err(~"End of file")
+                result::Ok(EndOfFile)
             }
         }
     }
@@ -244,6 +268,7 @@ impl NewlineTokenizer {
                 self.char_reader.read_char();
                 match self.char_reader.current_char {
                     option::Some('\n') => {
+                        self.char_reader.read_char();
                         return result::Ok(Newline(TokenData {
                             string: ~"\r\n",
                             row: 0,
@@ -251,7 +276,6 @@ impl NewlineTokenizer {
                         }));
                     },
                     _ => {
-                        self.char_reader.backtrack(&self.backtrack);
                         return result::Ok(Newline(TokenData {
                             string: ~"\r",
                             row: 0,
@@ -261,6 +285,7 @@ impl NewlineTokenizer {
                 }
             },
             _ => {
+                self.char_reader.read_char();
                 return result::Ok(Newline(TokenData {
                     string: ~"\n",
                     row: 0,
@@ -390,6 +415,7 @@ impl PrimitiveTokenizer {
             self.char_reader.read_char();
             match self.char_reader.current_char {
                 option::Some('.') => {
+                    self.char_reader.read_char();
                     result::Ok(Primitive(TokenData {
                         string: ~"∘.",
                         row: 0,
@@ -406,6 +432,7 @@ impl PrimitiveTokenizer {
                 }
             }
         } else {
+            self.char_reader.read_char();
             result::Ok(Primitive(TokenData {
                 string: str::from_char(opening_character),
                 row: 0,
