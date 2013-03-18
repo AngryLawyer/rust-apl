@@ -200,6 +200,7 @@ mod tokenizer {
               ~"⍀",
               ~"⌿",
               ~"∘.",
+              ~"∘",
               ~"¨",
               ~"[", //FIXME: Check that this should be parsed here
               ~"]",
@@ -208,19 +209,22 @@ mod tokenizer {
               ~"∇", //FIXME: Function definition?
               ~"⍫",
               ~"(",
-              ~")", //FIXME: Assignment is missing!
-              ~"←"
-              ]).each |newline| {
-            let mut tokenizer = Tokenizer::new(copy *newline);
+              ~")",
+              ~"←",
+              ~"{",
+              ~"}"
+              ]).each |prim| {
+            let mut tokenizer = Tokenizer::new(copy *prim);
             match tokenizer.read_next_token() {
                 result::Ok(tokenizer::Primitive(tokenData)) => {
                     //FIXME: Check it's the same primitive!
+                    test_assert(tokenData.string == *prim, fmt!("Read %s expected %s ", tokenData.string, *prim));
                     //Pass
                     fail_unless!(tokenData.row == 0);
                     fail_unless!(tokenData.col == 0);
                 },
                 result::Err(msg) => {
-                    fail!(fmt!("Expected primitive - %s", msg));
+                    fail!(fmt!("Expected primitive for %s - %s", *prim, msg));
                 },
                 _ => {
                     fail!(~"Unexpected token type");
