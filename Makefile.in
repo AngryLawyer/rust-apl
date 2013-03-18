@@ -3,16 +3,21 @@ VPATH=%VPATH%
 RUSTC = rustc
 RUST_SRC = $(shell find $(VPATH)/src/. -type f -name '*.rs')
 RC_PATH = src/rust-apl.rc
+PREPROCESSED_RC_PATH = tmp/rust-apl.rc
 RUST_FLAGS = ""
 
 .PHONY: all
 all: rust-apl 
 
 rust-apl: src/rust-apl.rc $(RUST_SRC)
-	$(RUSTC) $(RC_PATH) $(RUSTFLAGS) -o bin/rust-apl
+	./etc/de-unicode.py
+	$(RUSTC) $(PREPROCESSED_RC_PATH) $(RUSTFLAGS) -o bin/rust-apl
+	rm -r ./tmp
 
 check: src/rust-apl.rc $(RUST_SRC)
-	$(RUSTC) $(RC_PATH) $(RUSTFLAGS) -o bin/test --test && bin/test
+	./etc/de-unicode.py
+	$(RUSTC) $(PREPROCESSED_RC_PATH) $(RUSTFLAGS) -o bin/test --test && bin/test
+	rm -r ./tmp
 
 .PHONY: clean
 clean:
