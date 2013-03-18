@@ -25,7 +25,7 @@ mod tokenizer {
                     fail!(fmt!("Expected number - %s", msg));
                 },
                 _ => {
-                    fail!(~"Unexpected token type");
+                    fail!(fmt!("Unexpected token type for %s", *number));
                 }
             }
         }
@@ -54,10 +54,9 @@ mod tokenizer {
                 result::Ok(tokenizer::Number(tokenData)) => {
                     fail!(fmt!("Unexpectedly read %s from source %s",tokenData.string, *number));
                 },
-                result::Err(_msg) => {
+                result::Ok(_) => {
                 },
-                _ => {
-                    fail!(~"Unexpected token type");
+                result::Err(_msg) => {
                 }
             }
         }
@@ -189,7 +188,8 @@ mod tokenizer {
               ~"←",
               ~"{",
               ~"}",
-              ~"⍵"
+              ~"⍵",
+              ~"."
               ]).each |&prim| {
             let mut tokenizer = Tokenizer::new(copy prim);
             match tokenizer.read_next_token() {
@@ -257,10 +257,7 @@ mod tokenizer {
                 }
             }
         }
-        for tokens.each |token| {
-            tokenizer::print_token(copy *token);
-        }
-        test_assert(tokens.len() == 27, fmt!("Expected 27 tokens, got %u", tokens.len()));
+        test_assert(tokens.len() == 28, fmt!("Expected 28 tokens, got %u", tokens.len()));
     }
 }
 /*

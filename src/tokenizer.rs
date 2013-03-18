@@ -33,7 +33,7 @@ pub fn print_token(token: Token) {
         Number(data) => {
             io::println(fmt!("NUMBER: %s", data.string));
         },
-        Newline(data) => {
+        Newline(_data) => {
             io::println(~"NEWLINE");
         },
         String(data) => {
@@ -146,6 +146,10 @@ impl Tokenizer {
                 //FIXME: Make Tokenizer a trait, turn this into two lines of code!
                 if NewlineTokenizer::is_valid_newline_start(first_char) {
                     let mut tokenizer = NewlineTokenizer::new(self.char_reader);
+                    return tokenizer.read_next_token()
+                }
+                if DotTokenizer::is_dot(first_char) {
+                    let mut tokenizer = DotTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
                 }
                 if NumberTokenizer::is_valid_number_start(first_char) {
@@ -392,6 +396,42 @@ impl VariableTokenizer {
     }
 }
 
+struct DotTokenizer {
+    char_reader: @mut CharReader
+}
+
+impl DotTokenizer {
+
+    static fn is_dot(char: char) -> bool {
+        char == '.'
+    }
+
+    static fn new(char_reader: @mut CharReader) -> DotTokenizer {
+        DotTokenizer {
+            char_reader: char_reader
+        }
+    }
+
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
+        let backtrack = self.char_reader.create_backtrack();
+        self.char_reader.read_char();
+        match self.char_reader.current_char {
+            option::Some(char) if char::is_digit(char) => {
+                self.char_reader.backtrack(&backtrack);
+                let mut tokenizer = NumberTokenizer::new(self.char_reader);
+                return tokenizer.read_next_token()
+            },
+            _ => {
+                result::Ok(Primitive(TokenData {
+                    string: ~".",
+                    row: 0,
+                    col: 0
+                }))
+            }
+        }
+    }
+}
+
 struct PrimitiveTokenizer {
     char_reader: @mut CharReader
 }
@@ -399,7 +439,7 @@ struct PrimitiveTokenizer {
 impl PrimitiveTokenizer {
 
     static fn is_valid_primitive_start(char: char) -> bool {
-        vec::contains(~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','⌿','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵'], &char)
+        vec::contains(~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵'], &char)
     }
 
     static fn new(char_reader: @mut CharReader) -> PrimitiveTokenizer {
