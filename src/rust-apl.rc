@@ -9,9 +9,12 @@
 extern mod std;
 
 pub mod tokenizer;
+pub mod parser;
 
 #[cfg(test)]
 mod test_tokenizer;
+#[cfg(test)]
+mod test_parser;
 #[cfg(test)]
 mod test_utils;
 
