@@ -1,5 +1,6 @@
 use tokenizer;
 use tokenizer::Token;
+use core::cell;
 
 pub enum Type {
     Number(~Token),
@@ -26,7 +27,7 @@ impl Parser {
 
     pub fn parse(&mut self) -> result::Result<~Node, ~str> {
 
-        let mut parse_tree: option::Option<~Node> = option::None;
+        let mut parse_tree: @cell::Cell<~Node> = @cell::empty_cell();
 
         loop {
             match self.tokenizer.read_next_token() {
@@ -42,13 +43,11 @@ impl Parser {
                 
             }
         }
-        match parse_tree {
-            option::Some(node) => {
-                result::Ok(node)
-            },
-            option::None => {
-                result::Err(~"Unexpected end of file")
-            }
+
+        if parse_tree.is_empty() {
+            result::Err(~"Unexpected end of file")
+        } else {
+            result::Ok(parse_tree.take())
         }
     }
 }
