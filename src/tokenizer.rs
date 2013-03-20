@@ -53,7 +53,7 @@ struct CharReader {
 
 impl CharReader {
 
-    static fn new(input_string: ~str) -> CharReader {
+    pub fn new(input_string: ~str) -> CharReader {
         CharReader {
             source: input_string,
             next: 0,
@@ -130,7 +130,7 @@ struct Tokenizer {
 }
 
 impl Tokenizer {
-    static fn new(input_string: ~str) -> ~Tokenizer {
+    pub fn new(input_string: ~str) -> ~Tokenizer {
         let mut char_reader = CharReader::new(input_string);
         char_reader.read_char();
         ~Tokenizer {

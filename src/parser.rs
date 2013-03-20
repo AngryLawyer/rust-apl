@@ -19,7 +19,7 @@ pub struct Parser {
 
 impl Parser {
 
-    static fn new(input_string: ~str) -> ~Parser {
+    pub fn new(input_string: ~str) -> ~Parser {
         ~Parser {
             tokenizer: tokenizer::Tokenizer::new(input_string)
         }
