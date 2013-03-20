@@ -2,7 +2,6 @@ use tokenizer;
 use tokenizer::Token;
 
 pub enum Type {
-    Number(~Token),
     Array(~[Token]),
     Identity(~Token)
 }
@@ -23,27 +22,20 @@ fn try_parse_monadic(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~No
 }
 
 fn try_parse_array(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-    result::Err(~"NOPE")
-}
-
-fn try_parse_number(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
+    //Also includes numbers, which are a zero-element array
+    //TODO: Mark a rewind point, as we might be a Variable or niladic function
+    //Read the first one. Is it alright? Read until we run out.
     result::Err(~"NOPE")
 }
 
 fn try_parse(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
 
+    //A sequence is any number of non-sequence items, until EOF is hit, I guess
+    //Think about having Sequence as a linked list?
+    //Loop
+        //Try reading an expression
+        //Expressions read until Line break or EOF, or that crazy diamond
     let mut error = ~"";
-
-    for [try_parse_dyadic, try_parse_monadic, try_parse_array, try_parse_number].each |&f| {
-        match f(tokenizer) {
-            result::Ok(node) => {
-                return result::Ok(node);
-            },
-            result::Err(str) => {
-                error = str;
-            }
-        }
-    }
     result::Err(error)
 }
 

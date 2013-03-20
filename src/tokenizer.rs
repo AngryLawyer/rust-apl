@@ -176,6 +176,11 @@ impl Tokenizer {
         }
     }
 
+    //We should call this, then perform actions on the buffer that gets returned
+    pub fn tokenize(&mut self) -> result::Result<~TokenBuffer, ~str> {
+        result::Err(~"Not implemented")
+    }
+
 }
 
 struct NumberTokenizer {
