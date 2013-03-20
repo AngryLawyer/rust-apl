@@ -34,7 +34,7 @@ fn try_parse(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str
 
     let mut error = ~"";
 
-    for [try_parse_number].each |&f| {
+    for [try_parse_dyadic, try_parse_monadic, try_parse_array, try_parse_number].each |&f| {
         match f(tokenizer) {
             result::Ok(node) => {
                 return result::Ok(node);
