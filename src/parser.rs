@@ -1,33 +1,67 @@
 use tokenizer;
 use tokenizer::Token;
-use core::cell;
 
 pub enum Type {
     Number(~Token),
-    Array(~[Token])
+    Array(~[Token]),
+    Identity(~Token)
 }
 
 pub enum Node {
     pub Niladic(~Type),
     pub Monadic(~Type, ~Node),
-    pub Dyadic(~Type, ~Node, ~Node)
+    pub Dyadic(~Type, ~Node, ~Node),
+    pub Sequence(~[~Node])
+}
+
+fn try_parse_dyadic(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
+    result::Err(~"NOPE")
+}
+
+fn try_parse_monadic(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
+    result::Err(~"NOPE")
+}
+
+fn try_parse_array(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
+    result::Err(~"NOPE")
+}
+
+fn try_parse_number(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
+    result::Err(~"NOPE")
+}
+
+fn try_parse(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
+
+    let mut error = ~"";
+
+    for [try_parse_number].each |&f| {
+        match f(tokenizer) {
+            result::Ok(node) => {
+                return result::Ok(node);
+            },
+            result::Err(str) => {
+                error = str;
+            }
+        }
+    }
+    result::Err(error)
 }
 
 pub struct Parser {
-    tokenizer: ~tokenizer::Tokenizer,
+    tokenizer: @mut tokenizer::Tokenizer,
 }
 
 impl Parser {
 
     pub fn new(input_string: ~str) -> ~Parser {
         ~Parser {
-            tokenizer: tokenizer::Tokenizer::new(input_string)
+            tokenizer: @mut tokenizer::Tokenizer::new(input_string) 
         }
     }
 
     pub fn parse(&mut self) -> result::Result<~Node, ~str> {
 
-        let mut parse_tree: @cell::Cell<~Node> = @cell::empty_cell();
+        let mut sequence: ~[~Node] = ~[];
 
         loop {
             match self.tokenizer.read_next_token() {
@@ -38,16 +72,19 @@ impl Parser {
                     return result::Err(msg);
                 },
                 result::Ok(token) => {
-                    break;
+                    match try_parse(self.tokenizer) {
+                        result::Ok(node) => {
+                            sequence.push(node);
+                        },
+                        result::Err(msg) => {
+                            return result::Err(msg);
+                        }
+                    }
                 }
                 
             }
         }
 
-        if parse_tree.is_empty() {
-            result::Err(~"Unexpected end of file")
-        } else {
-            result::Ok(parse_tree.take())
-        }
+        result::Ok(~Sequence(sequence))
     }
 }

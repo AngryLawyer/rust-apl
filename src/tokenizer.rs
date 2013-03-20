@@ -130,10 +130,10 @@ struct Tokenizer {
 }
 
 impl Tokenizer {
-    pub fn new(input_string: ~str) -> ~Tokenizer {
+    pub fn new(input_string: ~str) -> Tokenizer {
         let mut char_reader = CharReader::new(input_string);
         char_reader.read_char();
-        ~Tokenizer {
+        Tokenizer {
             char_reader: @mut char_reader
         }
     }
