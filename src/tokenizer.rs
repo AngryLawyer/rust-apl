@@ -28,29 +28,6 @@ struct CharReader {
     col: uint
 }
 
-/*pub fn print_token(token: &Token) {
-    match token {
-        &Number(data) => {
-            io::println(fmt!("NUMBER: %s", data.string));
-        },
-        &Newline(_data) => {
-            io::println(~"NEWLINE");
-        },
-        &String(data) => {
-            io::println(fmt!("STRING: %s", data.string));
-        },
-        &Primitive(data) => {
-            io::println(fmt!("PRIMITIVE: %s", data.string));
-        },
-        &Variable(data) => {
-            io::println(fmt!("VARIABLE: %s", data.string));
-        },
-        &EndOfFile => {
-            io::println(~"EOF");
-        }
-    }
-}*/
-
 impl CharReader {
 
     pub fn new(input_string: ~str) -> CharReader {
@@ -175,12 +152,6 @@ impl Tokenizer {
             }
         }
     }
-
-    //We should call this, then perform actions on the buffer that gets returned
-    pub fn tokenize(&mut self) -> result::Result<~TokenBuffer, ~str> {
-        result::Err(~"Not implemented")
-    }
-
 }
 
 struct NumberTokenizer {
