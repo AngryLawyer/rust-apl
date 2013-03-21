@@ -1,17 +1,9 @@
 use tokenizer;
 use tokenizer::Token;
 
-pub enum Type {
-    Number(~Token),
-    Array(~[Token]),
-    Identity(~Token)
-}
-
 pub enum Node {
-    pub Niladic(~Type),
-    pub Monadic(~Type, ~Node),
-    pub Dyadic(~Type, ~Node, ~Node),
-    pub Sequence(~[~Node])
+    pub Array(~[@Token]),
+    pub Identity(@Token, ~Node)
 }
 
 fn try_parse_dyadic(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
@@ -130,14 +122,12 @@ impl Parser {
         } else {
             //FIXME: Better error handling
             if self.token_is_number() {
-                /*let current_token = self.clone_current_token();
-                self.read_next_token(); //FIXME: We should be trying to catch errors here
-                if self.token_is_number() {
-                    result::Err(~"Array array array")
-                } else {
-                    result::Err(~"Number number number")
-                }*/
-                result::Err(~"Number number number")
+                let mut tokens: ~[@Token] = ~[];
+                while self.token_is_number() {
+                    tokens.push(option::get(self.current_token));
+                    self.read_next_token();
+                }
+                result::Ok(~Array(tokens))
             } else {
                 result::Err(~"Unexpected token")
             }

@@ -22,7 +22,7 @@ fn test_parse_number() {
         result::Ok(tree) => {
             let item = first_of_sequence(tree);
             match item {
-                ~parser::Niladic(~parser::Number(_)) => {
+                ~parser::Niladic(parser::Array(_)) => {
                     //OK
                 },
                 _ => {
@@ -45,7 +45,7 @@ fn test_parse_array() {
         result::Ok(tree) => {
             let item = first_of_sequence(tree);
             match item {
-                ~parser::Niladic(~parser::Array(numbers)) => {
+                ~parser::Niladic(parser::Array(numbers)) => {
                     fail_unless!(numbers.len() == 4);
                 },
                 _ => {
@@ -67,7 +67,7 @@ fn test_monadic() {
         result::Ok(tree) => {
             let item = first_of_sequence(tree);
             match item {
-                ~parser::Monadic(~parser::Identity(_), ~parser::Niladic(~parser::Number(_))) => {
+                ~parser::Monadic(parser::Identity(_), ~parser::Niladic(parser::Array(_))) => {
                     //OK
                 },
                 _ => {
