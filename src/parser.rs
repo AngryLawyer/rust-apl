@@ -54,7 +54,7 @@ fn try_parse(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str
 
 pub struct Parser {
     tokenizer: @mut tokenizer::Tokenizer,
-    current_token: option::Option<~tokenizer::Token>
+    current_token: option::Option<@tokenizer::Token>
 }
 
 impl Parser {
@@ -68,37 +68,30 @@ impl Parser {
 
     pub fn parse_next_statement(&mut self) -> result::Result<~Node, ~str> {
 
-        let mut sequence: ~[~Node] = ~[];
-
-        loop {
-            match self.tokenizer.read_next_token() {
-                result::Ok(~tokenizer::EndOfFile) => {
-                    break;
-                },
-                result::Err(msg) => {
-                    return result::Err(msg);
-                },
-                result::Ok(token) => {
-                    match try_parse(self.tokenizer) {
-                        result::Ok(node) => {
-                            sequence.push(node);
-                        },
-                        result::Err(msg) => {
-                            return result::Err(msg);
-                        }
+        match self.read_next_token() {
+            result::Ok(()) => {
+                match self.current_token {
+                    option::Some(@tokenizer::EndOfFile) => {
+                        result::Err(~"End of File")
+                    },
+                    option::Some(token) => {
+                        self.parse_base_expression()
+                    },
+                    option::None => {
+                        result::Err(~"Everything is wrong")
                     }
                 }
-                
+            },
+            result::Err(msg) => {
+                result::Err(msg)
             }
         }
-
-        result::Ok(~Sequence(sequence))
     }
 
     fn read_next_token(&mut self) -> result::Result<(), ~str> {
         match self.tokenizer.read_next_token() {
             result::Ok(token) => {
-                self.current_token = option::Some(token);
+                self.current_token = option::Some(@token);
                 result::Ok(())
             },
             result::Err(msg) => {
@@ -111,26 +104,44 @@ impl Parser {
     fn end_of_source(&self) -> bool {
         match self.current_token {
             option::None => true,
-            option::Some(~tokenizer::EndOfFile) => true,
+            option::Some(@tokenizer::EndOfFile) => true,
             _ => false
         }
     }
+
+    fn token_is_number(&self) -> bool {
+        match self.current_token {
+            option::Some(@tokenizer::Number(_)) => true,
+            _ => false
+        }
+    }
+
+    /*fn clone_current_token(&self) -> Token {
+        match self.current_token {
+            option::Some(token) => token,
+            _ => fail!(~"Tried to clone")
+        }
+    }*/
 
     fn parse_base_expression(&mut self) -> result::Result<~Node, ~str> {
         //This will either be an Array, a Number, or a Niladic primitive (or a bracketed thingy)
         if self.end_of_source() {
             result::Err(~"Unexpected end of source")
         } else {
-            match self.current_token {
-                tokenizer::Number(_) => {
-                    //Lookahead
-                },
-                _ => {
-                    result::Err(
-                }
+            //FIXME: Better error handling
+            if self.token_is_number() {
+                /*let current_token = self.clone_current_token();
+                self.read_next_token(); //FIXME: We should be trying to catch errors here
+                if self.token_is_number() {
+                    result::Err(~"Array array array")
+                } else {
+                    result::Err(~"Number number number")
+                }*/
+                result::Err(~"Number number number")
+            } else {
+                result::Err(~"Unexpected token")
             }
         }
-        result::Err(~"NOPE")
     }
 
     /*fn skip_expected<T>(&mut self, token_string: &str) -> result::Result<(), ~str> { //FIXME: This should type check

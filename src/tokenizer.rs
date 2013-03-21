@@ -115,7 +115,7 @@ impl Tokenizer {
         }
     }
 
-    pub fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    pub fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         self.char_reader.wind_past_whitespace();
         self.char_reader.wind_past_comments();
         match self.char_reader.current_char {
@@ -148,7 +148,7 @@ impl Tokenizer {
                 result::Err(fmt!("No valid token found starting with %c" first_char))
             },
             option::None => {
-                result::Ok(~EndOfFile)
+                result::Ok(EndOfFile)
             }
         }
     }
@@ -191,7 +191,7 @@ impl NumberTokenizer {
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let mut token: ~[char] = ~[];
         loop {
             if self.first_character {
@@ -213,7 +213,7 @@ impl NumberTokenizer {
                 if (token[token.len() - 1] == '.') {
                     return result::Err(~"Invalid number");
                 }
-                return result::Ok(~Number(TokenData {
+                return result::Ok(Number(TokenData {
                     string: str::from_chars(token),
                     row: 0,
                     col: 0
@@ -242,21 +242,21 @@ impl NewlineTokenizer {
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         match self.char_reader.current_char {
             option::Some('\r') => {
                 self.char_reader.read_char();
                 match self.char_reader.current_char {
                     option::Some('\n') => {
                         self.char_reader.read_char();
-                        return result::Ok(~Newline(TokenData {
+                        return result::Ok(Newline(TokenData {
                             string: ~"\r\n",
                             row: 0,
                             col: 0
                         }));
                     },
                     _ => {
-                        return result::Ok(~Newline(TokenData {
+                        return result::Ok(Newline(TokenData {
                             string: ~"\r",
                             row: 0,
                             col: 0
@@ -266,7 +266,7 @@ impl NewlineTokenizer {
             },
             _ => {
                 self.char_reader.read_char();
-                return result::Ok(~Newline(TokenData {
+                return result::Ok(Newline(TokenData {
                     string: ~"\n",
                     row: 0,
                     col: 0
@@ -292,7 +292,7 @@ impl StringTokenizer {
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let mut token: ~[char] = ~[];
         let opening_character = option::unwrap(self.char_reader.current_char);
         self.char_reader.read_char();
@@ -310,7 +310,7 @@ impl StringTokenizer {
                         },
                         _ => {
                             self.char_reader.backtrack(&backtrack);
-                            return result::Ok(~String(TokenData {
+                            return result::Ok(String(TokenData {
                                 string: str::from_chars(token),
                                 row: 0,
                                 col: 0
@@ -346,7 +346,7 @@ impl VariableTokenizer {
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let mut token: ~[char] = ~[];
 
         loop {
@@ -364,7 +364,7 @@ impl VariableTokenizer {
             };
             self.char_reader.read_char();
         }
-        return result::Ok(~Variable(TokenData {
+        return result::Ok(Variable(TokenData {
             string: str::from_chars(token),
             row: 0,
             col: 0
@@ -388,7 +388,7 @@ impl DotTokenizer {
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let backtrack = self.char_reader.create_backtrack();
         self.char_reader.read_char();
         match self.char_reader.current_char {
@@ -398,7 +398,7 @@ impl DotTokenizer {
                 return tokenizer.read_next_token()
             },
             _ => {
-                result::Ok(~Primitive(TokenData {
+                result::Ok(Primitive(TokenData {
                     string: ~".",
                     row: 0,
                     col: 0
@@ -424,7 +424,7 @@ impl PrimitiveTokenizer {
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<~Token, ~str> {
+    fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let opening_character = option::unwrap(self.char_reader.current_char);
         if opening_character == '∘' {
             let backtrack = self.char_reader.create_backtrack();
@@ -432,7 +432,7 @@ impl PrimitiveTokenizer {
             match self.char_reader.current_char {
                 option::Some('.') => {
                     self.char_reader.read_char();
-                    result::Ok(~Primitive(TokenData {
+                    result::Ok(Primitive(TokenData {
                         string: ~"∘.",
                         row: 0,
                         col: 0
@@ -440,7 +440,7 @@ impl PrimitiveTokenizer {
                 },
                 _ => {
                     self.char_reader.backtrack(&backtrack);
-                    result::Ok(~Primitive(TokenData {
+                    result::Ok(Primitive(TokenData {
                         string: ~"∘",
                         row: 0,
                         col: 0
@@ -449,7 +449,7 @@ impl PrimitiveTokenizer {
             }
         } else {
             self.char_reader.read_char();
-            result::Ok(~Primitive(TokenData {
+            result::Ok(Primitive(TokenData {
                 string: str::from_char(opening_character),
                 row: 0,
                 col: 0

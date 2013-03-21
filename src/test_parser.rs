@@ -18,7 +18,7 @@ fn test_parse_number() {
    
     let number = ~"3.141"; //Everyone's favourite number 
     let mut parser = Parser::new(number);
-    match parser.parse() {
+    match parser.parse_next_statement() {
         result::Ok(tree) => {
             let item = first_of_sequence(tree);
             match item {
@@ -41,7 +41,7 @@ fn test_parse_array() {
 
     let numbers = ~"1 2 3 4";
     let mut parser = Parser::new(numbers);
-    match parser.parse() {
+    match parser.parse_next_statement() {
         result::Ok(tree) => {
             let item = first_of_sequence(tree);
             match item {
@@ -63,7 +63,7 @@ fn test_parse_array() {
 fn test_monadic() {
     let expression = ~"+1";
     let mut parser = Parser::new(expression);
-    match parser.parse() {
+    match parser.parse_next_statement() {
         result::Ok(tree) => {
             let item = first_of_sequence(tree);
             match item {
@@ -82,7 +82,7 @@ fn test_monadic() {
 
     let expression = ~"+";
     let mut parser = Parser::new(expression);
-    match parser.parse() {
+    match parser.parse_next_statement() {
         result::Err(msg) => {
         },
         _ => {
