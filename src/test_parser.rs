@@ -46,6 +46,50 @@ fn test_parse_array() {
 }
 
 #[test]
+fn test_parse_variable() {
+   
+    let var = ~"Trololo";
+    let mut parser = Parser::new(var);
+    match parser.parse_next_statement() {
+        result::Ok(tree) => {
+            match tree {
+                ~parser::Variable(_) => {
+                    //OK
+                },
+                _ => {
+                    fail!(~"Didn't find a variable");
+                }
+            }
+        },
+        result::Err(msg) => {
+            fail!(msg);
+        }
+    }
+}
+
+#[test]
+fn test_parse_zilde() {
+   
+    let var = ~"⍬";
+    let mut parser = Parser::new(var);
+    match parser.parse_next_statement() {
+        result::Ok(tree) => {
+            match tree {
+                ~parser::Zilde(_) => {
+                    //OK
+                },
+                _ => {
+                    fail!(~"Didn't find zilde");
+                }
+            }
+        },
+        result::Err(msg) => {
+            fail!(msg);
+        }
+    }
+}
+
+#[test]
 fn test_monadic() {
     let expression = ~"+1";
     let mut parser = Parser::new(expression);

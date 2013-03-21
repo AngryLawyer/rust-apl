@@ -2,46 +2,12 @@ use tokenizer;
 use tokenizer::Token;
 
 pub enum Node {
+    //Niladic
+    pub Variable(@Token),
     pub Array(~[@Token]),
+    pub Zilde(@Token),
+
     pub Identity(@Token, ~Node)
-}
-
-fn try_parse_dyadic(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-    result::Err(~"NOPE")
-}
-
-fn try_parse_monadic(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-    result::Err(~"NOPE")
-}
-
-fn try_parse_array(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-    //An array is 
-    //Also includes numbers, which are a zero-element array
-    //TODO: Mark a rewind point, as we might be a Variable or niladic function
-    //Read the first one. Is it alright? Read until we run out.
-    result::Err(~"NOPE")
-}
-
-fn try_parse_number(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-    //A number is an Array or an actual number
-    result::Err(~"NOPE")
-}
-
-fn try_parse_base_expression(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-    //This will either be an Array, a Number, or a Niladic primitive (or a bracketed thingy)
-
-    result::Err(~"NOPE")
-}
-
-fn try_parse(tokenizer: @mut tokenizer::Tokenizer) -> result::Result<~Node, ~str> {
-
-    //A sequence is any number of non-sequence items, until EOF is hit, I guess
-    //Think about having Sequence as a linked list?
-    //Loop
-        //Try reading an expression
-        //Expressions read until Line break or EOF, or that crazy diamond
-    let mut error = ~"";
-    result::Err(error)
 }
 
 pub struct Parser {
@@ -121,10 +87,18 @@ impl Parser {
             result::Err(~"Unexpected end of source")
         } else {
             //FIXME: Better error handling
-            if self.token_is_number() {
-                self.parse_array()
-            } else {
-                result::Err(~"Unexpected token")
+            match self.current_token {
+                option::Some(@tokenizer::Number(_)) => self.parse_array(),
+                option::Some(@tokenizer::Variable(_)) => self.parse_variable(),
+                option::Some(@tokenizer::Primitive(ref token_data)) => {
+                    match token_data.string {
+                        ~"⍬" => self.parse_zilde(),
+                        ~"(" => result::Err(~"Not yet implemented"),
+                        _ => result::Err(~"Unexpected primitive")
+                    }
+                },
+                //TODO: 
+                _ => result::Err(~"Unexpected token")
             }
         }
     }
@@ -136,6 +110,18 @@ impl Parser {
             self.read_next_token();
         }
         result::Ok(~Array(tokens))
+    }
+
+    fn parse_variable(&mut self) -> result::Result<~Node, ~str> {
+        let result = ~Variable(option::get(self.current_token));
+        self.read_next_token();
+        result::Ok(result)
+    }
+
+    fn parse_zilde(&mut self) -> result::Result<~Node, ~str> {
+        let result = ~Zilde(option::get(self.current_token));
+        self.read_next_token();
+        result::Ok(result)
     }
 
     /*fn skip_expected<T>(&mut self, token_string: &str) -> result::Result<(), ~str> { //FIXME: This should type check
