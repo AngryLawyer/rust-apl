@@ -1,18 +1,6 @@
 use parser;
 use parser::Parser;
 
-fn first_of_sequence(parse_tree: ~parser::Node) -> ~parser::Node {
-    match parse_tree {
-        ~parser::Sequence(seqItems) => {
-            fail_unless!(seqItems.len() == 1);
-            copy seqItems[0]
-        },
-        _ => {
-            fail!(~"Expected sequence")
-        }
-    }
-}
-
 #[test]
 fn test_parse_number() {
    
@@ -20,9 +8,8 @@ fn test_parse_number() {
     let mut parser = Parser::new(number);
     match parser.parse_next_statement() {
         result::Ok(tree) => {
-            let item = first_of_sequence(tree);
-            match item {
-                ~parser::Niladic(parser::Array(_)) => {
+            match tree {
+                ~parser::Array(_) => {
                     //OK
                 },
                 _ => {
@@ -43,9 +30,8 @@ fn test_parse_array() {
     let mut parser = Parser::new(numbers);
     match parser.parse_next_statement() {
         result::Ok(tree) => {
-            let item = first_of_sequence(tree);
-            match item {
-                ~parser::Niladic(parser::Array(numbers)) => {
+            match tree {
+                ~parser::Array(numbers) => {
                     fail_unless!(numbers.len() == 4);
                 },
                 _ => {
@@ -65,9 +51,8 @@ fn test_monadic() {
     let mut parser = Parser::new(expression);
     match parser.parse_next_statement() {
         result::Ok(tree) => {
-            let item = first_of_sequence(tree);
-            match item {
-                ~parser::Monadic(parser::Identity(_), ~parser::Niladic(parser::Array(_))) => {
+            match tree {
+                ~parser::Identity(_, ~parser::Array(_)) => {
                     //OK
                 },
                 _ => {

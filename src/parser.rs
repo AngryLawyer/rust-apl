@@ -122,16 +122,20 @@ impl Parser {
         } else {
             //FIXME: Better error handling
             if self.token_is_number() {
-                let mut tokens: ~[@Token] = ~[];
-                while self.token_is_number() {
-                    tokens.push(option::get(self.current_token));
-                    self.read_next_token();
-                }
-                result::Ok(~Array(tokens))
+                self.parse_array()
             } else {
                 result::Err(~"Unexpected token")
             }
         }
+    }
+
+    fn parse_array(&mut self) -> result::Result<~Node, ~str> {
+        let mut tokens: ~[@Token] = ~[];
+        while self.token_is_number() {
+            tokens.push(option::get(self.current_token));
+            self.read_next_token();
+        }
+        result::Ok(~Array(tokens))
     }
 
     /*fn skip_expected<T>(&mut self, token_string: &str) -> result::Result<(), ~str> { //FIXME: This should type check
