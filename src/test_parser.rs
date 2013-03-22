@@ -90,13 +90,13 @@ fn test_parse_zilde() {
 }
 
 #[test]
-fn test_monadic() {
+fn test_conjugate() {
     let expression = ~"+1";
     let mut parser = Parser::new(expression);
     match parser.parse_next_statement() {
         result::Ok(tree) => {
             match tree {
-                ~parser::Identity(_, ~parser::Array(_)) => {
+                ~parser::Conjugate(_, ~parser::Array(_)) => {
                     //OK
                 },
                 _ => {
@@ -116,6 +116,66 @@ fn test_monadic() {
         },
         _ => {
             fail!(~"Incorrectly parsed invalid expression");
+        }
+    }
+}
+
+#[test]
+fn test_negate() {
+    let expression = ~"−1";
+    let mut parser = Parser::new(expression);
+    match parser.parse_next_statement() {
+        result::Ok(tree) => {
+            match tree {
+                ~parser::Negate(_, ~parser::Array(_)) => {
+                    //OK
+                },
+                _ => {
+                    fail!(~"Didn't find the right Monadic expression");
+                }
+            }
+        },
+        result::Err(msg) => {
+            fail!(msg);
+        }
+    }
+
+    let expression = ~"-1";
+    let mut parser = Parser::new(expression);
+    match parser.parse_next_statement() {
+        result::Ok(tree) => {
+            match tree {
+                ~parser::Negate(_, ~parser::Array(_)) => {
+                    //OK
+                },
+                _ => {
+                    fail!(~"Didn't find the right Monadic expression");
+                }
+            }
+        },
+        result::Err(msg) => {
+            fail!(msg);
+        }
+    }
+}
+
+#[test]
+fn test_addition() {
+    let expression = ~"1 2 3 4+2 4 6 8";
+    let mut parser = Parser::new(expression);
+    match parser.parse_next_statement() {
+        result::Ok(tree) => {
+            match tree {
+                ~parser::Addition(_, ~parser::Array(_), ~parser::Array(_)) => {
+                    //OK
+                },
+                _ => {
+                    fail!(~"Didn't find the right Dyadic expression");
+                }
+            }
+        },
+        result::Err(msg) => {
+            fail!(msg);
         }
     }
 }

@@ -2,12 +2,18 @@ use tokenizer;
 use tokenizer::Token;
 
 pub enum Node {
+    //Dyadic
+    pub Addition(@Token, ~Node, ~Node),
+    pub Subtraction(@Token, ~Node, ~Node),
+
+    //Monadic
+    pub Conjugate(@Token, ~Node),
+    pub Negate(@Token, ~Node),
+
     //Niladic
     pub Variable(@Token),
     pub Array(~[@Token]),
     pub Zilde(@Token),
-
-    pub Identity(@Token, ~Node)
 }
 
 pub struct Parser {
@@ -33,7 +39,7 @@ impl Parser {
                         result::Err(~"End of File")
                     },
                     option::Some(token) => {
-                        self.parse_base_expression()
+                        self.parse_dyadic()
                     },
                     option::None => {
                         result::Err(~"Everything is wrong")
@@ -74,12 +80,85 @@ impl Parser {
         }
     }
 
-    /*fn clone_current_token(&self) -> Token {
-        match self.current_token {
-            option::Some(token) => token,
-            _ => fail!(~"Tried to clone")
+    fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(@Token, ~Node, ~Node) -> Node) -> result::Result<~Node, ~str> {
+        let stash = self.stash();
+        match self.parse_dyadic() {
+            result::Ok(node) => {
+                let item = ~kind(stash, left, node);
+                self.read_next_token();
+                result::Ok(item)
+            },
+            result::Err(msg) => {
+                result::Err(msg)
+            }
         }
-    }*/
+    }
+
+    fn parse_dyadic(&mut self) -> result::Result<~Node, ~str> {
+        if self.end_of_source() {
+            result::Err(~"Unexpected end of source")
+        } else {
+            //Parse monadic on the left (otherwise it's an endless loop).
+            match self.parse_monadic() {
+                result::Ok(left) => {
+                    if self.end_of_source() {
+                        result::Ok(left)
+                    } else {
+                        match self.current_token {
+                            option::Some(@tokenizer::Primitive(ref token_data)) => {
+                                match token_data.string {
+                                    ~"+" => self.create_dyadic_result(left, Addition),
+                                    ~"-" | ~"−" => self.create_dyadic_result(left, Subtraction),
+                                    _ => result::Err(~"Unknown operator")
+                                }
+                            },
+                            _ => {
+                                result::Ok(left)
+                            }
+                        }
+                    }
+                },
+                result::Err(msg) => result::Err(msg)
+            }
+        }
+    }
+
+    fn stash(&mut self) -> @tokenizer::Token {
+        let stash = option::unwrap(self.current_token);
+        self.read_next_token();
+        stash
+    }
+
+    fn create_monadic_result(&mut self, kind: &fn(@Token, ~Node) -> Node) -> result::Result<~Node, ~str> {
+        let stash = self.stash();
+        match self.parse_dyadic() {
+            result::Ok(node) => {
+                let item = ~kind(stash, node);
+                self.read_next_token();
+                result::Ok(item)
+            },
+            result::Err(msg) => {
+                result::Err(msg)
+            }
+        }
+    }
+
+    fn parse_monadic(&mut self) -> result::Result<~Node, ~str> {
+        if self.end_of_source() {
+            result::Err(~"Unexpected end of source")
+        } else {
+            match self.current_token {
+                option::Some(@tokenizer::Primitive(ref token_data)) => {
+                    match token_data.string {
+                        ~"+" => self.create_monadic_result(Conjugate),
+                        ~"-" | ~"−" => self.create_monadic_result(Negate),
+                        _ => self.parse_base_expression()
+                    }
+                },
+                _ => self.parse_base_expression()
+            }
+        }
+    }
 
     fn parse_base_expression(&mut self) -> result::Result<~Node, ~str> {
         //This will either be an Array, a Number, or a Niladic primitive (or a bracketed thingy)
