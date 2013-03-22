@@ -38,7 +38,7 @@ impl Parser {
                     option::Some(@tokenizer::EndOfFile) => {
                         result::Err(~"End of File")
                     },
-                    option::Some(token) => {
+                    option::Some(_token) => {
                         self.parse_dyadic()
                     },
                     option::None => {
