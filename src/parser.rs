@@ -1,20 +1,6 @@
 use tokenizer;
 use tokenizer::Token;
-
-pub enum Node {
-    //Dyadic
-    pub Addition(@Token, ~Node, ~Node),
-    pub Subtraction(@Token, ~Node, ~Node),
-
-    //Monadic
-    pub Conjugate(@Token, ~Node),
-    pub Negate(@Token, ~Node),
-
-    //Niladic
-    pub Variable(@Token),
-    pub Array(~[@Token]),
-    pub Zilde(@Token),
-}
+use nodes::*;
 
 pub struct Parser {
     tokenizer: @mut tokenizer::Tokenizer,
@@ -23,8 +9,8 @@ pub struct Parser {
 
 impl Parser {
 
-    pub fn new(input_string: ~str) -> ~Parser {
-        ~Parser {
+    pub fn new(input_string: ~str) -> Parser {
+        Parser {
             tokenizer: @mut tokenizer::Tokenizer::new(input_string),
             current_token: option::None
         }
