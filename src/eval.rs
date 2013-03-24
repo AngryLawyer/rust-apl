@@ -2,26 +2,12 @@ use parser;
 use nodes;
 use tokenizer;
 
-trait Value {}
-
-pub struct Float {
-    value: float
+pub enum Value {
+    Float(float),
+    Integer(int),
+    Array(uint, ~[~Value])
 }
 
-impl Value for Float;
-
-pub struct Integer {
-    value: int
-}
-
-impl Value for Integer;
-
-pub struct Array {
-    dimensions: uint,
-    values: ~[~Value]
-}
-
-impl Value for Array;
 
 pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
     match node {
@@ -47,7 +33,7 @@ fn eval_number(token: @tokenizer::Token) -> ~Value {
                 option::Some(_) => {
                     match float::from_str(token_data.string) {
                         option::Some(fl) => {
-                            ~Float{value: fl} as ~Value
+                            ~Float(fl)
                         },
                         option::None => fail!(~"Bad float")
                     }
@@ -55,7 +41,7 @@ fn eval_number(token: @tokenizer::Token) -> ~Value {
                 option::None => {
                     match int::from_str(token_data.string) {
                         option::Some(i) => {
-                            ~Integer{value: i} as ~Value
+                            ~Integer(i)
                         },
                         option::None => fail!(~"Bad int")
                     }

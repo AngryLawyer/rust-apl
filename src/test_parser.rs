@@ -1,8 +1,9 @@
 use parser;
 use parser::Parser;
+use nodes;
 
 
-fn test_parse(input: ~str, f: &fn(tree: ~parser::Node)) {
+fn test_parse(input: ~str, f: &fn(tree: ~nodes::Node)) {
 
     let mut parser = Parser::new(input);
     match parser.parse_next_statement() {
@@ -20,7 +21,7 @@ fn test_parse_number() {
     
     do test_parse(~"3.141") |tree| {
         match tree {
-            ~parser::Array(_) => {
+            ~nodes::Array(_) => {
                 //OK
             },
             _ => {
@@ -35,7 +36,7 @@ fn test_parse_array() {
 
     do test_parse(~"1 2 3 4") |tree| {
         match tree {
-            ~parser::Array(_) => {
+            ~nodes::Array(_) => {
                 //OK
             },
             _ => {
@@ -50,7 +51,7 @@ fn test_parse_variable() {
    
     do test_parse(~"Trololo") |tree| {
         match tree {
-            ~parser::Variable(_) => {
+            ~nodes::Variable(_) => {
                 //OK
             },
             _ => {
@@ -65,7 +66,7 @@ fn test_parse_zilde() {
    
     do test_parse(~"⍬") |tree| {
         match tree {
-            ~parser::Zilde(_) => {
+            ~nodes::Zilde(_) => {
                 //OK
             },
             _ => {
@@ -80,7 +81,7 @@ fn test_conjugate() {
 
     do test_parse(~"+1") |tree| {
         match tree {
-            ~parser::Conjugate(_, ~parser::Array(_)) => {
+            ~nodes::Conjugate(_, ~nodes::Array(_)) => {
                 //OK
             },
             _ => {
@@ -95,7 +96,7 @@ fn test_conjugate() {
 fn test_negate() {
     do test_parse(~"-1") |tree| {
         match tree {
-            ~parser::Negate(_, ~parser::Array(_)) => {
+            ~nodes::Negate(_, ~nodes::Array(_)) => {
                 //OK
             },
             _ => {
@@ -109,7 +110,7 @@ fn test_negate() {
 fn test_addition() {
     do test_parse(~"1 2 3 4 + 2 4 6 8") |tree| {
         match tree {
-            ~parser::Addition(_, ~parser::Array(_), ~parser::Array(_)) => {
+            ~nodes::Addition(_, ~nodes::Array(_), ~nodes::Array(_)) => {
                 //OK
             },
             _ => {
