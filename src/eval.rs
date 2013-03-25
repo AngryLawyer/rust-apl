@@ -49,26 +49,41 @@ impl Printable for Value {
 pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
     match node {
         &nodes::Array(ref nodes) => result::Ok(eval_array(nodes)),
-        &nodes::Addition(_, _, _) => eval_addition(node),
+        &nodes::Addition(_, ref left, ref right) => eval_addition(*left, *right),
         _ => result::Err(~"Not yet implemented")
     }
 }
 
-fn eval_addition(node: &nodes::Node) -> result::Result<~Value, ~str> {
-    match node {
-        &nodes::Addition(_, ref left, ref right) => {
-            let eval_left = eval_node(*left);
-            let eval_right = eval_node(*right);
-            match (eval_left, eval_right) {
-                (result::Ok(~Integer(x)), result::Ok(~Integer(y))) => { //FIXME: Should be returning errors here
-                    result::Ok(~Integer(x+y))
+fn eval_addition(left: &nodes::Node, right: &nodes::Node) -> result::Result<~Value, ~str> {
+    match eval_node(left) {
+        result::Ok(left) => {
+            match eval_node(right) {
+                result::Ok(right) => {
+                    match (left, right) {
+                        (~Integer(x), ~Integer(y)) => {
+                            result::Ok(~Integer(x+y))
+                        },
+                        (~Float(x), ~Float(y)) => {
+                            result::Ok(~Float(x+y))
+                        },
+                        (~Integer(x), ~Float(y)) => {
+                            result::Ok(~Float(x as float + y))
+                        },
+                        (~Float(x), ~Integer(y)) => {
+                            result::Ok(~Float(x + y as float))
+                        },
+                        _ => result::Err(~"Need to implement addition for arrays!")
+                    }
                 },
-                _ => result::Err(~"Need to implement addition!")
+                result::Err(msg) => {
+                    result::Err(msg)
+                }
             }
         },
-        _ => result::Err(~"Trying to do addition on non-addition item")
+        result::Err(msg) => {
+            result::Err(msg)
+        }
     }
-    
 }
 
 fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
