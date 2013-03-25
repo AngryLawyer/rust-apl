@@ -1,6 +1,6 @@
 use core::io::ReaderUtil;
 use eval::Evaluator;
-use nodes;
+use eval::Printable;
 
 fn main() {
    io::println(~"Rust-APL version 0.0.1");
@@ -10,10 +10,10 @@ fn main() {
         let mut eval = Evaluator::new(read);
         match eval.eval() {
             result::Ok(result) => {
-                io::println(~"LOL");
+                io::println(result.to_string());
             },
             result::Err(msg) => {
-                io::println(msg);
+                io::println(fmt!("Error: %s", msg));
             }
         }
    }

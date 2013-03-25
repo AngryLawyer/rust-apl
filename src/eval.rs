@@ -2,25 +2,85 @@ use parser;
 use nodes;
 use tokenizer;
 
-pub enum Value {
-    Float(float),
-    Integer(int),
-    Array(uint, ~[~Value])
+pub trait Printable {
+    pub fn to_string(&self) -> ~str;
 }
 
+pub enum Value {
+    pub Float(float),
+    pub Integer(int),
+    pub Array(uint, ~[~Value])
+}
+
+impl Printable for Value {
+
+    pub fn to_string(&self) -> ~str {
+        match self {
+            &Float(f) => {
+                fmt!("%f", f)
+            },
+            &Integer(i) => {
+                fmt!("%i", i)
+            },
+            &Array(depth, ref contents) => {
+                if depth != 1 {
+                    fail!(~"Multidimensional arrays aren't yet supported");
+                }
+                let mut result: ~str = ~"";
+                let mut first: bool = true;
+
+                for contents.each |value| {
+                    if first {
+                        first = false;
+                    } else {
+                        result += " ";
+                    }
+                    result += value.to_string()
+                }
+                result
+            }/*,
+            _ => {
+                fail!(~"Unknown type")
+            }*/
+        }
+    }
+}
 
 pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
     match node {
-        &nodes::Array(ref nodes) => eval_array(nodes),
+        &nodes::Array(ref nodes) => result::Ok(eval_array(nodes)),
+        &nodes::Addition(_, _, _) => eval_addition(node),
         _ => result::Err(~"Not yet implemented")
     }
 }
 
-fn eval_array(tokens: &~[@tokenizer::Token]) -> result::Result<~Value, ~str> {
+fn eval_addition(node: &nodes::Node) -> result::Result<~Value, ~str> {
+    match node {
+        &nodes::Addition(_, ref left, ref right) => {
+            let eval_left = eval_node(*left);
+            let eval_right = eval_node(*right);
+            match (eval_left, eval_right) {
+                (result::Ok(~Integer(x)), result::Ok(~Integer(y))) => { //FIXME: Should be returning errors here
+                    result::Ok(~Integer(x+y))
+                },
+                _ => result::Err(~"Need to implement addition!")
+            }
+        },
+        _ => result::Err(~"Trying to do addition on non-addition item")
+    }
+    
+}
+
+fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
     if tokens.len() == 1 {
-        result::Ok(eval_number(tokens[0]))
+        eval_number(tokens[0])
     } else {
-        result::Err(~"Can't deal with multidimensional arrays")
+        let mut array_contents: ~[~Value] = ~[];
+        for tokens.each |token| {
+            array_contents.push(eval_number(*token));
+        }
+        ~Array(1, array_contents)
+
     }
 
 }
