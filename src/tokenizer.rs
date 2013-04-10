@@ -199,16 +199,16 @@ impl NumberTokenizer {
                 if self.is_period() {
                     self.period_encountered = true;
                 }
-                token.push(option::unwrap(self.char_reader.current_char));
+                token.push(self.char_reader.current_char.unwrap());
             } else if self.is_period() {
                 if self.period_encountered {
                     return result::Err(~"Invalid number");
                 } else {
                     self.period_encountered = true;
-                    token.push(option::unwrap(self.char_reader.current_char));
+                    token.push(self.char_reader.current_char.unwrap());
                 }
             } else if self.is_number() {
-                token.push(option::unwrap(self.char_reader.current_char));
+                token.push(self.char_reader.current_char.unwrap());
             } else {
                 if (token[token.len() - 1] == '.') {
                     return result::Err(~"Invalid number");
@@ -294,7 +294,7 @@ impl StringTokenizer {
 
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let mut token: ~[char] = ~[];
-        let opening_character = option::unwrap(self.char_reader.current_char);
+        let opening_character = self.char_reader.current_char.unwrap();
         self.char_reader.read_and_stash_char();
 
         loop {
@@ -425,7 +425,7 @@ impl PrimitiveTokenizer {
     }
 
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
-        let opening_character = option::unwrap(self.char_reader.current_char);
+        let opening_character = self.char_reader.current_char.unwrap();
         if opening_character == '∘' {
             let backtrack = self.char_reader.create_backtrack();
             self.char_reader.read_and_stash_char();

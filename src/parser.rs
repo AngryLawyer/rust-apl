@@ -110,7 +110,7 @@ impl Parser {
     }
 
     fn stash(&mut self) -> @tokenizer::Token {
-        let stash = option::unwrap(self.current_token);
+        let stash = self.current_token.unwrap();
         self.read_next_token();
         stash
     }
@@ -171,20 +171,20 @@ impl Parser {
     fn parse_array(&mut self) -> result::Result<~Node, ~str> {
         let mut tokens: ~[@Token] = ~[];
         while self.token_is_number() {
-            tokens.push(option::get(self.current_token));
+            tokens.push(self.current_token.get());
             self.read_next_token();
         }
         result::Ok(~Array(tokens))
     }
 
     fn parse_variable(&mut self) -> result::Result<~Node, ~str> {
-        let result = ~Variable(option::get(self.current_token));
+        let result = ~Variable(self.current_token.get());
         self.read_next_token();
         result::Ok(result)
     }
 
     fn parse_zilde(&mut self) -> result::Result<~Node, ~str> {
-        let result = ~Zilde(option::get(self.current_token));
+        let result = ~Zilde(self.current_token.get());
         self.read_next_token();
         result::Ok(result)
     }
