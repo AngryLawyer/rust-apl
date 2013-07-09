@@ -1,3 +1,5 @@
+use std::{result, str, option, vec, char};
+
 pub struct TokenData {
     string: ~str,
     row: uint,
@@ -42,7 +44,7 @@ impl CharReader {
 
     fn read_and_stash_char(&mut self) {
         if self.next < self.source.len() {
-            let str::CharRange {ch, next} = str::char_range_at(self.source, self.next);
+            let str::CharRange {ch, next} = self.source.char_range_at(self.next);
             self.next = next;
             self.row += 1;
             self.current_char = option::Some(ch);
@@ -415,7 +417,7 @@ struct PrimitiveTokenizer {
 impl PrimitiveTokenizer {
 
     fn is_valid_primitive_start(char: char) -> bool {
-        vec::contains(~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵', '-'], &char)
+        ~['+','−','×','÷','⌈','⌉','∣','⍳','?','⋆','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵', '-'].contains(&char)
     }
 
     fn new(char_reader: @mut CharReader) -> PrimitiveTokenizer {

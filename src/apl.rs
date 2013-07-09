@@ -1,7 +1,10 @@
-use core::io::ReaderUtil;
+use std::io::ReaderUtil;
 use eval::Evaluator;
 use eval::Printable;
+use std::io;
+use std::result;
 
+#[main]
 fn main() {
    io::println(~"Rust-APL version 0.0.1");
    let reader = io::stdin();

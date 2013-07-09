@@ -1,3 +1,5 @@
+use std::{result, option, int, float, str};
+
 use parser;
 use nodes;
 use tokenizer;
@@ -104,7 +106,7 @@ fn eval_number(token: @tokenizer::Token) -> ~Value {
     match token {
         @tokenizer::Number(ref token_data) => { 
             //FIXME: This needs to handle exponents and complex numbers
-            match str::find_char(token_data.string, '.') {
+            match token_data.string.find('.') {
                 option::Some(_) => {
                     match float::from_str(token_data.string) {
                         option::Some(fl) => {
@@ -132,7 +134,7 @@ pub struct Evaluator {
     parser: @mut parser::Parser
 }
 
-pub impl Evaluator {
+impl Evaluator {
     
     pub fn new(input_string: ~str) -> Evaluator {
         Evaluator {
