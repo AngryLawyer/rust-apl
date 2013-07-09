@@ -31,13 +31,13 @@ impl Printable for Value {
                 let mut result: ~str = ~"";
                 let mut first: bool = true;
 
-                for contents.each |value| {
+                for contents.iter().advance |value| {
                     if first {
                         first = false;
                     } else {
-                        result += " ";
+                        result = result.append(" ");
                     }
-                    result += value.to_string()
+                    result = result.append(value.to_string())
                 }
                 result
             }/*,
@@ -93,7 +93,7 @@ fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
         eval_number(tokens[0])
     } else {
         let mut array_contents: ~[~Value] = ~[];
-        for tokens.each |token| {
+        for tokens.iter().advance|token| {
             array_contents.push(eval_number(*token));
         }
         ~Array(1, array_contents)

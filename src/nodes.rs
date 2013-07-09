@@ -46,12 +46,10 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Array(ref tokens) => {
             let mut string = ~"ARRAY(";
-            for tokens.each |token| {
-                string += token_string(*token) + ~",";
-
+            for tokens.iter().advance |token| {
+                string = string.append(token_string(*token)).append(~",");
             }
-            string += ~")";
-            string
+            string.append(~")")
         },
         &Zilde(ref token) => {
             ~"ZILDE("+token_string(*token)+")"
