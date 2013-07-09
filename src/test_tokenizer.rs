@@ -1,10 +1,12 @@
+use std::result;
 use tokenizer;
 use tokenizer::Tokenizer;
 use test_utils::test_assert;
 
 #[test]
 fn test_tokenize_number() {
-    for ([~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"]).each |number| {
+    let list = ~[~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"];
+    for list.iter().advance |number| {
         let mut tokenizer = Tokenizer::new(copy *number);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
@@ -41,7 +43,8 @@ fn test_tokenize_number() {
     }
 
     //Invalid numbers
-    for ([~".3.21", ~"3.2.1", ~"1.", ~"."]).each |number| {
+    let list = [~".3.21", ~"3.2.1", ~"1.", ~"."];
+    for list.iter().advance |number| {
         let mut tokenizer = Tokenizer::new(copy *number);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
@@ -57,7 +60,8 @@ fn test_tokenize_number() {
 
 #[test]
 fn test_tokenize_newlines() {
-    for ([~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"\r", ~"\r\n", ~"\r\r"]).each |newline| {
+    let list = [~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"\r", ~"\r\n", ~"\r\r"];
+    for list.iter().advance |newline| {
         let mut tokenizer = Tokenizer::new(copy *newline);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Newline(tokenData)) => {
@@ -78,16 +82,17 @@ fn test_tokenize_newlines() {
 #[test]
 fn test_tokenize_strings() {
     //Standard strings
-    for ([(~"'Hello'", ~"Hello"),
-          (~"\"Double quotes\"", ~"Double quotes"),
-          (~"'Anything ⍝ lol'", ~"Anything ⍝ lol"),
-          (~"'Inner \"\" quotes'", ~"Inner \"\" quotes"),
-          (~"\"Inner '' quotes\"", ~"Inner '' quotes"),
-          (~"'Escaped '' quote'", ~"Escaped ' quote"),
-          (~"\"Escaped \"\" quote\"", ~"Escaped \" quote"),
-          (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote"),
-          (~"'Not Escaped \"\" quote'", ~"Not Escaped \"\" quote")
-          ]).each |&(string, result)| {
+    let list = [(~"'Hello'", ~"Hello"),
+        (~"\"Double quotes\"", ~"Double quotes"),
+        (~"'Anything ⍝ lol'", ~"Anything ⍝ lol"),
+        (~"'Inner \"\" quotes'", ~"Inner \"\" quotes"),
+        (~"\"Inner '' quotes\"", ~"Inner '' quotes"),
+        (~"'Escaped '' quote'", ~"Escaped ' quote"),
+        (~"\"Escaped \"\" quote\"", ~"Escaped \" quote"),
+        (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote"),
+        (~"'Not Escaped \"\" quote'", ~"Not Escaped \"\" quote")
+    ];
+    for list.iter().advance |&(string, result)| {
         let mut tokenizer = Tokenizer::new(string);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::String(tokenData)) => {
@@ -109,81 +114,83 @@ fn test_tokenize_strings() {
 
 #[test]
 fn test_tokenize_primitives() {
-    for ([~"+", 
-          ~"−",
-          ~"×",
-          ~"÷",
-          ~"⌈",
-          ~"⌉",
-          ~"∣",
-          ~"⍳",
-          ~"?",
-          ~"⋆",
-          ~"⍟",
-          ~"○",
-          ~"!",
-          ~"⌹",
-          ~"<",
-          ~"≤",
-          ~"=",
-          ~"≥",
-          ~">",
-          ~"≠",
-          ~"≡",
-          ~"≢",
-          ~"∊",
-          ~"⍷",
-          ~"∪",
-          ~"∩",
-          ~"~",
-          ~"∨",
-          ~"∧",
-          ~"⍱",
-          ~"⍲",
-          ~"⍴",
-          ~",",
-          ~"⍪",
-          ~"⌽",
-          ~"⊖",
-          ~"⍉",
-          ~"↑",
-          ~"↓",
-          ~"⊂",
-          ~"⊃",
-          ~"⌷",
-          ~"⍋",
-          ~"⍒",
-          ~"⊤",
-          ~"⊥",
-          ~"⍺",
-          ~"⍕",
-          ~"⍎",
-          ~"⊣",
-          ~"⊢",
-          ~"▯",
-          ~"⍞",
-          ~"/",
-          ~"⌿",
-          ~"\\",
-          ~"⍀",
-          ~"⌿",
-          ~"∘.",
-          ~"∘",
-          ~"¨",
-          ~"[",
-          ~"]",
-          ~"⍬",
-          ~"⋄",
-          ~"∇",
-          ~"⍫",
-          ~"(",
-          ~")",
-          ~"←",
-          ~"{",
-          ~"}",
-          ~"⍵",
-          ~"."
-          ]).each |&prim| {
+    let list = [~"+", 
+        ~"−",
+        ~"×",
+        ~"÷",
+        ~"⌈",
+        ~"⌉",
+        ~"∣",
+        ~"⍳",
+        ~"?",
+        ~"⋆",
+        ~"⍟",
+        ~"○",
+        ~"!",
+        ~"⌹",
+        ~"<",
+        ~"≤",
+        ~"=",
+        ~"≥",
+        ~">",
+        ~"≠",
+        ~"≡",
+        ~"≢",
+        ~"∊",
+        ~"⍷",
+        ~"∪",
+        ~"∩",
+        ~"~",
+        ~"∨",
+        ~"∧",
+        ~"⍱",
+        ~"⍲",
+        ~"⍴",
+        ~",",
+        ~"⍪",
+        ~"⌽",
+        ~"⊖",
+        ~"⍉",
+        ~"↑",
+        ~"↓",
+        ~"⊂",
+        ~"⊃",
+        ~"⌷",
+        ~"⍋",
+        ~"⍒",
+        ~"⊤",
+        ~"⊥",
+        ~"⍺",
+        ~"⍕",
+        ~"⍎",
+        ~"⊣",
+        ~"⊢",
+        ~"▯",
+        ~"⍞",
+        ~"/",
+        ~"⌿",
+        ~"\\",
+        ~"⍀",
+        ~"⌿",
+        ~"∘.",
+        ~"∘",
+        ~"¨",
+        ~"[",
+        ~"]",
+        ~"⍬",
+        ~"⋄",
+        ~"∇",
+        ~"⍫",
+        ~"(",
+        ~")",
+        ~"←",
+        ~"{",
+        ~"}",
+        ~"⍵",
+        ~"."
+    ];
+
+    for list.iter().advance |&prim| {
         let mut tokenizer = Tokenizer::new(copy prim);
 
         match tokenizer.read_next_token() {
@@ -205,11 +212,14 @@ fn test_tokenize_primitives() {
 #[test]
 fn test_tokenize_variables() {
     //Standard Variables 
-    for ([(~"Hello", ~"Hello"),
-          (~"hi",~"hi"),
-          (~"HOLA⍝comment",~"HOLA"),
-          (~"∆delta", ~"∆delta"),
-          (~"⍙delta", ~"⍙delta")]).each |&(string, result)| {
+    let list = [(~"Hello", ~"Hello"),
+        (~"hi",~"hi"),
+        (~"HOLA⍝comment",~"HOLA"),
+        (~"∆delta", ~"∆delta"),
+        (~"⍙delta", ~"⍙delta")
+    ];
+
+    for list.iter().advance |&(string, result)| {
         let mut tokenizer = Tokenizer::new(string);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Variable(tokenData)) => {

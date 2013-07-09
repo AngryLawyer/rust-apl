@@ -1,3 +1,4 @@
+use std::result;
 use eval;
 use eval::Evaluator;
 use eval::Value;
