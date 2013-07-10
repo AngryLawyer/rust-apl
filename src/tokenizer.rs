@@ -1,4 +1,4 @@
-use std::{result, str, option, vec, char};
+use std::{result, str, option, char};
 
 pub struct TokenData {
     string: ~str,
@@ -159,6 +159,7 @@ impl Tokenizer {
 struct NumberTokenizer {
     char_reader: @mut CharReader,
     period_encountered: bool,
+    complex_encountered: bool,
     first_character: bool
 }
 
@@ -173,6 +174,7 @@ impl NumberTokenizer {
         NumberTokenizer {
             char_reader: char_reader,
             period_encountered: false,
+            complex_encountered: false,
             first_character: true
         }
     }
@@ -193,6 +195,13 @@ impl NumberTokenizer {
         }
     }
 
+    fn is_complex(&self) -> bool {
+        match self.char_reader.current_char {
+            option::Some('J') => true,
+            _ => false
+        }
+    }
+
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let mut token: ~[char] = ~[];
         loop {
@@ -202,6 +211,14 @@ impl NumberTokenizer {
                     self.period_encountered = true;
                 }
                 token.push(self.char_reader.current_char.unwrap());
+            } else if self.is_complex() {
+                if self.complex_encountered {
+                    return result::Err(~"Invalid number");
+                } else {
+                    self.complex_encountered = true;
+                    self.period_encountered = false;
+                    token.push(self.char_reader.current_char.unwrap());
+                }
             } else if self.is_period() {
                 if self.period_encountered {
                     return result::Err(~"Invalid number");
@@ -212,7 +229,8 @@ impl NumberTokenizer {
             } else if self.is_number() {
                 token.push(self.char_reader.current_char.unwrap());
             } else {
-                if (token[token.len() - 1] == '.') {
+                if (token[token.len() - 1] == '.' ||
+                    token[token.len() - 1] == 'J') {
                     return result::Err(~"Invalid number");
                 }
                 return result::Ok(Number(TokenData {

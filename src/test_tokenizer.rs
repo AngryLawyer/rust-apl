@@ -24,6 +24,27 @@ fn test_tokenize_number() {
             }
         }
     }
+
+    //Complex number
+    let list = ~[~"1J2", ~"0J21", ~"3.2J2.1", ~"¯321J¯321"];
+    for list.iter().advance |number| {
+        let mut tokenizer = Tokenizer::new(copy *number);
+        match tokenizer.read_next_token() {
+            result::Ok(tokenizer::Number(tokenData)) => {
+
+                //Pass
+                test_assert(tokenData.string == *number, fmt!("Read %s expected %s ", tokenData.string, *number));
+                /*fail_unless!(tokenData.row == 0);
+                fail_unless!(tokenData.col == 0);*/
+            },
+            result::Err(msg) => {
+                fail!(fmt!("Expected number - %s", msg));
+            },
+            _ => {
+                fail!(fmt!("Unexpected token type for %s", *number));
+            }
+        }
+    }
     //Offset number
     let mut tokenizer = Tokenizer::new(~" 123⍝ lol");
     let expected = ~"123";
@@ -43,7 +64,7 @@ fn test_tokenize_number() {
     }
 
     //Invalid numbers
-    let list = [~".3.21", ~"3.2.1", ~"1.", ~"."];
+    let list = [~".3.21", ~"3.2.1", ~"1.", ~".", ~"JJ", ~"1J", ~"J1"];
     for list.iter().advance |number| {
         let mut tokenizer = Tokenizer::new(copy *number);
         match tokenizer.read_next_token() {
@@ -64,7 +85,7 @@ fn test_tokenize_newlines() {
     for list.iter().advance |newline| {
         let mut tokenizer = Tokenizer::new(copy *newline);
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Newline(tokenData)) => {
+            result::Ok(tokenizer::Newline(_tokenData)) => {
                 //Pass
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
@@ -213,8 +234,8 @@ fn test_tokenize_primitives() {
 fn test_tokenize_variables() {
     //Standard Variables 
     let list = [(~"Hello", ~"Hello"),
-        (~"hi",~"hi"),
-        (~"HOLA⍝comment",~"HOLA"),
+        (~"hi", ~"hi"),
+        (~"HOLA⍝comment", ~"HOLA"),
         (~"∆delta", ~"∆delta"),
         (~"⍙delta", ~"⍙delta")
     ];
