@@ -1,5 +1,4 @@
 use std::result;
-use parser;
 use parser::Parser;
 use nodes;
 
@@ -21,6 +20,17 @@ fn test_parse(input: ~str, f: &fn(tree: ~nodes::Node)) {
 fn test_parse_number() {
     
     do test_parse(~"3.141") |tree| {
+        match tree {
+            ~nodes::Array(_) => {
+                //OK
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
+    }
+
+    do test_parse(~"0J3.141") |tree| {
         match tree {
             ~nodes::Array(_) => {
                 //OK

@@ -108,26 +108,69 @@ fn eval_number(token: @tokenizer::Token) -> ~Value {
             //FIXME: This needs to handle exponents and complex numbers
             match token_data.string.find('.') {
                 option::Some(_) => {
-                    match float::from_str(token_data.string) {
-                        option::Some(fl) => {
-                            ~Float(fl)
-                        },
-                        option::None => fail!(~"Bad float")
-                    }
+                    eval_float(token)
                 },
                 option::None => {
-                    match int::from_str(token_data.string) {
-                        option::Some(i) => {
-                            ~Integer(i)
-                        },
-                        option::None => fail!(~"Bad int")
-                    }
+                    eval_int(token)
+
                 }
             }
         },
         _ => fail!(~"Something is seriously wrong")
     }
-    
+}
+
+fn get_string_and_sign<'r>(token_string: &'r str) -> (&'r str, bool){
+    if token_string.char_at(0) == '¯' {
+        let str::CharRange {ch, next} = token_string.char_range_at(0);
+        (token_string.slice_from(next), true)
+    } else {
+        (token_string, false)
+    }
+}
+
+fn eval_float(token: @tokenizer::Token) -> ~Value {
+    match token {
+        @tokenizer::Number(ref token_data) => { 
+            let (match_string, is_negative) = get_string_and_sign(token_data.string);
+
+            match float::from_str(match_string) {
+                option::Some(fl) => {
+                    if is_negative {
+                        ~Float(-fl)
+                    } else {
+                        ~Float(fl)
+                    }
+                },
+                option::None => {
+                    fail!(fmt!("Bad float %s", token_data.string))
+                }
+            }
+        },
+        _ => fail!(~"Something is seriously wrong")
+    }
+}
+
+fn eval_int(token: @tokenizer::Token) -> ~Value {
+    match token {
+        @tokenizer::Number(ref token_data) => { 
+            let (match_string, is_negative) = get_string_and_sign(token_data.string);
+
+            match int::from_str(match_string) {
+                option::Some(i) => {
+                    if is_negative {
+                        ~Integer(-i)
+                    } else {
+                        ~Integer(i)
+                    }
+                },
+                option::None => {
+                    fail!(fmt!("Bad int %s", token_data.string))
+                }
+            }
+        },
+        _ => fail!(~"Something is seriously wrong")
+    }
 }
 
 pub struct Evaluator {

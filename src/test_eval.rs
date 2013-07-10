@@ -1,7 +1,6 @@
 use std::result;
 use eval;
 use eval::Evaluator;
-use eval::Value;
 
 fn test_eval(input: ~str, f: &fn(result: ~eval::Value)) {
 
@@ -28,6 +27,17 @@ fn test_eval_int() {
             }
         }
     }
+
+    do test_eval(~"¯3") |result| {
+        match result {
+            ~eval::Integer(x) => {
+                assert_eq!(x, -3);
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
+    }
 }
 
 #[test]
@@ -36,6 +46,30 @@ fn test_eval_float() {
         match result {
             ~eval::Float(x) => {
                 assert_eq!(x, 0.2f);
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
+    }
+    do test_eval(~"¯.2") |result| {
+        match result {
+            ~eval::Float(x) => {
+                assert_eq!(x, -0.2f);
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
+    }
+}
+
+#[test]
+fn test_eval_complex() {
+    do test_eval(~"1J3") |result| {
+        match result {
+            ~eval::Integer(x) => {
+                assert_eq!(x, 3);
             },
             _ => {
                 fail!(~"Didn't find a number");
@@ -70,7 +104,7 @@ fn test_eval_addition() {
 
     do test_eval(~"1 1+1 1") |result| {
         match result {
-            ~eval::Array(order, array) => {
+            ~eval::Array(_order, array) => {
                 match array[0] {
                     ~eval::Integer(2) => {
                         match array[1] {
@@ -94,7 +128,7 @@ fn test_eval_addition() {
 
     do test_eval(~"2+1 1") |result| {
         match result {
-            ~eval::Array(order, array) => {
+            ~eval::Array(_order, array) => {
                 match array[0] {
                     ~eval::Integer(3) => {
                         match array[1] {

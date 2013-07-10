@@ -17,7 +17,7 @@ fn test_tokenize_number() {
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected number - %s", msg));
+                fail!(fmt!("Expected %s - %s", *number, msg));
             },
             _ => {
                 fail!(fmt!("Unexpected token type for %s", *number));
@@ -38,7 +38,7 @@ fn test_tokenize_number() {
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected number - %s", msg));
+                fail!(fmt!("Expected %s - %s", *number, msg));
             },
             _ => {
                 fail!(fmt!("Unexpected token type for %s", *number));
@@ -56,15 +56,15 @@ fn test_tokenize_number() {
             fail_unless!(tokenData.col == 1);*/
         },
         result::Err(msg) => {
-            fail!(fmt!("Expected number - %s", msg));
+            fail!(fmt!("Expected %s - %s", expected, msg));
         },
         _ => {
-            fail!(~"Unexpected token type");
+            fail!(fmt!("Unexpected token type for %s", expected));
         }
     }
 
     //Invalid numbers
-    let list = [~".3.21", ~"3.2.1", ~"1.", ~".", ~"JJ", ~"1J", ~"J1"];
+    let list = [~".3.21", ~"3.2.1", ~"1.", ~".", ~"JJ", ~"1J", ~"J1", ~"0J1¯"];
     for list.iter().advance |number| {
         let mut tokenizer = Tokenizer::new(copy *number);
         match tokenizer.read_next_token() {

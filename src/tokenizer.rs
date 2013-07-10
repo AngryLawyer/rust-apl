@@ -160,7 +160,8 @@ struct NumberTokenizer {
     char_reader: @mut CharReader,
     period_encountered: bool,
     complex_encountered: bool,
-    first_character: bool
+    first_character: bool,
+    allowed_negative: bool
 }
 
 impl NumberTokenizer {
@@ -175,7 +176,8 @@ impl NumberTokenizer {
             char_reader: char_reader,
             period_encountered: false,
             complex_encountered: false,
-            first_character: true
+            first_character: true,
+            allowed_negative: false
         }
     }
 
@@ -202,6 +204,13 @@ impl NumberTokenizer {
         }
     }
 
+    fn is_negative(&self) -> bool {
+        match self.char_reader.current_char {
+            option::Some('¯') => true,
+            _ => false
+        }
+    }
+
     fn read_next_token(&mut self) -> result::Result<Token, ~str> {
         let mut token: ~[char] = ~[];
         loop {
@@ -211,15 +220,24 @@ impl NumberTokenizer {
                     self.period_encountered = true;
                 }
                 token.push(self.char_reader.current_char.unwrap());
+            } else if self.is_negative() {
+                if self.allowed_negative {
+                    self.allowed_negative = false;
+                    token.push(self.char_reader.current_char.unwrap());
+                } else {
+                    return result::Err(~"Invalid number");
+                }
             } else if self.is_complex() {
                 if self.complex_encountered {
                     return result::Err(~"Invalid number");
                 } else {
                     self.complex_encountered = true;
                     self.period_encountered = false;
+                    self.allowed_negative = true;
                     token.push(self.char_reader.current_char.unwrap());
                 }
             } else if self.is_period() {
+                self.allowed_negative = false;
                 if self.period_encountered {
                     return result::Err(~"Invalid number");
                 } else {
@@ -227,10 +245,12 @@ impl NumberTokenizer {
                     token.push(self.char_reader.current_char.unwrap());
                 }
             } else if self.is_number() {
+                self.allowed_negative = false;
                 token.push(self.char_reader.current_char.unwrap());
             } else {
                 if (token[token.len() - 1] == '.' ||
-                    token[token.len() - 1] == 'J') {
+                    token[token.len() - 1] == 'J' ||
+                    token[token.len() - 1] == '¯') {
                     return result::Err(~"Invalid number");
                 }
                 return result::Ok(Number(TokenData {
