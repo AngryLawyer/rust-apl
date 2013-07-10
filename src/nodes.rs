@@ -29,16 +29,16 @@ fn token_string(token: &Token) -> ~str {
 
 pub fn node_to_string(node: &Node) -> ~str {
     match node {
-        &Addition(ref token, ref left, ref right) => {
+        &Addition(ref _token, ref left, ref right) => {
             ~"ADDITION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
         },
-        &Subtraction(ref token, ref left, ref right) => {
+        &Subtraction(ref _token, ref left, ref right) => {
             ~"SUBTRACTION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
         },
-        &Conjugate(ref token, ref left) => {
+        &Conjugate(ref _token, ref left) => {
             ~"CONJUGATE[ "+node_to_string(*left)+" ]"
         },
-        &Negate(ref token, ref left) => {
+        &Negate(ref _token, ref left) => {
             ~"NEGATE[ "+node_to_string(*left)+" ]"
         },
         &Variable(ref token) => {
@@ -47,9 +47,9 @@ pub fn node_to_string(node: &Node) -> ~str {
         &Array(ref tokens) => {
             let mut string = ~"ARRAY(";
             for tokens.iter().advance |token| {
-                string = string.append(token_string(*token)).append(~",");
+                string = string.append(token_string(*token)).append(",");
             }
-            string.append(~")")
+            string.append(")")
         },
         &Zilde(ref token) => {
             ~"ZILDE("+token_string(*token)+")"

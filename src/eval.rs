@@ -11,6 +11,7 @@ pub trait Printable {
 pub enum Value {
     pub Float(float),
     pub Integer(int),
+    pub Complex(~Value, ~Value),
     pub Array(uint, ~[~Value])
 }
 
@@ -40,6 +41,9 @@ impl Printable for Value {
                     result = result.append(value.to_string())
                 }
                 result
+            },
+            &Complex(ref left, ref right) => {
+                left.to_string().append("J").append(right.to_string())
             }/*,
             _ => {
                 fail!(~"Unknown type")
@@ -74,7 +78,7 @@ fn eval_addition(left: &nodes::Node, right: &nodes::Node) -> result::Result<~Val
                         (~Float(x), ~Integer(y)) => {
                             result::Ok(~Float(x + y as float))
                         },
-                        _ => result::Err(~"Need to implement addition for arrays!")
+                        _ => result::Err(~"Need to implement addition for arrays and complex!")
                     }
                 },
                 result::Err(msg) => {
@@ -90,86 +94,93 @@ fn eval_addition(left: &nodes::Node, right: &nodes::Node) -> result::Result<~Val
 
 fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
     if tokens.len() == 1 {
-        eval_number(tokens[0])
+        match tokens[0] {
+            @tokenizer::Number(ref token_data) => {
+                eval_number(token_data.string)
+            },
+            _ => {
+                fail!("Unsupported type in array")
+            }
+        }
     } else {
         let mut array_contents: ~[~Value] = ~[];
         for tokens.iter().advance|token| {
-            array_contents.push(eval_number(*token));
-        }
-        ~Array(1, array_contents)
-
-    }
-
-}
-
-fn eval_number(token: @tokenizer::Token) -> ~Value {
-    match token {
-        @tokenizer::Number(ref token_data) => { 
-            //FIXME: This needs to handle exponents and complex numbers
-            match token_data.string.find('.') {
-                option::Some(_) => {
-                    eval_float(token)
+            match *token {
+                @tokenizer::Number(ref token_data) => {
+                    array_contents.push(eval_number(token_data.string))
                 },
-                option::None => {
-                    eval_int(token)
-
+                _ => {
+                    fail!("Unsupported type in array")
                 }
             }
+        }
+        ~Array(1, array_contents)
+    }
+}
+
+fn eval_number(token_string: &str) -> ~Value {
+    match token_string.find('J') {
+        //FIXME: This needs to handle exponents
+        option::Some(pos) => {
+            eval_complex(token_string.slice_to(pos), token_string.slice_from(pos + 1))
         },
-        _ => fail!(~"Something is seriously wrong")
+        option::None => {
+            match token_string.find('.') {
+                option::Some(_) => {
+                    eval_float(token_string)
+                },
+                option::None => {
+                    eval_int(token_string)
+                }
+            }
+        }
     }
 }
 
 fn get_string_and_sign<'r>(token_string: &'r str) -> (&'r str, bool){
     if token_string.char_at(0) == '¯' {
-        let str::CharRange {ch, next} = token_string.char_range_at(0);
-        (token_string.slice_from(next), true)
+        let range: str::CharRange = token_string.char_range_at(0);
+        (token_string.slice_from(range.next), true)
     } else {
         (token_string, false)
     }
 }
 
-fn eval_float(token: @tokenizer::Token) -> ~Value {
-    match token {
-        @tokenizer::Number(ref token_data) => { 
-            let (match_string, is_negative) = get_string_and_sign(token_data.string);
+fn eval_complex(left: &str, right: &str) -> ~Value {
+    ~Complex(eval_number(left), eval_number(right))
+}
 
-            match float::from_str(match_string) {
-                option::Some(fl) => {
-                    if is_negative {
-                        ~Float(-fl)
-                    } else {
-                        ~Float(fl)
-                    }
-                },
-                option::None => {
-                    fail!(fmt!("Bad float %s", token_data.string))
-                }
+fn eval_float(token_string: &str) -> ~Value {
+    let (match_string, is_negative) = get_string_and_sign(token_string);
+
+    match float::from_str(match_string) {
+        option::Some(fl) => {
+            if is_negative {
+                ~Float(-fl)
+            } else {
+                ~Float(fl)
             }
         },
-        _ => fail!(~"Something is seriously wrong")
+        option::None => {
+            fail!(fmt!("Bad float %s", token_string))
+        }
     }
 }
 
-fn eval_int(token: @tokenizer::Token) -> ~Value {
-    match token {
-        @tokenizer::Number(ref token_data) => { 
-            let (match_string, is_negative) = get_string_and_sign(token_data.string);
+fn eval_int(token_string: &str) -> ~Value {
+    let (match_string, is_negative) = get_string_and_sign(token_string);
 
-            match int::from_str(match_string) {
-                option::Some(i) => {
-                    if is_negative {
-                        ~Integer(-i)
-                    } else {
-                        ~Integer(i)
-                    }
-                },
-                option::None => {
-                    fail!(fmt!("Bad int %s", token_data.string))
-                }
+    match int::from_str(match_string) {
+        option::Some(i) => {
+            if is_negative {
+                ~Integer(-i)
+            } else {
+                ~Integer(i)
             }
         },
-        _ => fail!(~"Something is seriously wrong")
+        option::None => {
+            fail!(fmt!("Bad int %s", token_string))
+        }
     }
 }
 
