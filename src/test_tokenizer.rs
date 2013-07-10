@@ -113,11 +113,11 @@ fn test_tokenize_strings() {
         (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote"),
         (~"'Not Escaped \"\" quote'", ~"Not Escaped \"\" quote")
     ];
-    for list.iter().advance |&(string, result)| {
-        let mut tokenizer = Tokenizer::new(string);
+    for list.iter().advance |&(ref string, ref result)| {
+        let mut tokenizer = Tokenizer::new(copy *string);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::String(tokenData)) => {
-                test_assert(tokenData.string == result, fmt!("Read %s expected %s ", tokenData.string, result));
+                test_assert(tokenData.string == *result, fmt!("Read %s expected %s ", tokenData.string, *result));
 
                 //Pass
                 /*fail_unless!(tokenData.row == 0);
@@ -211,20 +211,20 @@ fn test_tokenize_primitives() {
         ~"."
     ];
 
-    for list.iter().advance |&prim| {
-        let mut tokenizer = Tokenizer::new(copy prim);
+    for list.iter().advance |prim| {
+        let mut tokenizer = Tokenizer::new(copy *prim);
 
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Primitive(tokenData)) => {
-                test_assert(tokenData.string == prim, fmt!("Read %s expected %s ", tokenData.string, prim));
+                test_assert(tokenData.string == *prim, fmt!("Read %s expected %s ", tokenData.string, *prim));
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected primitive for %s - %s", prim, msg));
+                fail!(fmt!("Expected primitive for %s - %s", *prim, msg));
             },
             _ => {
-                fail!(fmt!("Unexpected token type for %s", prim));
+                fail!(fmt!("Unexpected token type for %s", *prim));
             }
         }
     }
@@ -240,11 +240,11 @@ fn test_tokenize_variables() {
         (~"⍙delta", ~"⍙delta")
     ];
 
-    for list.iter().advance |&(string, result)| {
-        let mut tokenizer = Tokenizer::new(string);
+    for list.iter().advance |&(ref string, ref result)| {
+        let mut tokenizer = Tokenizer::new(copy *string);
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Variable(tokenData)) => {
-                test_assert(tokenData.string == result, fmt!("Read %s expected %s ", tokenData.string, result));
+                test_assert(tokenData.string == *result, fmt!("Read %s expected %s ", tokenData.string, *result));
 
                 //Pass
                 /*fail_unless!(tokenData.row == 0);
