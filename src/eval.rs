@@ -1,4 +1,4 @@
-use std::{result, option, int, float, str};
+use std::{result, option, int, str, float};
 
 use parser;
 use nodes;
@@ -9,23 +9,105 @@ pub trait Printable {
 }
 
 pub enum Value {
-    pub Float(float),
-    pub Integer(int),
-    pub Complex(~Value, ~Value),
-    pub Array(uint, ~[~Value])
+    pub AplFloat(float),
+    pub AplInteger(int),
+    pub AplComplex(~Value, ~Value),
+    pub AplArray(uint, ~[~Value])
 }
+
+pub trait AddableValue {
+    fn add(&self, other: &Value) -> result::Result<~Value, ~str>;
+}
+
+fn addFloat(f: float, other:&Value) -> result::Result<~Value, ~str> {
+    match other {
+        &AplFloat(val) => {
+            result::Ok(~AplFloat(f + val))
+        },
+        &AplInteger(val) => {
+            addFloat(f, ~AplFloat(val as float))
+        },
+        &AplComplex(ref a, ref bi) => {
+            addComplex(~AplComplex(~AplFloat(f), ~AplInteger(0)), other)
+        },
+        _ => {
+            result::Err(~"Not yet implemented for arrays")
+        }
+    }
+}
+
+fn addInteger(i: int, other:&Value) -> result::Result<~Value, ~str> {
+    match other {
+        &AplFloat(val) => {
+            addFloat(i as float, other)
+        },
+        &AplInteger(val) => {
+            result::Ok(~AplInteger(i + val))
+        },
+        &AplComplex(ref a, ref bi) => {
+            addComplex(~AplComplex(~AplInteger(i), ~AplInteger(0)), other)
+        },
+        _ => {
+            result::Err(~"Not yet implemented for arrays")
+        }
+    }
+}
+
+fn addComplex(complex: &Value, other: &Value) -> result::Result<~Value, ~str> {
+    match complex {
+        &AplComplex(ref i, ref j) => {
+            match other {
+                &AplFloat(_) | &AplInteger(_) => {
+                    addComplex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
+                },
+                &AplComplex(ref a, ref bi) => {
+                    match (i.add(*a), j.add(*bi)) {
+                        (result::Err(msg), _) => result::Err(msg),
+                        (_, result::Err(msg)) => result::Err(msg),
+                        (result::Ok(left), result::Ok(right)) => {
+                            result::Ok(~AplComplex(left, right))
+                        }
+                    }
+                },
+                _ => {
+                    result::Err(~"Not yet implemented for arrays")
+                }
+            }
+        },
+        _ => fail!(~"Oh dear")
+    }
+}
+
+impl AddableValue for Value {
+
+    fn add(&self, other: &Value) -> result::Result<~Value, ~str> {
+        match self {
+            &AplFloat(f) => {
+                addFloat(f, other)
+            },
+            &AplInteger(i) => {
+                addInteger(i, other)
+            }
+            &AplComplex(ref i, ref j) => {
+                addComplex(self, other)
+            },
+            _ =>result::Err(~"Internal type mismatch")
+        }
+    }
+}
+
 
 impl Printable for Value {
 
     pub fn to_string(&self) -> ~str {
         match self {
-            &Float(f) => {
+            &AplFloat(f) => {
                 fmt!("%f", f)
             },
-            &Integer(i) => {
+            &AplInteger(i) => {
                 fmt!("%i", i)
             },
-            &Array(depth, ref contents) => {
+            &AplArray(depth, ref contents) => {
                 if depth != 1 {
                     fail!(~"Multidimensional arrays aren't yet supported");
                 }
@@ -42,7 +124,7 @@ impl Printable for Value {
                 }
                 result
             },
-            &Complex(ref left, ref right) => {
+            &AplComplex(ref left, ref right) => {
                 left.to_string().append("J").append(right.to_string())
             }/*,
             _ => {
@@ -65,21 +147,7 @@ fn eval_addition(left: &nodes::Node, right: &nodes::Node) -> result::Result<~Val
         result::Ok(left) => {
             match eval_node(right) {
                 result::Ok(right) => {
-                    match (left, right) {
-                        (~Integer(x), ~Integer(y)) => {
-                            result::Ok(~Integer(x+y))
-                        },
-                        (~Float(x), ~Float(y)) => {
-                            result::Ok(~Float(x+y))
-                        },
-                        (~Integer(x), ~Float(y)) => {
-                            result::Ok(~Float(x as float + y))
-                        },
-                        (~Float(x), ~Integer(y)) => {
-                            result::Ok(~Float(x + y as float))
-                        },
-                        _ => result::Err(~"Need to implement addition for arrays and complex!")
-                    }
+                    left.add(right)
                 },
                 result::Err(msg) => {
                     result::Err(msg)
@@ -114,7 +182,7 @@ fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
                 }
             }
         }
-        ~Array(1, array_contents)
+        ~AplArray(1, array_contents)
     }
 }
 
@@ -147,7 +215,7 @@ fn get_string_and_sign<'r>(token_string: &'r str) -> (&'r str, bool){
 }
 
 fn eval_complex(left: &str, right: &str) -> ~Value {
-    ~Complex(eval_number(left), eval_number(right))
+    ~AplComplex(eval_number(left), eval_number(right))
 }
 
 fn eval_float(token_string: &str) -> ~Value {
@@ -156,9 +224,9 @@ fn eval_float(token_string: &str) -> ~Value {
     match float::from_str(match_string) {
         option::Some(fl) => {
             if is_negative {
-                ~Float(-fl)
+                ~AplFloat(-fl)
             } else {
-                ~Float(fl)
+                ~AplFloat(fl)
             }
         },
         option::None => {
@@ -173,9 +241,9 @@ fn eval_int(token_string: &str) -> ~Value {
     match int::from_str(match_string) {
         option::Some(i) => {
             if is_negative {
-                ~Integer(-i)
+                ~AplInteger(-i)
             } else {
-                ~Integer(i)
+                ~AplInteger(i)
             }
         },
         option::None => {
