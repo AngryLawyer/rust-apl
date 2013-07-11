@@ -11,7 +11,10 @@ extern mod std;
 pub mod tokenizer;
 pub mod parser;
 pub mod nodes;
-pub mod eval;
+pub mod eval {
+    pub mod eval;
+    pub mod add;
+}
 
 #[cfg(test)]
 mod test_tokenizer;

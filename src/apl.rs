@@ -1,6 +1,6 @@
 use std::io::ReaderUtil;
-use eval::Evaluator;
-use eval::Printable;
+use eval::eval::Evaluator;
+use eval::eval::Printable;
 use std::io;
 use std::result;
 
