@@ -1,6 +1,6 @@
 use std::result;
-use eval;
-use eval::Evaluator;
+use eval::eval;
+use eval::eval::Evaluator;
 
 fn test_eval(input: ~str, f: &fn(result: ~eval::Value)) {
 
