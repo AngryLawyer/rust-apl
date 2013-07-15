@@ -3,7 +3,8 @@ use std::{result, option, int, str, float};
 use parser;
 use nodes;
 use tokenizer;
-use eval::add::{eval_addition};
+use eval::add::eval_addition;
+use eval::subtract::eval_subtraction;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
@@ -57,6 +58,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
     match node {
         &nodes::Array(ref nodes) => result::Ok(eval_array(nodes)),
         &nodes::Addition(_, ref left, ref right) => eval_addition(*left, *right),
+        &nodes::Subtraction(_, ref left, ref right) => eval_subtraction(*left, *right),
         _ => result::Err(~"Not yet implemented")
     }
 }

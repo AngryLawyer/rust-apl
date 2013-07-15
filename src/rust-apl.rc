@@ -14,11 +14,14 @@ pub mod nodes;
 pub mod eval {
     pub mod eval;
     pub mod add;
+    pub mod subtract;
     pub mod array_helpers;
     #[cfg(test)]
     mod test_eval;
     #[cfg(test)]
     mod test_add;
+    #[cfg(test)]
+    mod test_subtract;
 }
 
 #[cfg(test)]

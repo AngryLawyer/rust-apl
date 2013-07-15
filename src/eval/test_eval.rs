@@ -10,7 +10,20 @@ pub fn test_eval(input: ~str, f: &fn(result: ~eval::Value)) {
             f(result)
         },
         result::Err(msg) => {
-            fail!(fmt!("%s - %s ", eval.parser.tokenizer.char_reader.source, msg))
+            fail!(fmt!("%s - %s", eval.parser.tokenizer.char_reader.source, msg))
+        }
+    }
+}
+
+pub fn test_eval_fail(input: ~str, f: &fn(result: ~str)) {
+
+    let mut eval = Evaluator::new(input);
+    match eval.eval() {
+        result::Ok(result) => {
+            fail!(fmt!("%s - incorrectly gave a success", eval.parser.tokenizer.char_reader.source))
+        },
+        result::Err(msg) => {
+            f(msg)
         }
     }
 }
@@ -89,29 +102,4 @@ fn test_eval_complex() {
             }
         }
     };
-}
-
-#[test]
-fn test_eval_subtract() {
-    do test_eval(~"1-1") |result| {
-        match result {
-            ~eval::AplInteger(x) => {
-                assert_eq!(x, 0);
-            },
-            _ => {
-                fail!(~"Didn't find a number");
-            }
-        }
-    }
-
-    do test_eval(~"1.0-1") |result| {
-        match result {
-            ~eval::AplFloat(x) => {
-                assert_eq!(x, 0.0);
-            },
-            _ => {
-                fail!(~"Didn't find a number");
-            }
-        }
-    }
 }
