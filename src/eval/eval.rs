@@ -13,7 +13,7 @@ pub enum Value {
     pub AplFloat(float),
     pub AplInteger(int),
     pub AplComplex(~Value, ~Value),
-    pub AplArray(uint, ~[~Value])
+    pub AplArray(uint, ~[uint], ~[~Value])
 }
 
 impl Printable for Value {
@@ -26,7 +26,7 @@ impl Printable for Value {
             &AplInteger(i) => {
                 fmt!("%i", i)
             },
-            &AplArray(depth, ref contents) => {
+            &AplArray(depth, ref dimensions, ref contents) => {
                 if depth != 1 {
                     fail!(~"Multidimensional arrays aren't yet supported");
                 }
@@ -83,7 +83,7 @@ fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
                 }
             }
         }
-        ~AplArray(1, array_contents)
+        ~AplArray(1, ~[array_contents.len()], array_contents)
     }
 }
 

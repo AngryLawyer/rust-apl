@@ -151,9 +151,57 @@ fn test_eval_addition() {
         }
     }
 
+    do test_eval(~"2+1 1") |result| {
+        match result {
+            ~eval::AplArray(_order, _dims, array) => {
+                match array[0] {
+                    ~eval::AplInteger(3) => {
+                        match array[1] {
+                            ~eval::AplInteger(3) => {
+                            },
+                            _ => {
+                                fail!(~"Bad array addition")
+                            }
+                        }
+                    },
+                    _ => {
+                        fail!(~"Bad array addition")
+                    }
+                }
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
+    }
+
+    do test_eval(~"2J1+1 1") |result| {
+        match result {
+            ~eval::AplArray(_order, _dims, array) => {
+                match array[0] {
+                    ~eval::AplComplex(~eval::AplInteger(3), ~eval::AplInteger(1)) => {
+                        match array[1] {
+                            ~eval::AplComplex(~eval::AplInteger(3), ~eval::AplInteger(1)) => {
+                            },
+                            _ => {
+                                fail!(~"Bad array addition")
+                            }
+                        }
+                    },
+                    _ => {
+                        fail!(~"Bad array addition")
+                    }
+                }
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
+    }
+
     do test_eval(~"1 1+1 1") |result| {
         match result {
-            ~eval::AplArray(_order, array) => {
+            ~eval::AplArray(_order, _dims, array) => {
                 match array[0] {
                     ~eval::AplInteger(2) => {
                         match array[1] {
@@ -175,29 +223,6 @@ fn test_eval_addition() {
         }
     }
 
-    do test_eval(~"2+1 1") |result| {
-        match result {
-            ~eval::AplArray(_order, array) => {
-                match array[0] {
-                    ~eval::AplInteger(3) => {
-                        match array[1] {
-                            ~eval::AplInteger(3) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array addition")
-                            }
-                        }
-                    },
-                    _ => {
-                        fail!(~"Bad array addition")
-                    }
-                }
-            },
-            _ => {
-                fail!(~"Didn't find a number");
-            }
-        }
-    }
 }
 
 #[test]

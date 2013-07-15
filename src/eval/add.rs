@@ -4,12 +4,13 @@ use parser;
 use nodes;
 use tokenizer;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_node};
+use eval::array_helpers::simple_dyadic_array;
 
 pub trait AddableValue {
     fn add(&self, other: &Value) -> result::Result<~Value, ~str>;
 }
 
-fn addFloat(f: float, other:&Value) -> result::Result<~Value, ~str> {
+fn addFloat(f: &float, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
             result::Ok(~AplFloat(f + val))
@@ -17,28 +18,28 @@ fn addFloat(f: float, other:&Value) -> result::Result<~Value, ~str> {
         &AplInteger(val) => {
             addFloat(f, ~AplFloat(val as float))
         },
-        &AplComplex(ref a, ref bi) => {
-            addComplex(~AplComplex(~AplFloat(f), ~AplInteger(0)), other)
+        &AplComplex(ref _i, ref _j) => {
+            addComplex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
         },
-        _ => {
-            result::Err(~"Not yet implemented for arrays")
+        &AplArray(_, _, ref values) => {
+            simple_dyadic_array(addFloat, f, other)
         }
     }
 }
 
-fn addInteger(i: int, other:&Value) -> result::Result<~Value, ~str> {
+fn addInteger(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            addFloat(i as float, other)
+            addFloat(&(*i as float), other)
         },
         &AplInteger(val) => {
             result::Ok(~AplInteger(i + val))
         },
-        &AplComplex(ref a, ref bi) => {
-            addComplex(~AplComplex(~AplInteger(i), ~AplInteger(0)), other)
+        &AplComplex(ref _i, ref _j) => {
+            addComplex(~AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
         },
-        _ => {
-            result::Err(~"Not yet implemented for arrays")
+        &AplArray(_, _, ref values) => {
+            simple_dyadic_array(addInteger, i, other)
         }
     }
 }
@@ -68,20 +69,26 @@ fn addComplex(complex: &Value, other: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
+fn addArray(array: &Value, other: &Value) -> result::Result<~Value, ~str> {
+    result::Err(~"Not yet implemented for arrays")
+}
+
 impl AddableValue for Value {
 
     fn add(&self, other: &Value) -> result::Result<~Value, ~str> {
         match self {
             &AplFloat(f) => {
-                addFloat(f, other)
+                addFloat(&f, other)
             },
             &AplInteger(i) => {
-                addInteger(i, other)
+                addInteger(&i, other)
             }
-            &AplComplex(ref i, ref j) => {
+            &AplComplex(ref _i, ref _j) => {
                 addComplex(self, other)
             },
-            _ =>result::Err(~"Internal type mismatch")
+            &AplArray(ref _depth, ref _dimensions, ref _values) => {
+                addArray(self, other)
+            }
         }
     }
 }
