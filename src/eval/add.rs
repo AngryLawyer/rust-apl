@@ -21,7 +21,7 @@ fn addFloat(f: &float, other:&Value) -> result::Result<~Value, ~str> {
         &AplComplex(ref _i, ref _j) => {
             addComplex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
         },
-        &AplArray(_, _, ref values) => {
+        &AplArray(_, _, _) => {
             simple_dyadic_array(addFloat, f, other)
         }
     }
@@ -38,7 +38,7 @@ fn addInteger(i: &int, other:&Value) -> result::Result<~Value, ~str> {
         &AplComplex(ref _i, ref _j) => {
             addComplex(~AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
         },
-        &AplArray(_, _, ref values) => {
+        &AplArray(_, _, _) => {
             simple_dyadic_array(addInteger, i, other)
         }
     }
@@ -60,8 +60,8 @@ fn addComplex(complex: &Value, other: &Value) -> result::Result<~Value, ~str> {
                         }
                     }
                 },
-                _ => {
-                    result::Err(~"Not yet implemented for arrays")
+                &AplArray(_, _, _) => {
+                    simple_dyadic_array(addComplex, complex, other)
                 }
             }
         },
