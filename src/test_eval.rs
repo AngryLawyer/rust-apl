@@ -173,6 +173,30 @@ fn test_eval_addition() {
                 fail!(~"Didn't find a number");
             }
         }
+    }    
+    
+    do test_eval(~"1 1 + 2") |result| {
+        match result {
+            ~eval::AplArray(_order, _dims, array) => {
+                match array[0] {
+                    ~eval::AplInteger(3) => {
+                        match array[1] {
+                            ~eval::AplInteger(3) => {
+                            },
+                            _ => {
+                                fail!(~"Bad array addition")
+                            }
+                        }
+                    },
+                    _ => {
+                        fail!(~"Bad array addition")
+                    }
+                }
+            },
+            _ => {
+                fail!(~"Didn't find a number");
+            }
+        }
     }
 
     do test_eval(~"2J1+1 1") |result| {
@@ -222,6 +246,8 @@ fn test_eval_addition() {
             }
         }
     }
+
+    //TODO - test length, depth
 
 }
 
