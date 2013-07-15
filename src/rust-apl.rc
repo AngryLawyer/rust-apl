@@ -15,6 +15,10 @@ pub mod eval {
     pub mod eval;
     pub mod add;
     pub mod array_helpers;
+    #[cfg(test)]
+    mod test_eval;
+    #[cfg(test)]
+    mod test_add;
 }
 
 #[cfg(test)]
@@ -23,7 +27,5 @@ mod test_tokenizer;
 mod test_parser;
 #[cfg(test)]
 mod test_utils;
-#[cfg(test)]
-mod test_eval;
 
 mod apl;

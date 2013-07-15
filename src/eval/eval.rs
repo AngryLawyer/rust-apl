@@ -153,6 +153,24 @@ fn eval_int(token_string: &str) -> ~Value {
     }
 }
 
+pub fn eval_dyadic(func: extern fn(&Value, &Value) -> result::Result<~Value, ~str>, left: &nodes::Node, right: &nodes::Node) -> result::Result<~Value, ~str> {
+    match eval_node(left) {
+        result::Ok(left) => {
+            match eval_node(right) {
+                result::Ok(right) => {
+                    func(left, right)
+                },
+                result::Err(msg) => {
+                    result::Err(msg)
+                }
+            }
+        },
+        result::Err(msg) => {
+            result::Err(msg)
+        }
+    }
+}
+
 pub struct Evaluator {
     parser: @mut parser::Parser
 }

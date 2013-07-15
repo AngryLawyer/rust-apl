@@ -1,9 +1,9 @@
 use std::{result, option, int, str, float};
 
-use parser;
 use nodes;
+use parser;
 use tokenizer;
-use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_node};
+use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_node, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array};
 
 fn add_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
@@ -100,19 +100,5 @@ fn add(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
 }
 
 pub fn eval_addition(left: &nodes::Node, right: &nodes::Node) -> result::Result<~Value, ~str> {
-    match eval_node(left) {
-        result::Ok(left) => {
-            match eval_node(right) {
-                result::Ok(right) => {
-                    add(left, right)
-                },
-                result::Err(msg) => {
-                    result::Err(msg)
-                }
-            }
-        },
-        result::Err(msg) => {
-            result::Err(msg)
-        }
-    }
+    eval_dyadic(add, left, right)
 }
