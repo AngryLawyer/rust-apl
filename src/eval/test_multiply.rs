@@ -1,6 +1,4 @@
-use std::result;
 use eval::eval;
-use eval::eval::Evaluator;
 use eval::test_eval::{test_eval, test_eval_fail};
 use eval::eval::Printable;
 
@@ -153,7 +151,7 @@ fn test_eval_array_multiplication() {
     }
 
     //TODO - test length, depth
-    do test_eval_fail(~"1 1 1 × 1 1") |result| {
+    do test_eval_fail(~"1 1 1 × 1 1") |_result| {
         //Cool beanz
     }
 

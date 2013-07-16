@@ -1,5 +1,4 @@
 use eval::eval::{AplArray, Value};
-use eval::eval::Printable;
 use std::{result, uint};
 
 pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Value, ~str>, param: &T, other: &Value) -> result::Result<~Value, ~str> {

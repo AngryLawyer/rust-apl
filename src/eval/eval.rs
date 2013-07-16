@@ -29,7 +29,7 @@ impl Printable for Value {
             &AplInteger(i) => {
                 fmt!("%i", i)
             },
-            &AplArray(depth, ref dimensions, ref contents) => {
+            &AplArray(depth, ref _dimensions, ref contents) => {
                 if depth != 1 {
                     fail!(~"Multidimensional arrays aren't yet supported");
                 }
@@ -54,16 +54,16 @@ impl Printable for Value {
 
     pub fn to_typed_string(&self) -> ~str {
         match self {
-            &AplFloat(f) => {
+            &AplFloat(_) => {
                 fmt!("FLOAT(%s)", self.to_string())
             },
-            &AplInteger(i) => {
+            &AplInteger(_) => {
                 fmt!("INTEGER(%s)", self.to_string())
             },
-            &AplArray(depth, ref dimensions, ref contents) => {
+            &AplArray(_, _, _) => {
                 fmt!("ARRAY(%s)", self.to_string())
             },
-            &AplComplex(ref left, ref right) => {
+            &AplComplex(_, _) => {
                 fmt!("COMPLEX(%s)", self.to_string())
             }
         }

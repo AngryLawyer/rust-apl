@@ -1,7 +1,6 @@
-use std::result;
 use eval::eval;
-use eval::eval::Evaluator;
 use eval::test_eval::{test_eval, test_eval_fail};
+use eval::eval::Printable;
 
 #[test]
 fn test_eval_basic_addition() {
@@ -11,7 +10,7 @@ fn test_eval_basic_addition() {
                 assert_eq!(x, 2);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -22,7 +21,7 @@ fn test_eval_basic_addition() {
                 assert_eq!(x, 2.0);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -34,7 +33,7 @@ fn test_eval_basic_addition() {
                 assert_eq!(y, 1);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -46,7 +45,7 @@ fn test_eval_basic_addition() {
                 assert_eq!(y, 6);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -58,7 +57,7 @@ fn test_eval_basic_addition() {
                 assert_eq!(y, 4.2);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -69,16 +68,9 @@ fn test_eval_array_addition() {
 
     do test_eval(~"2+1 1") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplInteger(3) => {
-                        match array[1] {
-                            ~eval::AplInteger(3) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array addition")
-                            }
-                        }
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplInteger(3), &~eval::AplInteger(3)) => {
                     },
                     _ => {
                         fail!(~"Bad array addition")
@@ -86,23 +78,16 @@ fn test_eval_array_addition() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     } 
 
     do test_eval(~"1 1 + 2") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplInteger(3) => {
-                        match array[1] {
-                            ~eval::AplInteger(3) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array addition")
-                            }
-                        }
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplInteger(3), &~eval::AplInteger(3)) => {
                     },
                     _ => {
                         fail!(~"Bad array addition")
@@ -110,23 +95,16 @@ fn test_eval_array_addition() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
 
     do test_eval(~"2J1+1 1") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplComplex(~eval::AplInteger(3), ~eval::AplInteger(1)) => {
-                        match array[1] {
-                            ~eval::AplComplex(~eval::AplInteger(3), ~eval::AplInteger(1)) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array addition")
-                            }
-                        }
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplComplex(~eval::AplInteger(3), ~eval::AplInteger(1)), &~eval::AplComplex(~eval::AplInteger(3), ~eval::AplInteger(1)))  => {
                     },
                     _ => {
                         fail!(~"Bad array addition")
@@ -134,23 +112,16 @@ fn test_eval_array_addition() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
 
     do test_eval(~"1 1+1 1") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplInteger(2) => {
-                        match array[1] {
-                            ~eval::AplInteger(2) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array addition")
-                            }
-                        }
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplInteger(2), &~eval::AplInteger(2)) => {
                     },
                     _ => {
                         fail!(~"Bad array addition")
@@ -158,13 +129,13 @@ fn test_eval_array_addition() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
 
     //TODO - test length, depth
-    do test_eval_fail(~"1 1 1 + 1 1") |result| {
+    do test_eval_fail(~"1 1 1 + 1 1") |_result| {
         //Cool beanz
     }
 

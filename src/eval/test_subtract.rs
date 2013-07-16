@@ -1,6 +1,4 @@
-use std::result;
 use eval::eval;
-use eval::eval::Evaluator;
 use eval::test_eval::{test_eval, test_eval_fail};
 use eval::eval::Printable;
 
@@ -12,7 +10,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(x, 0);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -23,7 +21,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(x, 1.0);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -35,7 +33,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(y, -1);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -47,7 +45,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(y, 2);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -59,7 +57,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(y, 0.0);
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -81,7 +79,7 @@ fn test_eval_array_subtraction() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -99,7 +97,7 @@ fn test_eval_array_subtraction() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -123,7 +121,7 @@ fn test_eval_array_subtraction() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
@@ -147,13 +145,13 @@ fn test_eval_array_subtraction() {
                 }
             },
             _ => {
-                fail!(~"Didn't find a number");
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
             }
         }
     }
 
     //TODO - test length, depth
-    do test_eval_fail(~"1 1 1 − 1 1") |result| {
+    do test_eval_fail(~"1 1 1 − 1 1") |_result| {
         //Cool beanz
     }
 

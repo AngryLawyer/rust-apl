@@ -1,9 +1,7 @@
-use std::{result, option, int, str, float};
+use std::result;
 
 use nodes;
-use parser;
-use tokenizer;
-use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_node, eval_dyadic};
+use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 
 fn subtract_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
@@ -25,7 +23,7 @@ fn subtract_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
 
 fn subtract_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
-        &AplFloat(val) => {
+        &AplFloat(_val) => {
             subtract_float(&(*i as float), other)
         },
         &AplInteger(val) => {

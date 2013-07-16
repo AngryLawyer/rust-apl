@@ -19,7 +19,7 @@ pub fn test_eval_fail(input: ~str, f: &fn(result: ~str)) {
 
     let mut eval = Evaluator::new(input);
     match eval.eval() {
-        result::Ok(result) => {
+        result::Ok(_) => {
             fail!(fmt!("%s - incorrectly gave a success", eval.parser.tokenizer.char_reader.source))
         },
         result::Err(msg) => {
