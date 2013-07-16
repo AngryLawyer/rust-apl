@@ -80,7 +80,7 @@ fn add_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-fn add(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
+pub fn add(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
             add_float(&f, other)

@@ -38,11 +38,11 @@ fn test_eval_basic_multiplication() {
         }
     }
 
-    do test_eval(~"3J4×1J2") |result| {
+    do test_eval(~"4J5×3J2") |result| {
         match result {
             ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
-                assert_eq!(x, -5);
-                assert_eq!(y, 10);
+                assert_eq!(x, 2);
+                assert_eq!(y, 23);
             },
             _ => {
                 fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
@@ -68,7 +68,7 @@ fn test_eval_basic_multiplication() {
 fn test_eval_array_multiplication() {
     do test_eval(~"2×2 2") |result| {
         match result {
-            ~eval::AplArray(_order, ref _dims, ref array) => {
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
                     (&~eval::AplInteger(4), &~eval::AplInteger(4)) => {
                         //Fine
@@ -86,7 +86,7 @@ fn test_eval_array_multiplication() {
 
     do test_eval(~"2 2 × 2") |result| {
         match result {
-            ~eval::AplArray(_order, ref _dims, ref array) => {
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
                     (&~eval::AplInteger(4), &~eval::AplInteger(4)) => {
                         //Fine
@@ -104,19 +104,12 @@ fn test_eval_array_multiplication() {
 
     do test_eval(~"2J1×2 2") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplComplex(~eval::AplInteger(4), ~eval::AplInteger(2)) => {
-                        match array[1] {
-                            ~eval::AplComplex(~eval::AplInteger(4), ~eval::AplInteger(2)) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array multiplication")
-                            }
-                        }
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplComplex(~eval::AplInteger(4), ~eval::AplInteger(2)), &~eval::AplComplex(~eval::AplInteger(4), ~eval::AplInteger(2))) => {
                     },
                     _ => {
-                        fail!(~"Bad array multiplication")
+                        fail!(fmt!("Bad array multiplication: got %s", result.to_string()))
                     }
                 }
             },
@@ -128,19 +121,13 @@ fn test_eval_array_multiplication() {
 
     do test_eval(~"3 3×2 1") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplInteger(6) => {
-                        match array[1] {
-                            ~eval::AplInteger(3) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array multiplication")
-                            }
-                        }
+            ~eval::AplArray(ref _order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplInteger(6), &~eval::AplInteger(3)) => {
+                        //Fine
                     },
                     _ => {
-                        fail!(~"Bad array multiplication")
+                        fail!(fmt!("Bad array multiplication: got %s", result.to_string()))
                     }
                 }
             },

@@ -74,7 +74,7 @@ fn subtract_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> 
     }
 }
 
-fn subtract(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
+pub fn subtract(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
             subtract_float(&f, other)
