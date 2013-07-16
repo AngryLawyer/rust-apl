@@ -7,6 +7,7 @@ use eval::add::eval_addition;
 use eval::subtract::eval_subtraction;
 use eval::multiply::eval_multiplication;
 use eval::divide::eval_division;
+use eval::conjugate::eval_conjugate;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
@@ -78,6 +79,9 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Subtraction(_, ref left, ref right) => eval_subtraction(*left, *right),
         &nodes::Multiplication(_, ref left, ref right) => eval_multiplication(*left, *right),
         &nodes::Division(_, ref left, ref right) => eval_division(*left, *right),
+
+        &nodes::Conjugate(_, ref left) => eval_conjugate(*left, *right),
+
         _ => result::Err(~"Not yet implemented")
     }
 }
