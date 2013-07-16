@@ -96,6 +96,7 @@ impl Parser {
                                 match token_data.string {
                                     ~"+" => self.create_dyadic_result(left, Addition),
                                     ~"-" | ~"−" => self.create_dyadic_result(left, Subtraction),
+                                    ~"×" => self.create_dyadic_result(left, Multiplication),
                                     _ => result::Err(~"Unknown operator")
                                 }
                             },

@@ -5,6 +5,7 @@ pub enum Node {
     //Dyadic
     pub Addition(@Token, ~Node, ~Node),
     pub Subtraction(@Token, ~Node, ~Node),
+    pub Multiplication(@Token, ~Node, ~Node),
 
     //Monadic
     pub Conjugate(@Token, ~Node),
@@ -34,6 +35,9 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Subtraction(ref _token, ref left, ref right) => {
             ~"SUBTRACTION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
+        },
+        &Multiplication(ref _token, ref left, ref right) => {
+            ~"MULTIPLICATION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
         },
         &Conjugate(ref _token, ref left) => {
             ~"CONJUGATE[ "+node_to_string(*left)+" ]"
