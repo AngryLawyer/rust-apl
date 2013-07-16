@@ -8,6 +8,7 @@ use eval::subtract::eval_subtraction;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
+    pub fn to_typed_string(&self) -> ~str;
 }
 
 pub enum Value {
@@ -46,10 +47,24 @@ impl Printable for Value {
             },
             &AplComplex(ref left, ref right) => {
                 left.to_string().append("J").append(right.to_string())
-            }/*,
-            _ => {
-                fail!(~"Unknown type")
-            }*/
+            }
+        }
+    }
+
+    pub fn to_typed_string(&self) -> ~str {
+        match self {
+            &AplFloat(f) => {
+                fmt!("FLOAT(%s)", self.to_string())
+            },
+            &AplInteger(i) => {
+                fmt!("INTEGER(%s)", self.to_string())
+            },
+            &AplArray(depth, ref dimensions, ref contents) => {
+                fmt!("ARRAY(%s)", self.to_string())
+            },
+            &AplComplex(ref left, ref right) => {
+                fmt!("COMPLEX(%s)", self.to_string())
+            }
         }
     }
 }

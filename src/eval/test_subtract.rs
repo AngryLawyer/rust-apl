@@ -2,6 +2,7 @@ use std::result;
 use eval::eval;
 use eval::eval::Evaluator;
 use eval::test_eval::{test_eval, test_eval_fail};
+use eval::eval::Printable;
 
 #[test]
 fn test_eval_basic_subtraction() {
@@ -69,19 +70,13 @@ fn test_eval_basic_subtraction() {
 fn test_eval_array_subtraction() {
     do test_eval(~"2−1 1") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplInteger(1) => {
-                        match array[1] {
-                            ~eval::AplInteger(1) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array subtraction")
-                            }
-                        }
+            ~eval::AplArray(_order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplInteger(1), &~eval::AplInteger(1)) => {
+                        //Fine
                     },
                     _ => {
-                        fail!(~"Bad array subtraction")
+                        fail!(fmt!("Bad array subtraction: got %s", result.to_string()))
                     }
                 }
             },
@@ -93,19 +88,13 @@ fn test_eval_array_subtraction() {
 
     do test_eval(~"2 2 − 1") |result| {
         match result {
-            ~eval::AplArray(_order, _dims, array) => {
-                match array[0] {
-                    ~eval::AplInteger(1) => {
-                        match array[1] {
-                            ~eval::AplInteger(1) => {
-                            },
-                            _ => {
-                                fail!(~"Bad array subtraction")
-                            }
-                        }
+            ~eval::AplArray(_order, ref _dims, ref array) => {
+                match (&array[0], &array[1]) {
+                    (&~eval::AplInteger(1), &~eval::AplInteger(1)) => {
+                        //Fine
                     },
                     _ => {
-                        fail!(~"Bad array subtraction")
+                        fail!(fmt!("Bad array subtraction: got %s", result.to_string()))
                     }
                 }
             },

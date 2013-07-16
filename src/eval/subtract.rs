@@ -4,7 +4,7 @@ use nodes;
 use parser;
 use tokenizer;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_node, eval_dyadic};
-use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array};
+use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 
 fn subtract_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
     match other {
@@ -67,14 +67,8 @@ fn subtract_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~s
 
 fn subtract_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> {
     match other {
-        &AplFloat(val) => {
-            simple_dyadic_array(subtract, array, *val)
-        },
-        &AplInteger(val) => {
-            simple_dyadic_array(subtract, array, *val)
-        },
-        &AplComplex(_, _) => {
-            simple_dyadic_array(subtract, array, other)
+        &AplFloat(_) |  &AplInteger(_) | &AplComplex(_, _) => {
+            inverse_simple_dyadic_array(subtract, array, other)
         },
         &AplArray(_, _, _) => {
             dual_dyadic_array(subtract, array, other)
