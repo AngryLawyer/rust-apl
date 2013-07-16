@@ -16,6 +16,7 @@ pub mod eval {
     pub mod add;
     pub mod subtract;
     pub mod multiply;
+    pub mod divide;
     pub mod array_helpers;
     #[cfg(test)]
     mod test_eval;
@@ -25,6 +26,8 @@ pub mod eval {
     mod test_subtract;
     #[cfg(test)]
     mod test_multiply;
+    #[cfg(test)]
+    mod test_divide;
 }
 
 #[cfg(test)]

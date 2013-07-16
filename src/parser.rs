@@ -97,6 +97,7 @@ impl Parser {
                                     ~"+" => self.create_dyadic_result(left, Addition),
                                     ~"-" | ~"−" => self.create_dyadic_result(left, Subtraction),
                                     ~"×" => self.create_dyadic_result(left, Multiplication),
+                                    ~"÷" => self.create_dyadic_result(left, Division),
                                     _ => result::Err(~"Unknown operator")
                                 }
                             },

@@ -6,6 +6,7 @@ pub enum Node {
     pub Addition(@Token, ~Node, ~Node),
     pub Subtraction(@Token, ~Node, ~Node),
     pub Multiplication(@Token, ~Node, ~Node),
+    pub Division(@Token, ~Node, ~Node),
 
     //Monadic
     pub Conjugate(@Token, ~Node),
@@ -38,6 +39,9 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Multiplication(ref _token, ref left, ref right) => {
             ~"MULTIPLICATION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
+        },
+        &Division(ref _token, ref left, ref right) => {
+            ~"DIVISION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
         },
         &Conjugate(ref _token, ref left) => {
             ~"CONJUGATE[ "+node_to_string(*left)+" ]"

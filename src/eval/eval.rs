@@ -6,6 +6,7 @@ use tokenizer;
 use eval::add::eval_addition;
 use eval::subtract::eval_subtraction;
 use eval::multiply::eval_multiplication;
+use eval::divide::eval_division;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
@@ -76,6 +77,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Addition(_, ref left, ref right) => eval_addition(*left, *right),
         &nodes::Subtraction(_, ref left, ref right) => eval_subtraction(*left, *right),
         &nodes::Multiplication(_, ref left, ref right) => eval_multiplication(*left, *right),
+        &nodes::Division(_, ref left, ref right) => eval_division(*left, *right),
         _ => result::Err(~"Not yet implemented")
     }
 }
