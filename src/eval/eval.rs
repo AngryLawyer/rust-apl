@@ -80,7 +80,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Multiplication(_, ref left, ref right) => eval_multiplication(*left, *right),
         &nodes::Division(_, ref left, ref right) => eval_division(*left, *right),
 
-        &nodes::Conjugate(_, ref left) => eval_conjugate(*left, *right),
+        &nodes::Conjugate(_, ref left) => eval_conjugate(*left),
 
         _ => result::Err(~"Not yet implemented")
     }

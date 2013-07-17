@@ -57,23 +57,10 @@ fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str
                 &AplFloat(_) | &AplInteger(_) => {
                     divide_complex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
                 },
-                &AplComplex(ref c, ref di) => {
-                    //First, Outers, Inners, Lasts, negate lasts
-                    match (divide(*a, *c), divide(*a, *di), divide(*bi, *c), divide(*bi, *di)) {
-                        (result::Err(msg), _, _, _) |
-                        (_, result::Err(msg), _, _) |
-                        (_, _, result::Err(msg), _) |
-                        (_, _, _, result::Err(msg)) => result::Err(msg),
-                        (result::Ok(first), result::Ok(outer), result::Ok(inner), result::Ok(last)) => {
-                            match (subtract(first, last), add(outer, inner)) {
-                                (result::Err(msg), _) |
-                                (_, result::Err(msg)) => result::Err(msg),
-                                (result::Ok(real), result::Ok(imaginary)) => {
-                                    result::Ok(~AplComplex(real, imaginary))
-                                }
-                            }
-                        }
-                    }
+                &AplComplex(_, _) => {
+                    //z.a = (x.a*y.a + x.b*y.b)/(y.a*y.a+y.b*y.b);
+                    //z.b = (x.b*y.a - x.a*y.b)/(y.a*y.a + y.b*y.b);
+                    fail!("FINISH ME!");
                 },
                 &AplArray(_, _, _) => {
                     simple_dyadic_array(divide_complex, complex, other)
