@@ -4,6 +4,7 @@ use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic}
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 use eval::add::add;
 use eval::subtract::subtract;
+use eval::multiply::multiply;
 
 fn divide_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
     match other {
@@ -57,10 +58,43 @@ fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str
                 &AplFloat(_) | &AplInteger(_) => {
                     divide_complex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
                 },
-                &AplComplex(_, _) => {
+                &AplComplex(ref c, ref di) => {
+                    let za = multiply(*a, *c).chain(|ac| {
+                        multiply(*bi, *di).chain(|bidi| {
+                            multiply(*c, *c).chain(|cc| {
+                                multiply(*di, *di).chain(|didi| {
+                                    add(ac, bidi).chain(|left| {
+                                        add(cc, didi).chain(|right| {
+                                            divide(left, right)
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    });
+                    let zb = multiply(*bi, *c).chain(|bic| {
+                        multiply(*a, *di).chain(|adi| {
+                            multiply(*c, *c).chain(|cc| {
+                                multiply(*di, *di).chain(|didi| {
+                                    subtract(bic, adi).chain(|left| {
+                                        add(cc, didi).chain(|right| {
+                                            divide(left, right)
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    });
+                    match (za, zb) {
+                        (result::Err(err), _) | (_, result::Err(err)) => {
+                            result::Err(err)
+                        },
+                        (result::Ok(left), result::Ok(right))=> {
+                            result::Ok(~AplComplex(left, right))
+                        } 
+                    }
                     //z.a = (x.a*y.a + x.b*y.b)/(y.a*y.a+y.b*y.b);
                     //z.b = (x.b*y.a - x.a*y.b)/(y.a*y.a + y.b*y.b);
-                    fail!("FINISH ME!");
                 },
                 &AplArray(_, _, _) => {
                     simple_dyadic_array(divide_complex, complex, other)

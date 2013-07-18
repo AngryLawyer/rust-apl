@@ -1,6 +1,7 @@
 use eval::eval;
 use eval::test_eval::{test_eval, test_eval_fail};
 use eval::eval::Printable;
+use std::float::ApproxEq;
 
 #[test]
 fn test_eval_basic_division() {
@@ -52,8 +53,8 @@ fn test_eval_basic_division() {
     do test_eval(~"4J5÷3J2") |result| {
         match result {
             ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert_eq!(x, 1.69231);
-                assert_eq!(y, 0.538462);
+                assert!(x.approx_eq(&1.69230769));
+                assert!(y.approx_eq(&0.538462));
             },
             _ => {
                 fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
@@ -64,8 +65,8 @@ fn test_eval_basic_division() {
     do test_eval(~"5J.2÷3J.2") |result| {
         match result {
             ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert_eq!(x, 1.66372);
-                assert_eq!(y, -0.0442478);
+                assert!(x.approx_eq(&1.663717));
+                assert!(y.approx_eq(&-0.0442478));
             },
             _ => {
                 fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));

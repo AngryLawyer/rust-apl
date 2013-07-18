@@ -84,7 +84,7 @@ fn multiply_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> 
     }
 }
 
-fn multiply(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
+pub fn multiply(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
             multiply_float(&f, other)
