@@ -26,7 +26,7 @@ fn divide_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
     }
 }
 
-fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
+pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(_val) => {
             divide_float(&(*i as float), other)

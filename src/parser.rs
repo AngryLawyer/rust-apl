@@ -141,6 +141,8 @@ impl Parser {
                     match token_data.string {
                         ~"+" => self.create_monadic_result(Conjugate),
                         ~"-" | ~"−" => self.create_monadic_result(Negate),
+                        ~"×" => self.create_monadic_result(Sign),
+                        ~"÷" => self.create_monadic_result(Reciprocal),
                         _ => self.parse_base_expression()
                     }
                 },

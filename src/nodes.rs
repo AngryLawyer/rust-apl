@@ -11,6 +11,8 @@ pub enum Node {
     //Monadic
     pub Conjugate(@Token, ~Node),
     pub Negate(@Token, ~Node),
+    pub Reciprocal(@Token, ~Node),
+    pub Sign(@Token, ~Node),
 
     //Niladic
     pub Variable(@Token),
@@ -48,6 +50,12 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Negate(ref _token, ref left) => {
             ~"NEGATE[ "+node_to_string(*left)+" ]"
+        },
+        &Reciprocal(ref _token, ref left) => {
+            ~"RECIPROCAL[ "+node_to_string(*left)+" ]"
+        },
+        &Sign(ref _token, ref left) => {
+            ~"SIGN[ "+node_to_string(*left)+" ]"
         },
         &Variable(ref token) => {
             ~"VAR("+token_string(*token)+")"
