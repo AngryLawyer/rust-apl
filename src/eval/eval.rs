@@ -8,6 +8,7 @@ use eval::subtract::eval_subtraction;
 use eval::multiply::eval_multiplication;
 use eval::divide::eval_division;
 use eval::conjugate::eval_conjugate;
+use eval::negate::eval_negate;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
@@ -81,6 +82,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Division(_, ref left, ref right) => eval_division(*left, *right),
 
         &nodes::Conjugate(_, ref left) => eval_conjugate(*left),
+        &nodes::Negate(_, ref left) => eval_negate(*left),
 
         _ => result::Err(~"Not yet implemented")
     }
@@ -194,6 +196,12 @@ pub fn eval_dyadic(func: extern fn(&Value, &Value) -> result::Result<~Value, ~st
             result::Err(msg)
         }
     }
+}
+
+pub fn eval_monadic(func: extern fn(&Value) -> result::Result<~Value, ~str>, left: &nodes::Node) -> result::Result<~Value, ~str> {
+    eval_node(left).chain(|result| {
+        func(result)
+    })
 }
 
 pub struct Evaluator {

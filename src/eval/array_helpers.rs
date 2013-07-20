@@ -113,3 +113,36 @@ pub fn dual_dyadic_array(func: extern fn(&Value, &Value) -> result::Result<~Valu
         }
     }
 }
+
+pub fn simple_monadic_array(func: extern fn(&Value) -> result::Result<~Value, ~str>, param: &Value) -> result::Result<~Value, ~str> {
+    match param {
+        &AplArray(ref depth, ref dimensions, ref values) => {
+            let mut result_values: ~[~Value] = ~[];
+            let mut error_state = ~"";
+            let mut errored = false;
+
+            for values.iter().advance |value|{ 
+                if !errored {
+                    match func(*value) {
+                        result::Ok(val) => {
+                            result_values.push(val);
+                        },
+                        result::Err(err) => {
+                            errored = true;
+                            error_state = err;
+                        }
+                    }
+                }
+            }
+
+            if errored {
+                result::Err(error_state)
+            } else {
+                result::Ok(~AplArray(copy *depth, copy *dimensions, result_values))
+            }
+        },
+        _ => {
+            fail!("This should never be reached")
+        }
+    }
+}

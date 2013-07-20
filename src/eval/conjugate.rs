@@ -1,8 +1,25 @@
 use nodes;
 use std::result;
-use eval::eval::Value;
+use eval::array_helpers::{simple_monadic_array};
+use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
+use eval::negate::negate;
+
+pub fn conjugate(first: &Value) -> result::Result<~Value, ~str> {
+    match first{
+        &AplFloat(_) | &AplInteger(_) => {
+            result::Ok(~(copy *first))
+        },
+        &AplComplex(ref i, ref j) => {
+            negate(*j).chain(|new_j| {
+                result::Ok(~AplComplex(copy *i, new_j))
+            })
+        },
+        &AplArray(ref _depth, ref _dimensions, ref _values) => {
+            simple_monadic_array(conjugate, first)
+        }
+    }
+}
 
 pub fn eval_conjugate(left: &nodes::Node) -> result::Result<~Value, ~str> {
-    //eval_dyadic(divide, left, right)
-    result::Err(~"Not yet implemented")
+    eval_monadic(conjugate, left)
 }
