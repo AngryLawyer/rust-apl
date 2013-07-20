@@ -19,6 +19,7 @@ pub mod eval {
     pub mod divide;
 
     pub mod conjugate;
+    pub mod negate;
 
     pub mod array_helpers;
 
@@ -31,9 +32,15 @@ pub mod eval {
     #[cfg(test)]
     mod test_multiply;
     #[cfg(test)]
+    mod test_divide;
+    #[cfg(test)]
     mod test_conjugate;
     #[cfg(test)]
-    mod test_divide;
+    mod test_negate;
+    #[cfg(test)]
+    mod test_reciprocal;
+    #[cfg(test)]
+    mod test_sign;
 }
 
 #[cfg(test)]
