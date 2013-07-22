@@ -116,7 +116,7 @@ fn divide_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-fn divide(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
+pub fn divide(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
             divide_float(&f, other)
