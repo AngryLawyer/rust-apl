@@ -14,7 +14,7 @@ pub fn negate(first: &Value) -> result::Result<~Value, ~str> {
         &AplComplex(ref i, ref j) => {
             negate(*i).chain(|new_i| {
                 negate(*j).chain(|new_j| {
-                    result::Ok(~AplComplex(copy new_i, copy new_j))
+                    result::Ok(~AplComplex(new_i.clone(), new_j.clone()))
                 })
             })
         },

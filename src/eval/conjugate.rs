@@ -7,11 +7,11 @@ use eval::negate::negate;
 pub fn conjugate(first: &Value) -> result::Result<~Value, ~str> {
     match first{
         &AplFloat(_) | &AplInteger(_) => {
-            result::Ok(~(copy *first))
+            result::Ok(~(first.clone()))
         },
         &AplComplex(ref i, ref j) => {
             negate(*j).chain(|new_j| {
-                result::Ok(~AplComplex(copy *i, new_j))
+                result::Ok(~AplComplex(i.clone(), new_j))
             })
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {

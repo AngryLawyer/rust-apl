@@ -25,7 +25,7 @@ pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Val
             if errored {
                 result::Err(error_state)
             } else {
-                result::Ok(~AplArray(copy *depth, copy *dimensions, result_values))
+                result::Ok(~AplArray(depth.clone(), dimensions.clone(), result_values))
             }
         },
         _ => {
@@ -57,7 +57,7 @@ pub fn inverse_simple_dyadic_array<T>(func: extern fn(&Value, &T) -> result::Res
             if errored {
                 result::Err(error_state)
             } else {
-                result::Ok(~AplArray(copy *depth, copy *dimensions, result_values))
+                result::Ok(~AplArray(depth.clone(), dimensions.clone(), result_values))
             }
         },
         _ => {
@@ -100,7 +100,7 @@ pub fn dual_dyadic_array(func: extern fn(&Value, &Value) -> result::Result<~Valu
                     if errored {
                         result::Err(error_state)
                     } else {
-                        result::Ok(~AplArray(copy *left_depth, copy *left_dimensions, result_values))
+                        result::Ok(~AplArray(left_depth.clone(), left_dimensions.clone(), result_values))
                     }
                 },
                 _ => {
@@ -138,7 +138,7 @@ pub fn simple_monadic_array(func: extern fn(&Value) -> result::Result<~Value, ~s
             if errored {
                 result::Err(error_state)
             } else {
-                result::Ok(~AplArray(copy *depth, copy *dimensions, result_values))
+                result::Ok(~AplArray(*depth, dimensions.clone(), result_values))
             }
         },
         _ => {

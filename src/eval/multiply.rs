@@ -44,7 +44,7 @@ fn multiply_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~s
         &AplComplex(ref a, ref bi) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    multiply_complex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
+                    multiply_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref c, ref di) => {
                     //First, Outers, Inners, Lasts, negate lasts

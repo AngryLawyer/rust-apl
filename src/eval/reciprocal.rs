@@ -18,7 +18,7 @@ pub fn reciprocal(first: &Value) -> result::Result<~Value, ~str> {
                                 add(aa, bibi).chain(|div| {
                                     divide(c, div).chain(|real| {
                                         divide(di, div).chain(|imaginary| {
-                                            result::Ok(~AplComplex(copy real, imaginary))
+                                            result::Ok(~AplComplex(real.clone(), imaginary))
                                         })
                                     })
                                 })
@@ -30,6 +30,7 @@ pub fn reciprocal(first: &Value) -> result::Result<~Value, ~str> {
             })
         },
         _ => {
+            print("LOL");
             divide_integer(&1, first)
         }
     }

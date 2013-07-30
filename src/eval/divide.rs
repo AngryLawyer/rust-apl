@@ -56,7 +56,7 @@ fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str
         &AplComplex(ref a, ref bi) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    divide_complex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
+                    divide_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref c, ref di) => {
                     let za = multiply(*a, *c).chain(|ac| {

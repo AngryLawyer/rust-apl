@@ -147,7 +147,7 @@ impl Tokenizer {
                     let mut tokenizer = VariableTokenizer::new(self.char_reader);
                     return tokenizer.read_next_token()
                 }
-                result::Err(fmt!("No valid token found starting with %c" first_char))
+                result::Err(fmt!("No valid token found starting with %c", first_char))
             },
             option::None => {
                 result::Ok(EndOfFile)

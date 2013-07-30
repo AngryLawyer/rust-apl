@@ -43,7 +43,7 @@ fn add_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str> {
         &AplComplex(ref i, ref j) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    add_complex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
+                    add_complex(complex, ~AplComplex(~other.clone(), ~AplInteger(0)))
                 },
                 &AplComplex(ref a, ref bi) => {
                     match (add(*i, *a), add(*j, *bi)) {

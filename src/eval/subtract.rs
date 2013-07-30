@@ -43,7 +43,7 @@ fn subtract_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~s
         &AplComplex(ref i, ref j) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    subtract_complex(complex, ~AplComplex(~(copy *other), ~AplInteger(0)))
+                    subtract_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref a, ref bi) => {
                     match (subtract(*i, *a), subtract(*j, *bi)) {

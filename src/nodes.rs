@@ -22,11 +22,11 @@ pub enum Node {
 
 fn token_string(token: &Token) -> ~str {
     match token {
-        &tokenizer::Number(ref token_data) => copy token_data.string,
-        &tokenizer::Newline(ref token_data) => copy token_data.string,
-        &tokenizer::String(ref token_data) => copy token_data.string,
-        &tokenizer::Primitive(ref token_data) => copy token_data.string,
-        &tokenizer::Variable(ref token_data) => copy token_data.string,
+        &tokenizer::Number(ref token_data) => token_data.string.clone(),
+        &tokenizer::Newline(ref token_data) => token_data.string.clone(),
+        &tokenizer::String(ref token_data) => token_data.string.clone(),
+        &tokenizer::Primitive(ref token_data) => token_data.string.clone(),
+        &tokenizer::Variable(ref token_data) => token_data.string.clone(),
         &tokenizer::EndOfFile() => ~"(none)"
     }
 }
@@ -62,9 +62,8 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Array(ref tokens) => {
             let mut string = ~"ARRAY(";
-            for tokens.iter().advance |token| {
-                string = string.append(token_string(*token)).append(",");
-            }
+            let token_items: ~[~str] = tokens.iter().transform(|token| token_string(*token)).collect();
+            string = string.append(token_items.connect(","));
             string.append(")")
         },
         &Zilde(ref token) => {

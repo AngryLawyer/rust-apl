@@ -23,6 +23,25 @@ pub enum Value {
     pub AplArray(uint, ~[uint], ~[~Value])
 }
 
+impl Clone for Value {
+    pub fn clone(&self) -> Value {
+        match *self {
+            AplFloat(f) => {
+                AplFloat(f)
+            },
+            AplInteger(i) => {
+                AplInteger(i)
+            },
+            AplComplex(ref a, ref b) => {
+                AplComplex(a.clone(), b.clone())
+            },
+            AplArray(depth, ref dimensions, ref contents) => {
+                AplArray(depth, dimensions.clone(), contents.clone())
+            }
+        }
+    }
+}
+
 impl Printable for Value {
 
     pub fn to_string(&self) -> ~str {
@@ -37,18 +56,9 @@ impl Printable for Value {
                 if depth != 1 {
                     fail!(~"Multidimensional arrays aren't yet supported");
                 }
-                let mut result: ~str = ~"";
-                let mut first: bool = true;
+                let segments: ~[~str] = contents.iter().transform(|item| item.to_string()).collect();
 
-                for contents.iter().advance |value| {
-                    if first {
-                        first = false;
-                    } else {
-                        result = result.append(" ");
-                    }
-                    result = result.append(value.to_string())
-                }
-                result
+                segments.connect(" ")
             },
             &AplComplex(ref left, ref right) => {
                 left.to_string().append("J").append(right.to_string())
