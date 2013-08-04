@@ -143,6 +143,7 @@ impl Parser {
                         ~"-" | ~"−" => self.create_monadic_result(Negate),
                         ~"×" => self.create_monadic_result(Sign),
                         ~"÷" => self.create_monadic_result(Reciprocal),
+                        ~"|" | ~"∣" => self.create_monadic_result(Magnitude),
                         _ => self.parse_base_expression()
                     }
                 },

@@ -22,6 +22,7 @@ pub mod eval {
     pub mod negate;
     pub mod reciprocal;
     pub mod sign;
+    pub mod magnitude;
 
     pub mod array_helpers;
 
@@ -43,6 +44,8 @@ pub mod eval {
     mod test_reciprocal;
     #[cfg(test)]
     mod test_sign;
+    #[cfg(test)]
+    mod test_magnitude;
 }
 
 #[cfg(test)]

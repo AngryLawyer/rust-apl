@@ -3,6 +3,8 @@ use nodes;
 use std::result;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
+use eval::divide::divide;
+use eval::magnitude::magnitude;
 
 pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
     match first {
@@ -25,7 +27,9 @@ pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
             })
         },
         &AplComplex(ref _i, ref _j) => {
-            result::Err(~"Sign for Complex not yet implemented")
+            magnitude(first).chain(|magnituded| {
+                divide(first, magnituded)
+            })
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(sign, first)

@@ -11,6 +11,7 @@ use eval::conjugate::eval_conjugate;
 use eval::negate::eval_negate;
 use eval::reciprocal::eval_reciprocal;
 use eval::sign::eval_sign;
+use eval::magnitude::eval_magnitude;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
@@ -98,6 +99,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Negate(_, ref left) => eval_negate(*left),
         &nodes::Reciprocal(_, ref left) => eval_reciprocal(*left),
         &nodes::Sign(_, ref left) => eval_sign(*left),
+        &nodes::Magnitude(_, ref left) => eval_magnitude(*left),
 
         _ => result::Err(~"Not yet implemented")
     }

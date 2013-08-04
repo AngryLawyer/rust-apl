@@ -13,6 +13,7 @@ pub enum Node {
     pub Negate(@Token, ~Node),
     pub Reciprocal(@Token, ~Node),
     pub Sign(@Token, ~Node),
+    pub Magnitude(@Token, ~Node),
 
     //Niladic
     pub Variable(@Token),
@@ -56,6 +57,9 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Sign(ref _token, ref left) => {
             ~"SIGN[ "+node_to_string(*left)+" ]"
+        },
+        &Magnitude(ref _token, ref left) => {
+            ~"MAGNITUDE[ "+node_to_string(*left)+" ]"
         },
         &Variable(ref token) => {
             ~"VAR("+token_string(*token)+")"
