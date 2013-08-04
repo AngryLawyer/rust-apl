@@ -27,6 +27,17 @@ fn test_eval_basic_division() {
         }
     }
 
+    do test_eval(~"-4÷20") |result| {
+        match result {
+            ~eval::AplFloat(x) => {
+                assert_eq!(x, -0.2);
+            },
+            _ => {
+                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+            }
+        }
+    }
+
     do test_eval(~"4.0÷2") |result| {
         match result {
             ~eval::AplFloat(x) => {

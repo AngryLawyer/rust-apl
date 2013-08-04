@@ -37,11 +37,11 @@ fn test_eval_basic_reciprocal() {
         }
     }
 
-    do test_eval(~"÷1J1") |result| {
+    do test_eval(~"÷2J4") |result| {
         match result {
             ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(j)) => {
-                assert_eq!(x, 0.5);
-                assert_eq!(j, -0.5);
+                assert_eq!(x, 0.1);
+                assert_eq!(j, -0.2);
             },
             _ => {
                 fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
@@ -56,8 +56,8 @@ fn test_eval_array_reciprocal() {
         match result {
             ~eval::AplArray(ref _order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
-                    (&~eval::AplInteger(2), &~eval::AplComplex(~eval::AplFloat(0.5), ~eval::AplFloat(j))) => {
-                        assert_eq!(j, -0.5)
+                    (&~eval::AplInteger(2), complex) => {
+                        assert_eq!(complex, &~eval::AplComplex(~eval::AplFloat(0.5), ~eval::AplFloat(-0.5)));
                     },
                     _ => {
                         fail!(~"Bad array reciprocal")

@@ -16,6 +16,7 @@ pub trait Printable {
     pub fn to_typed_string(&self) -> ~str;
 }
 
+#[deriving(Eq)]
 pub enum Value {
     pub AplFloat(float),
     pub AplInteger(int),

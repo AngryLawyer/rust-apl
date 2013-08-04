@@ -36,7 +36,7 @@ pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
         },
         &AplInteger(val) => {
             let remainder = i % val;
-            if remainder > 0 {
+            if remainder != 0 {
                 divide_float(&(*i as float), ~AplFloat(val as float))
             } else {
                 result::Ok(~AplInteger(i / val))
