@@ -6,7 +6,7 @@ use test_utils::test_assert;
 #[test]
 fn test_tokenize_number() {
     let list = ~[~"1", ~"321", ~"3.21", ~".21", ~"0.21", ~"¯321"];
-    for list.iter().advance |number| {
+    for number in list.iter() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
@@ -27,7 +27,7 @@ fn test_tokenize_number() {
 
     //Complex number
     let list = ~[~"1J2", ~"0J21", ~"3.2J2.1", ~"¯321J¯321"];
-    for list.iter().advance |number| {
+    for number in list.iter() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
@@ -65,7 +65,7 @@ fn test_tokenize_number() {
 
     //Invalid numbers
     let list = [~".3.21", ~"3.2.1", ~"1.", ~".", ~"JJ", ~"1J", ~"J1", ~"0J1¯"];
-    for list.iter().advance |number| {
+    for number in list.iter() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
@@ -82,7 +82,7 @@ fn test_tokenize_number() {
 #[test]
 fn test_tokenize_newlines() {
     let list = [~"\n", ~"  \n", ~"\n\n", ~"⍝ lol\n", ~"\r", ~"\r\n", ~"\r\r"];
-    for list.iter().advance |newline| {
+    for newline in list.iter() {
         let mut tokenizer = Tokenizer::new(newline.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Newline(_tokenData)) => {
@@ -113,7 +113,7 @@ fn test_tokenize_strings() {
         (~"\"Not Escaped '' quote\"", ~"Not Escaped '' quote"),
         (~"'Not Escaped \"\" quote'", ~"Not Escaped \"\" quote")
     ];
-    for list.iter().advance |&(ref string, ref result)| {
+    for &(ref string, ref result) in list.iter() {
         let mut tokenizer = Tokenizer::new(string.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::String(tokenData)) => {
@@ -211,7 +211,7 @@ fn test_tokenize_primitives() {
         ~"."
     ];
 
-    for list.iter().advance |prim| {
+    for prim in list.iter() {
         let mut tokenizer = Tokenizer::new(prim.clone());
 
         match tokenizer.read_next_token() {
@@ -240,7 +240,7 @@ fn test_tokenize_variables() {
         (~"⍙delta", ~"⍙delta")
     ];
 
-    for list.iter().advance |&(ref string, ref result)| {
+    for &(ref string, ref result) in list.iter() {
         let mut tokenizer = Tokenizer::new(string.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Variable(tokenData)) => {

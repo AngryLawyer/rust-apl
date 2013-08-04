@@ -8,7 +8,7 @@ pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Val
             let mut error_state = ~"";
             let mut errored = false;
 
-            for values.iter().advance |value|{ 
+            for value in values.iter() { 
                 if !errored {
                     match func(param, *value) {
                         result::Ok(val) => {
@@ -20,7 +20,7 @@ pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Val
                         }
                     }
                 }
-            }
+            };
 
             if errored {
                 result::Err(error_state)
@@ -40,7 +40,7 @@ pub fn inverse_simple_dyadic_array<T>(func: extern fn(&Value, &T) -> result::Res
             let mut result_values: ~[~Value] = ~[];
             let mut error_state = ~"";
             let mut errored = false;
-            for values.iter().advance |value|{ 
+            for value in values.iter() { 
                 if !errored {
                     match func(*value, other) {
                         result::Ok(val) => {
@@ -81,21 +81,19 @@ pub fn dual_dyadic_array(func: extern fn(&Value, &Value) -> result::Result<~Valu
 
                     let mut result_values: ~[~Value] = ~[];
                     let mut error_state = ~"";
-                    let mut errored = false;
 
-                    for uint::range(0, left_values.len()) |index| {
-                        if !errored {
-                            match func(left_values[index], right_values[index]) {
-                                result::Ok(val) => {
-                                    result_values.push(val);
-                                },
-                                result::Err(err) => {
-                                    errored = true;
-                                    error_state = err;
-                                }
+                    let errored = !uint::iterate(0, left_values.len(), {|index: uint|
+                        match func(left_values[index], right_values[index]) {
+                            result::Ok(val) => {
+                                result_values.push(val);
+                                true
+                            },
+                            result::Err(err) => {
+                                error_state = err;
+                                false
                             }
                         }
-                    }
+                    });
 
                     if errored {
                         result::Err(error_state)
@@ -121,7 +119,7 @@ pub fn simple_monadic_array(func: extern fn(&Value) -> result::Result<~Value, ~s
             let mut error_state = ~"";
             let mut errored = false;
 
-            for values.iter().advance |value|{ 
+            for value in values.iter() { 
                 if !errored {
                     match func(*value) {
                         result::Ok(val) => {

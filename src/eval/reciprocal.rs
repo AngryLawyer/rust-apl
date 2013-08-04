@@ -30,7 +30,6 @@ pub fn reciprocal(first: &Value) -> result::Result<~Value, ~str> {
             })
         },
         _ => {
-            print("LOL");
             divide_integer(&1, first)
         }
     }

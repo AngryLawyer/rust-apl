@@ -112,7 +112,7 @@ fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
         }
     } else {
         let mut array_contents: ~[~Value] = ~[];
-        for tokens.iter().advance|token| {
+        for token in tokens.iter() {
             match *token {
                 @tokenizer::Number(ref token_data) => {
                     array_contents.push(eval_number(token_data.string))
