@@ -10,6 +10,7 @@ use eval::divide::eval_division;
 use eval::conjugate::eval_conjugate;
 use eval::negate::eval_negate;
 use eval::reciprocal::eval_reciprocal;
+use eval::sign::eval_sign;
 
 pub trait Printable {
     pub fn to_string(&self) -> ~str;
@@ -96,6 +97,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Conjugate(_, ref left) => eval_conjugate(*left),
         &nodes::Negate(_, ref left) => eval_negate(*left),
         &nodes::Reciprocal(_, ref left) => eval_reciprocal(*left),
+        &nodes::Sign(_, ref left) => eval_sign(*left),
 
         _ => result::Err(~"Not yet implemented")
     }

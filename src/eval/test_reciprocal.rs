@@ -55,7 +55,6 @@ fn test_eval_array_reciprocal() {
     do test_eval(~"÷0.5 1J1") |result| {
         match result {
             ~eval::AplArray(ref _order, ref _dims, ref array) => {
-                println(fmt!("%?", result));
                 match (&array[0], &array[1]) {
                     (&~eval::AplFloat(2.0), complex) => {
                         assert_eq!(complex, &~eval::AplComplex(~eval::AplFloat(0.5), ~eval::AplFloat(-0.5)));

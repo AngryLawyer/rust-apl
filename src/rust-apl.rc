@@ -21,6 +21,7 @@ pub mod eval {
     pub mod conjugate;
     pub mod negate;
     pub mod reciprocal;
+    pub mod sign;
 
     pub mod array_helpers;
 
