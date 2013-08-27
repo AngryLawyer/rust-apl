@@ -177,20 +177,20 @@ impl Parser {
     fn parse_array(&mut self) -> result::Result<~Node, ~str> {
         let mut tokens: ~[@Token] = ~[];
         while self.token_is_number() {
-            tokens.push(self.current_token.get());
+            tokens.push(self.current_token.unwrap());
             self.read_next_token();
         }
         result::Ok(~Array(tokens))
     }
 
     fn parse_variable(&mut self) -> result::Result<~Node, ~str> {
-        let result = ~Variable(self.current_token.get());
+        let result = ~Variable(self.current_token.unwrap());
         self.read_next_token();
         result::Ok(result)
     }
 
     fn parse_zilde(&mut self) -> result::Result<~Node, ~str> {
-        let result = ~Zilde(self.current_token.get());
+        let result = ~Zilde(self.current_token.unwrap());
         self.read_next_token();
         result::Ok(result)
     }

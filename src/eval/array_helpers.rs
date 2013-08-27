@@ -1,5 +1,5 @@
 use eval::eval::{AplArray, Value};
-use std::{result, uint};
+use std::result;
 
 pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Value, ~str>, param: &T, other: &Value) -> result::Result<~Value, ~str> {
     match other {
@@ -81,19 +81,20 @@ pub fn dual_dyadic_array(func: extern fn(&Value, &Value) -> result::Result<~Valu
 
                     let mut result_values: ~[~Value] = ~[];
                     let mut error_state = ~"";
+                    let mut errored = false;
 
-                    let errored = !uint::iterate(0, left_values.len(), {|index: uint|
+                    for index in range(0, left_values.len()) {
                         match func(left_values[index], right_values[index]) {
                             result::Ok(val) => {
                                 result_values.push(val);
-                                true
                             },
                             result::Err(err) => {
                                 error_state = err;
-                                false
+                                errored = true;
+                                break;
                             }
                         }
-                    });
+                    };
 
                     if errored {
                         result::Err(error_state)

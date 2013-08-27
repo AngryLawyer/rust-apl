@@ -7,12 +7,12 @@ pub struct TokenData {
 }
 
 pub enum Token {
-    pub Number(TokenData),
-    pub Newline(TokenData),
-    pub String(TokenData),
-    pub Primitive(TokenData),
-    pub Variable(TokenData),
-    pub EndOfFile()
+    Number(TokenData),
+    Newline(TokenData),
+    String(TokenData),
+    Primitive(TokenData),
+    Variable(TokenData),
+    EndOfFile()
 }
 
 struct Backtrack {

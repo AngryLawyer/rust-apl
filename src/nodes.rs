@@ -3,22 +3,22 @@ use tokenizer::Token;
 
 pub enum Node {
     //Dyadic
-    pub Addition(@Token, ~Node, ~Node),
-    pub Subtraction(@Token, ~Node, ~Node),
-    pub Multiplication(@Token, ~Node, ~Node),
-    pub Division(@Token, ~Node, ~Node),
+    Addition(@Token, ~Node, ~Node),
+    Subtraction(@Token, ~Node, ~Node),
+    Multiplication(@Token, ~Node, ~Node),
+    Division(@Token, ~Node, ~Node),
 
     //Monadic
-    pub Conjugate(@Token, ~Node),
-    pub Negate(@Token, ~Node),
-    pub Reciprocal(@Token, ~Node),
-    pub Sign(@Token, ~Node),
-    pub Magnitude(@Token, ~Node),
+    Conjugate(@Token, ~Node),
+    Negate(@Token, ~Node),
+    Reciprocal(@Token, ~Node),
+    Sign(@Token, ~Node),
+    Magnitude(@Token, ~Node),
 
     //Niladic
-    pub Variable(@Token),
-    pub Array(~[@Token]),
-    pub Zilde(@Token),
+    Variable(@Token),
+    Array(~[@Token]),
+    Zilde(@Token),
 }
 
 fn token_string(token: &Token) -> ~str {
@@ -66,7 +66,7 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Array(ref tokens) => {
             let mut string = ~"ARRAY(";
-            let token_items: ~[~str] = tokens.iter().transform(|token| token_string(*token)).collect();
+            let token_items: ~[~str] = tokens.iter().map(|token| token_string(*token)).collect();
             string = string.append(token_items.connect(","));
             string.append(")")
         },

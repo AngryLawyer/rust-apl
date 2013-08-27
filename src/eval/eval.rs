@@ -14,20 +14,20 @@ use eval::sign::eval_sign;
 use eval::magnitude::eval_magnitude;
 
 pub trait Printable {
-    pub fn to_string(&self) -> ~str;
-    pub fn to_typed_string(&self) -> ~str;
+    fn to_string(&self) -> ~str;
+    fn to_typed_string(&self) -> ~str;
 }
 
 #[deriving(Eq)]
 pub enum Value {
-    pub AplFloat(float),
-    pub AplInteger(int),
-    pub AplComplex(~Value, ~Value),
-    pub AplArray(uint, ~[uint], ~[~Value])
+    AplFloat(float),
+    AplInteger(int),
+    AplComplex(~Value, ~Value),
+    AplArray(uint, ~[uint], ~[~Value])
 }
 
 impl Clone for Value {
-    pub fn clone(&self) -> Value {
+    fn clone(&self) -> Value {
         match *self {
             AplFloat(f) => {
                 AplFloat(f)
@@ -47,7 +47,7 @@ impl Clone for Value {
 
 impl Printable for Value {
 
-    pub fn to_string(&self) -> ~str {
+    fn to_string(&self) -> ~str {
         match self {
             &AplFloat(f) => {
                 fmt!("%f", f)
@@ -59,7 +59,7 @@ impl Printable for Value {
                 if depth != 1 {
                     fail!(~"Multidimensional arrays aren't yet supported");
                 }
-                let segments: ~[~str] = contents.iter().transform(|item| item.to_string()).collect();
+                let segments: ~[~str] = contents.iter().map(|item| item.to_string()).collect();
 
                 segments.connect(" ")
             },
@@ -69,7 +69,7 @@ impl Printable for Value {
         }
     }
 
-    pub fn to_typed_string(&self) -> ~str {
+    fn to_typed_string(&self) -> ~str {
         match self {
             &AplFloat(_) => {
                 fmt!("FLOAT(%s)", self.to_string())
