@@ -59,12 +59,12 @@ fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str
                     divide_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref c, ref di) => {
-                    let za = multiply(*a, *c).chain(|ac| {
-                        multiply(*bi, *di).chain(|bidi| {
-                            multiply(*c, *c).chain(|cc| {
-                                multiply(*di, *di).chain(|didi| {
-                                    add(ac, bidi).chain(|left| {
-                                        add(cc, didi).chain(|right| {
+                    let za = multiply(*a, *c).and_then(|ac| {
+                        multiply(*bi, *di).and_then(|bidi| {
+                            multiply(*c, *c).and_then(|cc| {
+                                multiply(*di, *di).and_then(|didi| {
+                                    add(ac, bidi).and_then(|left| {
+                                        add(cc, didi).and_then(|right| {
                                             divide(left, right)
                                         })
                                     })
@@ -72,12 +72,12 @@ fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str
                             })
                         })
                     });
-                    let zb = multiply(*bi, *c).chain(|bic| {
-                        multiply(*a, *di).chain(|adi| {
-                            multiply(*c, *c).chain(|cc| {
-                                multiply(*di, *di).chain(|didi| {
-                                    subtract(bic, adi).chain(|left| {
-                                        add(cc, didi).chain(|right| {
+                    let zb = multiply(*bi, *c).and_then(|bic| {
+                        multiply(*a, *di).and_then(|adi| {
+                            multiply(*c, *c).and_then(|cc| {
+                                multiply(*di, *di).and_then(|didi| {
+                                    subtract(bic, adi).and_then(|left| {
+                                        add(cc, didi).and_then(|right| {
                                             divide(left, right)
                                         })
                                     })

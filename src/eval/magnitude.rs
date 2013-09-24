@@ -15,9 +15,9 @@ pub fn magnitude(first: &Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplInteger(val.abs()))
         },
         &AplComplex(ref i, ref j) => {
-            multiply(*i, *i).chain( |ii| {
-                multiply(*j, *j).chain( |jj| {
-                    add(ii, jj).chain( |sum| {
+            multiply(*i, *i).and_then( |ii| {
+                multiply(*j, *j).and_then( |jj| {
+                    add(ii, jj).and_then( |sum| {
                         match sum {
                             ~AplFloat(ref f) => {
                                 result::Ok(~AplFloat(f.sqrt()))

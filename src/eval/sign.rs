@@ -27,7 +27,7 @@ pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
             })
         },
         &AplComplex(ref _i, ref _j) => {
-            magnitude(first).chain(|magnituded| {
+            magnitude(first).and_then(|magnituded| {
                 divide(first, magnituded)
             })
         },

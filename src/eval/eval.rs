@@ -1,4 +1,5 @@
-use std::{result, option, int, str, float};
+use std::{result, option, str};
+use std::from_str::from_str;
 
 use parser;
 use nodes;
@@ -166,7 +167,7 @@ fn eval_complex(left: &str, right: &str) -> ~Value {
 fn eval_float(token_string: &str) -> ~Value {
     let (match_string, is_negative) = get_string_and_sign(token_string);
 
-    match float::from_str(match_string) {
+    match from_str::<float>(match_string) {
         option::Some(fl) => {
             if is_negative {
                 ~AplFloat(-fl)
@@ -183,7 +184,7 @@ fn eval_float(token_string: &str) -> ~Value {
 fn eval_int(token_string: &str) -> ~Value {
     let (match_string, is_negative) = get_string_and_sign(token_string);
 
-    match int::from_str(match_string) {
+    match from_str::<int>(match_string) {
         option::Some(i) => {
             if is_negative {
                 ~AplInteger(-i)
@@ -216,7 +217,7 @@ pub fn eval_dyadic(func: extern fn(&Value, &Value) -> result::Result<~Value, ~st
 }
 
 pub fn eval_monadic(func: extern fn(&Value) -> result::Result<~Value, ~str>, left: &nodes::Node) -> result::Result<~Value, ~str> {
-    eval_node(left).chain(|result| {
+    eval_node(left).and_then(|result| {
         func(result)
     })
 }

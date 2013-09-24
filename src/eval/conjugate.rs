@@ -10,7 +10,7 @@ pub fn conjugate(first: &Value) -> result::Result<~Value, ~str> {
             result::Ok(~(first.clone()))
         },
         &AplComplex(ref i, ref j) => {
-            negate(*j).chain(|new_j| {
+            negate(*j).and_then(|new_j| {
                 result::Ok(~AplComplex(i.clone(), new_j))
             })
         },

@@ -1,7 +1,6 @@
 use eval::eval;
 use eval::test_eval::{test_eval, test_eval_fail};
 use eval::eval::Printable;
-use std::float::ApproxEq;
 
 #[test]
 fn test_eval_basic_division() {
