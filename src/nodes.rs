@@ -14,6 +14,7 @@ pub enum Node {
     Reciprocal(@Token, ~Node),
     Sign(@Token, ~Node),
     Magnitude(@Token, ~Node),
+    Ceiling(@Token, ~Node),
 
     //Niladic
     Variable(@Token),
@@ -60,6 +61,9 @@ pub fn node_to_string(node: &Node) -> ~str {
         },
         &Magnitude(ref _token, ref left) => {
             ~"MAGNITUDE[ "+node_to_string(*left)+" ]"
+        },
+        &Ceiling(ref _token, ref left) => {
+            ~"CEILING[ "+node_to_string(*left)+" ]"
         },
         &Variable(ref token) => {
             ~"VAR("+token_string(*token)+")"

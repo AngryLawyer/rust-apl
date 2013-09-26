@@ -23,6 +23,7 @@ pub mod eval {
     pub mod reciprocal;
     pub mod sign;
     pub mod magnitude;
+    pub mod ceiling;
 
     pub mod array_helpers;
 
@@ -46,6 +47,8 @@ pub mod eval {
     mod test_sign;
     #[cfg(test)]
     mod test_magnitude;
+    #[cfg(test)]
+    mod test_ceiling;
 }
 
 #[cfg(test)]

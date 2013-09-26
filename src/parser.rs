@@ -144,6 +144,7 @@ impl Parser {
                         ~"×" => self.create_monadic_result(Sign),
                         ~"÷" => self.create_monadic_result(Reciprocal),
                         ~"|" | ~"∣" => self.create_monadic_result(Magnitude),
+                        ~"⌈" => self.create_monadic_result(Ceiling),
                         _ => self.parse_base_expression()
                     }
                 },
