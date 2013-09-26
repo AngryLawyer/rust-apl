@@ -98,6 +98,7 @@ impl Parser {
                                     ~"-" | ~"−" => self.create_dyadic_result(left, Subtraction),
                                     ~"×" => self.create_dyadic_result(left, Multiplication),
                                     ~"÷" => self.create_dyadic_result(left, Division),
+                                    ~"⌈" => self.create_dyadic_result(left, Maximum),
                                     _ => result::Err(~"Unknown operator")
                                 }
                             },

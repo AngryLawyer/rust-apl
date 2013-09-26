@@ -15,6 +15,7 @@ pub enum Node {
     Sign(@Token, ~Node),
     Magnitude(@Token, ~Node),
     Ceiling(@Token, ~Node),
+    Maximum(@Token, ~Node),
 
     //Niladic
     Variable(@Token),
@@ -34,48 +35,5 @@ fn token_string(token: &Token) -> ~str {
 }
 
 pub fn node_to_string(node: &Node) -> ~str {
-    match node {
-        &Addition(ref _token, ref left, ref right) => {
-            ~"ADDITION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
-        },
-        &Subtraction(ref _token, ref left, ref right) => {
-            ~"SUBTRACTION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
-        },
-        &Multiplication(ref _token, ref left, ref right) => {
-            ~"MULTIPLICATION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
-        },
-        &Division(ref _token, ref left, ref right) => {
-            ~"DIVISION[ "+node_to_string(*left)+", "+node_to_string(*right)+" ]"
-        },
-        &Conjugate(ref _token, ref left) => {
-            ~"CONJUGATE[ "+node_to_string(*left)+" ]"
-        },
-        &Negate(ref _token, ref left) => {
-            ~"NEGATE[ "+node_to_string(*left)+" ]"
-        },
-        &Reciprocal(ref _token, ref left) => {
-            ~"RECIPROCAL[ "+node_to_string(*left)+" ]"
-        },
-        &Sign(ref _token, ref left) => {
-            ~"SIGN[ "+node_to_string(*left)+" ]"
-        },
-        &Magnitude(ref _token, ref left) => {
-            ~"MAGNITUDE[ "+node_to_string(*left)+" ]"
-        },
-        &Ceiling(ref _token, ref left) => {
-            ~"CEILING[ "+node_to_string(*left)+" ]"
-        },
-        &Variable(ref token) => {
-            ~"VAR("+token_string(*token)+")"
-        },
-        &Array(ref tokens) => {
-            let mut string = ~"ARRAY(";
-            let token_items: ~[~str] = tokens.iter().map(|token| token_string(*token)).collect();
-            string = string.append(token_items.connect(","));
-            string.append(")")
-        },
-        &Zilde(ref token) => {
-            ~"ZILDE("+token_string(*token)+")"
-        }
-    }
+    fmt!("%?", node)
 }

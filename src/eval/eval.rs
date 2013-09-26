@@ -8,6 +8,8 @@ use eval::add::eval_addition;
 use eval::subtract::eval_subtraction;
 use eval::multiply::eval_multiplication;
 use eval::divide::eval_division;
+use eval::maximum::eval_maximum;
+
 use eval::conjugate::eval_conjugate;
 use eval::negate::eval_negate;
 use eval::reciprocal::eval_reciprocal;
@@ -96,6 +98,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Subtraction(_, ref left, ref right) => eval_subtraction(*left, *right),
         &nodes::Multiplication(_, ref left, ref right) => eval_multiplication(*left, *right),
         &nodes::Division(_, ref left, ref right) => eval_division(*left, *right),
+        &nodes::Maximum(_, ref left, ref right) => eval_maximum(*left, *right),
 
         &nodes::Conjugate(_, ref left) => eval_conjugate(*left),
         &nodes::Negate(_, ref left) => eval_negate(*left),
