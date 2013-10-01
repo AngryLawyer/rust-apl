@@ -10,12 +10,12 @@ RUST_FLAGS = ""
 all: rust-apl 
 
 rust-apl: src/rust-apl.rc $(RUST_SRC)
-	./etc/de-unicode.py
+	python ./etc/de-unicode.py
 	$(RUSTC) $(PREPROCESSED_RC_PATH) $(RUSTFLAGS) -o bin/rust-apl
 	rm -rf tmp
 
 check: src/rust-apl.rc $(RUST_SRC)
-	./etc/de-unicode.py
+	python ./etc/de-unicode.py
 	$(RUSTC) $(PREPROCESSED_RC_PATH) $(RUSTFLAGS) -o bin/test --test && bin/test
 	rm -rf tmp
 
