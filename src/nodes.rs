@@ -8,6 +8,8 @@ pub enum Node {
     Multiplication(@Token, ~Node, ~Node),
     Division(@Token, ~Node, ~Node),
 
+    Maximum(@Token, ~Node, ~Node),
+
     //Monadic
     Conjugate(@Token, ~Node),
     Negate(@Token, ~Node),
@@ -15,7 +17,6 @@ pub enum Node {
     Sign(@Token, ~Node),
     Magnitude(@Token, ~Node),
     Ceiling(@Token, ~Node),
-    Maximum(@Token, ~Node),
 
     //Niladic
     Variable(@Token),
