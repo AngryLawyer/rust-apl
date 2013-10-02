@@ -9,6 +9,7 @@ use eval::subtract::eval_subtraction;
 use eval::multiply::eval_multiplication;
 use eval::divide::eval_division;
 use eval::maximum::eval_maximum;
+use eval::minimum::eval_minimum;
 
 use eval::conjugate::eval_conjugate;
 use eval::negate::eval_negate;
@@ -16,6 +17,7 @@ use eval::reciprocal::eval_reciprocal;
 use eval::sign::eval_sign;
 use eval::magnitude::eval_magnitude;
 use eval::ceiling::eval_ceiling;
+use eval::floor::eval_floor;
 
 pub trait Printable {
     fn to_string(&self) -> ~str;
@@ -99,6 +101,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Multiplication(_, ref left, ref right) => eval_multiplication(*left, *right),
         &nodes::Division(_, ref left, ref right) => eval_division(*left, *right),
         &nodes::Maximum(_, ref left, ref right) => eval_maximum(*left, *right),
+        &nodes::Minimum(_, ref left, ref right) => eval_minimum(*left, *right),
 
         &nodes::Conjugate(_, ref left) => eval_conjugate(*left),
         &nodes::Negate(_, ref left) => eval_negate(*left),
@@ -106,6 +109,7 @@ pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
         &nodes::Sign(_, ref left) => eval_sign(*left),
         &nodes::Magnitude(_, ref left) => eval_magnitude(*left),
         &nodes::Ceiling(_, ref left) => eval_ceiling(*left),
+        &nodes::Floor(_, ref left) => eval_floor(*left),
 
         _ => result::Err(~"Not yet implemented")
     }
