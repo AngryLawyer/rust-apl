@@ -99,6 +99,7 @@ impl Parser {
                                     ~"×" => self.create_dyadic_result(left, Multiplication),
                                     ~"÷" => self.create_dyadic_result(left, Division),
                                     ~"⌈" => self.create_dyadic_result(left, Maximum),
+                                    ~"⌊" => self.create_dyadic_result(left, Minimum),
                                     _ => result::Err(~"Unknown operator")
                                 }
                             },
@@ -146,6 +147,7 @@ impl Parser {
                         ~"÷" => self.create_monadic_result(Reciprocal),
                         ~"|" | ~"∣" => self.create_monadic_result(Magnitude),
                         ~"⌈" => self.create_monadic_result(Ceiling),
+                        ~"⌊" => self.create_monadic_result(Floor),
                         _ => self.parse_base_expression()
                     }
                 },
