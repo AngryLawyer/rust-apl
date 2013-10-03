@@ -23,7 +23,7 @@ pub fn magnitude(first: &Value) -> result::Result<~Value, ~str> {
                                 result::Ok(~AplFloat(f.sqrt()))
                             },
                             ~AplInteger(ref integer) => {
-                                result::Ok(~AplFloat((*integer as float).sqrt()))
+                                result::Ok(~AplFloat((*integer as f64).sqrt()))
                             },
                             _ => {
                                 result::Err(~"Bad Magnitude")

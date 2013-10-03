@@ -4,13 +4,13 @@ use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array};
 
-fn add_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
+fn add_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
             result::Ok(~AplFloat(f + val))
         },
         &AplInteger(val) => {
-            add_float(f, ~AplFloat(val as float))
+            add_float(f, ~AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
             add_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
@@ -24,7 +24,7 @@ fn add_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
 fn add_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(_val) => {
-            add_float(&(*i as float), other)
+            add_float(&(*i as f64), other)
         },
         &AplInteger(val) => {
             result::Ok(~AplInteger(i + val))

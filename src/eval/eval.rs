@@ -26,7 +26,7 @@ pub trait Printable {
 
 #[deriving(Eq)]
 pub enum Value {
-    AplFloat(float),
+    AplFloat(f64),
     AplInteger(int),
     AplComplex(~Value, ~Value),
     AplArray(uint, ~[uint], ~[~Value])
@@ -176,7 +176,7 @@ fn eval_complex(left: &str, right: &str) -> ~Value {
 fn eval_float(token_string: &str) -> ~Value {
     let (match_string, is_negative) = get_string_and_sign(token_string);
 
-    match from_str::<float>(match_string) {
+    match from_str::<f64>(match_string) {
         option::Some(fl) => {
             if is_negative {
                 ~AplFloat(-fl)

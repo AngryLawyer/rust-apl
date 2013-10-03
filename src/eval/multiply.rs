@@ -5,13 +5,13 @@ use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple
 use eval::add::add;
 use eval::subtract::subtract;
 
-fn multiply_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
+fn multiply_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
             result::Ok(~AplFloat(f * val))
         },
         &AplInteger(val) => {
-            multiply_float(f, ~AplFloat(val as float))
+            multiply_float(f, ~AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
             multiply_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
@@ -25,7 +25,7 @@ fn multiply_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
 fn multiply_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(_val) => {
-            multiply_float(&(*i as float), other)
+            multiply_float(&(*i as f64), other)
         },
         &AplInteger(val) => {
             result::Ok(~AplInteger(i * val))

@@ -4,13 +4,13 @@ use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 
-fn maximum_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
+fn maximum_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
             result::Ok(~AplFloat(if *f > val { *f } else { val }))
         },
         &AplInteger(val) => {
-            result::Ok((if *f > val as float { ~AplFloat(*f) } else { ~AplInteger(val) }))
+            result::Ok((if *f > val as f64 { ~AplFloat(*f) } else { ~AplInteger(val) }))
         },
         &AplComplex(ref _i, ref _j) => {
             Err(~"Maximum is not supported on complex numbers")
@@ -24,7 +24,7 @@ fn maximum_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
 fn maximum_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            result::Ok((if *i as float > val { ~AplInteger(*i) } else { ~AplFloat(val) }))
+            result::Ok((if *i as f64 > val { ~AplInteger(*i) } else { ~AplFloat(val) }))
         },
         &AplInteger(val) => {
             result::Ok(~AplInteger(if *i > val { *i } else { val }))

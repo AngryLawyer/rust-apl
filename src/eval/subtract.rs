@@ -4,13 +4,13 @@ use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 
-fn subtract_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
+fn subtract_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
             result::Ok(~AplFloat(f - val))
         },
         &AplInteger(val) => {
-            subtract_float(f, ~AplFloat(val as float))
+            subtract_float(f, ~AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
             subtract_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
@@ -24,7 +24,7 @@ fn subtract_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
 fn subtract_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(_val) => {
-            subtract_float(&(*i as float), other)
+            subtract_float(&(*i as f64), other)
         },
         &AplInteger(val) => {
             result::Ok(~AplInteger(i - val))

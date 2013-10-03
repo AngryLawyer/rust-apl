@@ -6,7 +6,7 @@ use eval::add::add;
 use eval::subtract::subtract;
 use eval::multiply::multiply;
 
-fn divide_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
+fn divide_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(0.0) => {
             result::Err(~"Domain error - division by zero")
@@ -15,7 +15,7 @@ fn divide_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplFloat(f / val))
         },
         &AplInteger(val) => {
-            divide_float(f, ~AplFloat(val as float))
+            divide_float(f, ~AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
             divide_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
@@ -29,7 +29,7 @@ fn divide_float(f: &float, other:&Value) -> result::Result<~Value, ~str> {
 pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     match other {
         &AplFloat(_val) => {
-            divide_float(&(*i as float), other)
+            divide_float(&(*i as f64), other)
         },
         &AplInteger(0) => {
             result::Err(~"Domain error - division by zero")
@@ -37,7 +37,7 @@ pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
         &AplInteger(val) => {
             let remainder = i % val;
             if remainder != 0 {
-                divide_float(&(*i as float), ~AplFloat(val as float))
+                divide_float(&(*i as f64), ~AplFloat(val as f64))
             } else {
                 result::Ok(~AplInteger(i / val))
             }
