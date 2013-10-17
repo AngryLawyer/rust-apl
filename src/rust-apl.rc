@@ -5,6 +5,7 @@
 
 #[comment = "SDL bindings"];
 #[license = "LGPL"];
+#[feature(globs)];
 
 extern mod std;
 
