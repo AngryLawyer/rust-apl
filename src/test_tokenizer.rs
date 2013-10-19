@@ -12,15 +12,15 @@ fn test_tokenize_number() {
             result::Ok(tokenizer::Number(tokenData)) => {
 
                 //Pass
-                test_assert(tokenData.string == *number, fmt!("Read %s expected %s ", tokenData.string, *number));
+                test_assert(tokenData.string == *number, format!("Read {} expected {} ", tokenData.string, *number));
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected %s - %s", *number, msg));
+                fail!(format!("Expected {} - {}", *number, msg));
             },
             _ => {
-                fail!(fmt!("Unexpected token type for %s", *number));
+                fail!(format!("Unexpected token type for {}", *number));
             }
         }
     }
@@ -33,15 +33,15 @@ fn test_tokenize_number() {
             result::Ok(tokenizer::Number(tokenData)) => {
 
                 //Pass
-                test_assert(tokenData.string == *number, fmt!("Read %s expected %s ", tokenData.string, *number));
+                test_assert(tokenData.string == *number, format!("Read {} expected {} ", tokenData.string, *number));
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected %s - %s", *number, msg));
+                fail!(format!("Expected {} - {}", *number, msg));
             },
             _ => {
-                fail!(fmt!("Unexpected token type for %s", *number));
+                fail!(format!("Unexpected token type for {}", *number));
             }
         }
     }
@@ -51,15 +51,15 @@ fn test_tokenize_number() {
     match tokenizer.read_next_token() {
         result::Ok(tokenizer::Number(tokenData)) => {
             //Pass
-            test_assert(tokenData.string == expected, fmt!("Read %s expected %s ", tokenData.string, expected));
+            test_assert(tokenData.string == expected, format!("Read {} expected {} ", tokenData.string, expected));
             /*fail_unless!(tokenData.row == 0);
             fail_unless!(tokenData.col == 1);*/
         },
         result::Err(msg) => {
-            fail!(fmt!("Expected %s - %s", expected, msg));
+            fail!(format!("Expected {} - {}", expected, msg));
         },
         _ => {
-            fail!(fmt!("Unexpected token type for %s", expected));
+            fail!(format!("Unexpected token type for {}", expected));
         }
     }
 
@@ -69,7 +69,7 @@ fn test_tokenize_number() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Number(tokenData)) => {
-                fail!(fmt!("Unexpectedly read %s from source %s",tokenData.string, *number));
+                fail!(format!("Unexpectedly read {} from source {}",tokenData.string, *number));
             },
             result::Ok(_) => {
             },
@@ -91,7 +91,7 @@ fn test_tokenize_newlines() {
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected newline - %s", msg));
+                fail!(format!("Expected newline - {}", msg));
             },
             _ => {
                 fail!(~"Unexpected token type");
@@ -117,14 +117,14 @@ fn test_tokenize_strings() {
         let mut tokenizer = Tokenizer::new(string.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::String(tokenData)) => {
-                test_assert(tokenData.string == *result, fmt!("Read %s expected %s ", tokenData.string, *result));
+                test_assert(tokenData.string == *result, format!("Read {} expected {} ", tokenData.string, *result));
 
                 //Pass
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected string for %s - %s", tokenizer.char_reader.source, msg));
+                fail!(format!("Expected string for {} - {}", tokenizer.char_reader.source, msg));
             },
             _ => {
                 fail!(~"Unexpected token type");
@@ -216,15 +216,15 @@ fn test_tokenize_primitives() {
 
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Primitive(tokenData)) => {
-                test_assert(tokenData.string == *prim, fmt!("Read %s expected %s ", tokenData.string, *prim));
+                test_assert(tokenData.string == *prim, format!("Read {} expected {} ", tokenData.string, *prim));
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected primitive for %s - %s", *prim, msg));
+                fail!(format!("Expected primitive for {} - {}", *prim, msg));
             },
             _ => {
-                fail!(fmt!("Unexpected token type for %s", *prim));
+                fail!(format!("Unexpected token type for {}", *prim));
             }
         }
     }
@@ -244,14 +244,14 @@ fn test_tokenize_variables() {
         let mut tokenizer = Tokenizer::new(string.clone());
         match tokenizer.read_next_token() {
             result::Ok(tokenizer::Variable(tokenData)) => {
-                test_assert(tokenData.string == *result, fmt!("Read %s expected %s ", tokenData.string, *result));
+                test_assert(tokenData.string == *result, format!("Read {} expected {} ", tokenData.string, *result));
 
                 //Pass
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
             },
             result::Err(msg) => {
-                fail!(fmt!("Expected variable for %s - %s", tokenizer.char_reader.source, msg));
+                fail!(format!("Expected variable for {} - {}", tokenizer.char_reader.source, msg));
             },
             _ => {
                 fail!(~"Unexpected token type");
@@ -282,7 +282,7 @@ fn test_tokenize_multiple() {
             }
         }
     }
-    test_assert(tokens.len() == 28, fmt!("Expected 28 tokens, got %u", tokens.len()));
+    test_assert(tokens.len() == 28, format!("Expected 28 tokens, got {}", tokens.len()));
 }
 /*
 TODO:

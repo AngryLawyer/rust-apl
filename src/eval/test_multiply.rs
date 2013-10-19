@@ -10,7 +10,7 @@ fn test_eval_basic_multiplication() {
                 assert_eq!(x, 4);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -21,7 +21,7 @@ fn test_eval_basic_multiplication() {
                 assert_eq!(x, 4.0);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -33,7 +33,7 @@ fn test_eval_basic_multiplication() {
                 assert_eq!(y, 2);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -45,7 +45,7 @@ fn test_eval_basic_multiplication() {
                 assert_eq!(y, 23);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -57,7 +57,7 @@ fn test_eval_basic_multiplication() {
                 assert_eq!(y, 1.6);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -74,12 +74,12 @@ fn test_eval_array_multiplication() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array multiplication: got %s", result.to_string()))
+                        fail!(format!("Bad array multiplication: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -92,12 +92,12 @@ fn test_eval_array_multiplication() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array multiplication: got %s", result.to_string()))
+                        fail!(format!("Bad array multiplication: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -109,12 +109,12 @@ fn test_eval_array_multiplication() {
                     (&~eval::AplComplex(~eval::AplInteger(4), ~eval::AplInteger(2)), &~eval::AplComplex(~eval::AplInteger(4), ~eval::AplInteger(2))) => {
                     },
                     _ => {
-                        fail!(fmt!("Bad array multiplication: got %s", result.to_string()))
+                        fail!(format!("Bad array multiplication: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -127,12 +127,12 @@ fn test_eval_array_multiplication() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array multiplication: got %s", result.to_string()))
+                        fail!(format!("Bad array multiplication: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }

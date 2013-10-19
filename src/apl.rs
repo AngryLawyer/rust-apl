@@ -16,7 +16,7 @@ fn main() {
                 io::println(result.to_string());
             },
             result::Err(msg) => {
-                io::println(fmt!("Error: %s", msg));
+                io::println(format!("Error: {}", msg));
             }
         }
    }

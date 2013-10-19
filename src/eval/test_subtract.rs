@@ -10,7 +10,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(x, 0);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -21,7 +21,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(x, 1.0);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -33,7 +33,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(y, -1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -45,7 +45,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(y, 2);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -57,7 +57,7 @@ fn test_eval_basic_subtraction() {
                 assert_eq!(y, 0.0);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -74,12 +74,12 @@ fn test_eval_array_subtraction() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array subtraction: got %s", result.to_string()))
+                        fail!(format!("Bad array subtraction: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -92,12 +92,12 @@ fn test_eval_array_subtraction() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array subtraction: got %s", result.to_string()))
+                        fail!(format!("Bad array subtraction: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -121,7 +121,7 @@ fn test_eval_array_subtraction() {
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -145,7 +145,7 @@ fn test_eval_array_subtraction() {
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }

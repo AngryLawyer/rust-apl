@@ -10,7 +10,7 @@ fn test_eval_basic_reciprocal() {
                 assert_eq!(x, 1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -21,7 +21,7 @@ fn test_eval_basic_reciprocal() {
                 assert_eq!(x, 0.2);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -32,7 +32,7 @@ fn test_eval_basic_reciprocal() {
                 assert_eq!(x, -1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -44,7 +44,7 @@ fn test_eval_basic_reciprocal() {
                 assert_eq!(j, -0.2);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -65,7 +65,7 @@ fn test_eval_array_reciprocal() {
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }

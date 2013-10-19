@@ -56,10 +56,10 @@ impl Printable for Value {
     fn to_string(&self) -> ~str {
         match self {
             &AplFloat(f) => {
-                fmt!("%f", f)
+                format!("{}", f)
             },
             &AplInteger(i) => {
-                fmt!("%i", i)
+                format!("{}", i)
             },
             &AplArray(depth, ref _dimensions, ref contents) => {
                 if depth != 1 {
@@ -78,16 +78,16 @@ impl Printable for Value {
     fn to_typed_string(&self) -> ~str {
         match self {
             &AplFloat(_) => {
-                fmt!("FLOAT(%s)", self.to_string())
+                format!("FLOAT({})", self.to_string())
             },
             &AplInteger(_) => {
-                fmt!("INTEGER(%s)", self.to_string())
+                format!("INTEGER({})", self.to_string())
             },
             &AplArray(_, _, _) => {
-                fmt!("ARRAY(%s)", self.to_string())
+                format!("ARRAY({})", self.to_string())
             },
             &AplComplex(_, _) => {
-                fmt!("COMPLEX(%s)", self.to_string())
+                format!("COMPLEX({})", self.to_string())
             }
         }
     }
@@ -185,7 +185,7 @@ fn eval_float(token_string: &str) -> ~Value {
             }
         },
         option::None => {
-            fail!(fmt!("Bad float %s", token_string))
+            fail!(format!("Bad float {}", token_string))
         }
     }
 }
@@ -202,7 +202,7 @@ fn eval_int(token_string: &str) -> ~Value {
             }
         },
         option::None => {
-            fail!(fmt!("Bad int %s", token_string))
+            fail!(format!("Bad int {}", token_string))
         }
     }
 }

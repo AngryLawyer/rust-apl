@@ -10,7 +10,7 @@ fn test_eval_basic_sign() {
                 assert_eq!(x, 1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -21,7 +21,7 @@ fn test_eval_basic_sign() {
                 assert_eq!(x, 0);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -32,7 +32,7 @@ fn test_eval_basic_sign() {
                 assert_eq!(x, -1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -44,7 +44,7 @@ fn test_eval_basic_sign() {
                 assert!(j.approx_eq(&0.707107));
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -64,7 +64,7 @@ fn test_eval_array_sign() {
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }

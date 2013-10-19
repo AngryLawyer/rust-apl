@@ -10,7 +10,7 @@ fn test_eval_basic_minimum() {
                 assert_eq!(x, 1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -21,7 +21,7 @@ fn test_eval_basic_minimum() {
                 assert_eq!(x, 1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -47,12 +47,12 @@ fn test_eval_array_minimum() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array minimum: got %s", result.to_string()))
+                        fail!(format!("Bad array minimum: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -65,12 +65,12 @@ fn test_eval_array_minimum() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array minimum: got %s", result.to_string()))
+                        fail!(format!("Bad array minimum: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -98,7 +98,7 @@ fn test_eval_array_minimum() {
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }

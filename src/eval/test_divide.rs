@@ -10,7 +10,7 @@ fn test_eval_basic_division() {
                 assert_eq!(x, 2);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -21,7 +21,7 @@ fn test_eval_basic_division() {
                 assert_eq!(x, 2.5);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -32,7 +32,7 @@ fn test_eval_basic_division() {
                 assert_eq!(x, -0.2);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -43,7 +43,7 @@ fn test_eval_basic_division() {
                 assert_eq!(x, 2.0);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -55,7 +55,7 @@ fn test_eval_basic_division() {
                 assert_eq!(y, -1);
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -67,7 +67,7 @@ fn test_eval_basic_division() {
                 assert!(y.approx_eq(&0.538462));
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -79,7 +79,7 @@ fn test_eval_basic_division() {
                 assert!(y.approx_eq(&-0.0442478));
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -96,12 +96,12 @@ fn test_eval_array_division() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array division: got %s", result.to_string()))
+                        fail!(format!("Bad array division: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -114,12 +114,12 @@ fn test_eval_array_division() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array division: got %s", result.to_string()))
+                        fail!(format!("Bad array division: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -131,12 +131,12 @@ fn test_eval_array_division() {
                     (&~eval::AplComplex(~eval::AplInteger(1), ~eval::AplFloat(0.5)), &~eval::AplComplex(~eval::AplInteger(1), ~eval::AplFloat(0.5))) => {
                     },
                     _ => {
-                        fail!(fmt!("Bad array division: got %s", result.to_string()))
+                        fail!(format!("Bad array division: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }
@@ -149,12 +149,12 @@ fn test_eval_array_division() {
                         //Fine
                     },
                     _ => {
-                        fail!(fmt!("Bad array division: got %s", result.to_string()))
+                        fail!(format!("Bad array division: got {}", result.to_string()))
                     }
                 }
             },
             _ => {
-                fail!(fmt!("Didn't find a number - %s", result.to_typed_string()));
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
     }

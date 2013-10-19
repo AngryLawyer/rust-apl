@@ -37,5 +37,5 @@ fn token_string(token: &Token) -> ~str {
 }
 
 pub fn node_to_string(node: &Node) -> ~str {
-    fmt!("%?", node)
+    format!("{:?}", node)
 }
