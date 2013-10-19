@@ -1,6 +1,8 @@
 use tokenizer;
 use tokenizer::Token;
+use tokenizer::TokenData;
 use eval::eval::Value;
+use parser::Parser;
 
 use eval::add::eval_addition;
 use eval::subtract::eval_subtraction;
@@ -19,6 +21,38 @@ use eval::floor::eval_floor;
 
 pub trait EvalNode {
     fn eval(&self) -> Result<~Value, ~str>;
+}
+
+pub trait Parseable {
+    fn monadic(&self, parser: &mut Parser) -> Result<~Node, ~str>;
+    fn dyadic(&self, parser: &mut Parser, left: ~Node) -> Result<~Node, ~str>;
+}
+
+impl Parseable for TokenData {
+    fn monadic(&self, parser: &mut Parser) -> Result<~Node, ~str> {
+        match self.string {
+            ~"+" => parser.create_monadic_result(Conjugate),
+            ~"-" | ~"−" => parser.create_monadic_result(Negate),
+            ~"×" => parser.create_monadic_result(Sign),
+            ~"÷" => parser.create_monadic_result(Reciprocal),
+            ~"|" | ~"∣" => parser.create_monadic_result(Magnitude),
+            ~"⌈" => parser.create_monadic_result(Ceiling),
+            ~"⌊" => parser.create_monadic_result(Floor),
+            _ => parser.parse_base_expression()
+        }
+    }
+
+    fn dyadic(&self, parser: &mut Parser, left: ~Node) -> Result<~Node, ~str> {
+        match self.string {
+            ~"+" => parser.create_dyadic_result(left, Addition),
+            ~"-" | ~"−" => parser.create_dyadic_result(left, Subtraction),
+            ~"×" => parser.create_dyadic_result(left, Multiplication),
+            ~"÷" => parser.create_dyadic_result(left, Division),
+            ~"⌈" => parser.create_dyadic_result(left, Maximum),
+            ~"⌊" => parser.create_dyadic_result(left, Minimum),
+            _ => Err(~"Unknown operator")
+        }
+    }
 }
 
 pub enum Node {

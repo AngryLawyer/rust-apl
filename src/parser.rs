@@ -1,7 +1,7 @@
 use std::{result, option};
 use tokenizer;
 use tokenizer::Token;
-use nodes::*;
+use nodes::{Zilde, Variable, Node, Array, Parseable};
 
 pub struct Parser {
     tokenizer: @mut tokenizer::Tokenizer,
@@ -67,7 +67,7 @@ impl Parser {
         }
     }
 
-    fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(@Token, ~Node, ~Node) -> Node) -> result::Result<~Node, ~str> {
+    pub fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(@Token, ~Node, ~Node) -> Node) -> result::Result<~Node, ~str> {
         let stash = self.stash();
         match self.parse_dyadic() {
             result::Ok(node) => {
@@ -93,15 +93,7 @@ impl Parser {
                     } else {
                         match self.current_token {
                             option::Some(@tokenizer::Primitive(ref token_data)) => {
-                                match token_data.string {
-                                    ~"+" => self.create_dyadic_result(left, Addition),
-                                    ~"-" | ~"−" => self.create_dyadic_result(left, Subtraction),
-                                    ~"×" => self.create_dyadic_result(left, Multiplication),
-                                    ~"÷" => self.create_dyadic_result(left, Division),
-                                    ~"⌈" => self.create_dyadic_result(left, Maximum),
-                                    ~"⌊" => self.create_dyadic_result(left, Minimum),
-                                    _ => result::Err(~"Unknown operator")
-                                }
+                                token_data.dyadic(self, left)
                             },
                             _ => {
                                 result::Ok(left)
@@ -120,7 +112,7 @@ impl Parser {
         stash
     }
 
-    fn create_monadic_result(&mut self, kind: &fn(@Token, ~Node) -> Node) -> result::Result<~Node, ~str> {
+    pub fn create_monadic_result(&mut self, kind: &fn(@Token, ~Node) -> Node) -> result::Result<~Node, ~str> {
         let stash = self.stash();
         match self.parse_dyadic() {
             result::Ok(node) => {
@@ -140,23 +132,14 @@ impl Parser {
         } else {
             match self.current_token {
                 option::Some(@tokenizer::Primitive(ref token_data)) => {
-                    match token_data.string {
-                        ~"+" => self.create_monadic_result(Conjugate),
-                        ~"-" | ~"−" => self.create_monadic_result(Negate),
-                        ~"×" => self.create_monadic_result(Sign),
-                        ~"÷" => self.create_monadic_result(Reciprocal),
-                        ~"|" | ~"∣" => self.create_monadic_result(Magnitude),
-                        ~"⌈" => self.create_monadic_result(Ceiling),
-                        ~"⌊" => self.create_monadic_result(Floor),
-                        _ => self.parse_base_expression()
-                    }
+                    token_data.monadic(self)
                 },
                 _ => self.parse_base_expression()
             }
         }
     }
 
-    fn parse_base_expression(&mut self) -> result::Result<~Node, ~str> {
+    pub fn parse_base_expression(&mut self) -> result::Result<~Node, ~str> {
         //This will either be an Array, a Number, or a Niladic primitive (or a bracketed thingy)
         if self.end_of_source() {
             result::Err(~"Unexpected end of source")
