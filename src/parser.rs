@@ -1,11 +1,10 @@
-use std::{result, option};
 use tokenizer;
 use tokenizer::Token;
 use nodes::{Zilde, Variable, Node, Array, Parseable};
 
 pub struct Parser {
     tokenizer: @mut tokenizer::Tokenizer,
-    current_token: option::Option<@tokenizer::Token>
+    current_token: Option<@tokenizer::Token>
 }
 
 impl Parser {
@@ -13,95 +12,95 @@ impl Parser {
     pub fn new(input_string: ~str) -> Parser {
         Parser {
             tokenizer: @mut tokenizer::Tokenizer::new(input_string),
-            current_token: option::None
+            current_token: None
         }
     }
 
-    pub fn parse_next_statement(&mut self) -> result::Result<~Node, ~str> {
+    pub fn parse_next_statement(&mut self) -> Result<~Node, ~str> {
 
         match self.read_next_token() {
-            result::Ok(()) => {
+            Ok(()) => {
                 match self.current_token {
-                    option::Some(@tokenizer::EndOfFile) => {
-                        result::Err(~"End of File")
+                    Some(@tokenizer::EndOfFile) => {
+                        Err(~"End of File")
                     },
-                    option::Some(_token) => {
+                    Some(_token) => {
                         self.parse_dyadic()
                     },
-                    option::None => {
-                        result::Err(~"Everything is wrong")
+                    None => {
+                        Err(~"Everything is wrong")
                     }
                 }
             },
-            result::Err(msg) => {
-                result::Err(msg)
+            Err(msg) => {
+                Err(msg)
             }
         }
     }
 
-    fn read_next_token(&mut self) -> result::Result<(), ~str> {
+    fn read_next_token(&mut self) -> Result<(), ~str> {
         match self.tokenizer.read_next_token() {
-            result::Ok(token) => {
-                self.current_token = option::Some(@token);
-                result::Ok(())
+            Ok(token) => {
+                self.current_token = Some(@token);
+                Ok(())
             },
-            result::Err(msg) => {
-                self.current_token = option::None;
-                result::Err(msg)
+            Err(msg) => {
+                self.current_token = None;
+                Err(msg)
             }
         }
     }
 
     fn end_of_source(&self) -> bool {
         match self.current_token {
-            option::None => true,
-            option::Some(@tokenizer::EndOfFile) => true,
+            None => true,
+            Some(@tokenizer::EndOfFile) => true,
             _ => false
         }
     }
 
     fn token_is_number(&self) -> bool {
         match self.current_token {
-            option::Some(@tokenizer::Number(_)) => true,
+            Some(@tokenizer::Number(_)) => true,
             _ => false
         }
     }
 
-    pub fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(@Token, ~Node, ~Node) -> Node) -> result::Result<~Node, ~str> {
+    pub fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(@Token, ~Node, ~Node) -> Node) -> Result<~Node, ~str> {
         let stash = self.stash();
         match self.parse_dyadic() {
-            result::Ok(node) => {
+            Ok(node) => {
                 let item = ~kind(stash, left, node);
                 self.read_next_token();
-                result::Ok(item)
+                Ok(item)
             },
-            result::Err(msg) => {
-                result::Err(msg)
+            Err(msg) => {
+                Err(msg)
             }
         }
     }
 
-    fn parse_dyadic(&mut self) -> result::Result<~Node, ~str> {
+    fn parse_dyadic(&mut self) -> Result<~Node, ~str> {
         if self.end_of_source() {
-            result::Err(~"Unexpected end of source")
+            Err(~"Unexpected end of source")
         } else {
             //Parse monadic on the left (otherwise it's an endless loop).
             match self.parse_monadic() {
-                result::Ok(left) => {
+                Ok(left) => {
                     if self.end_of_source() {
-                        result::Ok(left)
+                        Ok(left)
                     } else {
                         match self.current_token {
-                            option::Some(@tokenizer::Primitive(ref token_data)) => {
+                            Some(@tokenizer::Primitive(ref token_data)) => {
                                 token_data.dyadic(self, left)
                             },
                             _ => {
-                                result::Ok(left)
+                                Ok(left)
                             }
                         }
                     }
                 },
-                result::Err(msg) => result::Err(msg)
+                Err(msg) => Err(msg)
             }
         }
     }
@@ -112,26 +111,26 @@ impl Parser {
         stash
     }
 
-    pub fn create_monadic_result(&mut self, kind: &fn(@Token, ~Node) -> Node) -> result::Result<~Node, ~str> {
+    pub fn create_monadic_result(&mut self, kind: &fn(@Token, ~Node) -> Node) -> Result<~Node, ~str> {
         let stash = self.stash();
         match self.parse_dyadic() {
-            result::Ok(node) => {
+            Ok(node) => {
                 let item = ~kind(stash, node);
                 self.read_next_token();
-                result::Ok(item)
+                Ok(item)
             },
-            result::Err(msg) => {
-                result::Err(msg)
+            Err(msg) => {
+                Err(msg)
             }
         }
     }
 
-    fn parse_monadic(&mut self) -> result::Result<~Node, ~str> {
+    fn parse_monadic(&mut self) -> Result<~Node, ~str> {
         if self.end_of_source() {
-            result::Err(~"Unexpected end of source")
+            Err(~"Unexpected end of source")
         } else {
             match self.current_token {
-                option::Some(@tokenizer::Primitive(ref token_data)) => {
+                Some(@tokenizer::Primitive(ref token_data)) => {
                     token_data.monadic(self)
                 },
                 _ => self.parse_base_expression()
@@ -139,52 +138,52 @@ impl Parser {
         }
     }
 
-    pub fn parse_base_expression(&mut self) -> result::Result<~Node, ~str> {
+    pub fn parse_base_expression(&mut self) -> Result<~Node, ~str> {
         //This will either be an Array, a Number, or a Niladic primitive (or a bracketed thingy)
         if self.end_of_source() {
-            result::Err(~"Unexpected end of source")
+            Err(~"Unexpected end of source")
         } else {
             //FIXME: Better error handling
             match self.current_token {
-                option::Some(@tokenizer::Number(_)) => self.parse_array(),
-                option::Some(@tokenizer::Variable(_)) => self.parse_variable(),
-                option::Some(@tokenizer::Primitive(ref token_data)) => {
+                Some(@tokenizer::Number(_)) => self.parse_array(),
+                Some(@tokenizer::Variable(_)) => self.parse_variable(),
+                Some(@tokenizer::Primitive(ref token_data)) => {
                     match token_data.string {
                         ~"⍬" => self.parse_zilde(),
-                        ~"(" => result::Err(~"Not yet implemented"),
-                        _ => result::Err(~"Unexpected primitive")
+                        ~"(" => Err(~"Not yet implemented"),
+                        _ => Err(~"Unexpected primitive")
                     }
                 },
                 //TODO: 
-                _ => result::Err(~"Unexpected token")
+                _ => Err(~"Unexpected token")
             }
         }
     }
 
-    fn parse_array(&mut self) -> result::Result<~Node, ~str> {
+    fn parse_array(&mut self) -> Result<~Node, ~str> {
         let mut tokens: ~[@Token] = ~[];
         while self.token_is_number() {
             tokens.push(self.current_token.unwrap());
             self.read_next_token();
         }
-        result::Ok(~Array(tokens))
+        Ok(~Array(tokens))
     }
 
-    fn parse_variable(&mut self) -> result::Result<~Node, ~str> {
+    fn parse_variable(&mut self) -> Result<~Node, ~str> {
         let result = ~Variable(self.current_token.unwrap());
         self.read_next_token();
-        result::Ok(result)
+        Ok(result)
     }
 
-    fn parse_zilde(&mut self) -> result::Result<~Node, ~str> {
+    fn parse_zilde(&mut self) -> Result<~Node, ~str> {
         let result = ~Zilde(self.current_token.unwrap());
         self.read_next_token();
-        result::Ok(result)
+        Ok(result)
     }
 
-    /*fn skip_expected<T>(&mut self, token_string: &str) -> result::Result<(), ~str> { //FIXME: This should type check
+    /*fn skip_expected<T>(&mut self, token_string: &str) -> Result<(), ~str> { //FIXME: This should type check
         if self.end_of_source() {
-            result::Err(~"Unexpected end of source")
+            Err(~"Unexpected end of source")
         } else {
             match self.current_token {
                 T(data) => {

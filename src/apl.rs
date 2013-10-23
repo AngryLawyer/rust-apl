@@ -2,7 +2,6 @@ use std::io::ReaderUtil;
 use eval::eval::Evaluator;
 use eval::eval::Printable;
 use std::io;
-use std::result;
 
 #[main]
 fn main() {
@@ -12,10 +11,10 @@ fn main() {
         let read = reader.read_line();
         let mut eval = Evaluator::new(read);
         match eval.eval() {
-            result::Ok(result) => {
+            Ok(result) => {
                 io::println(result.to_string());
             },
-            result::Err(msg) => {
+            Err(msg) => {
                 io::println(format!("Error: {}", msg));
             }
         }

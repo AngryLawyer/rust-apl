@@ -1,4 +1,4 @@
-use std::{result, option, str};
+use std::str;
 use std::from_str::from_str;
 
 use parser;
@@ -80,9 +80,9 @@ impl Printable for Value {
     }
 }
 
-pub fn eval_node(node: &nodes::Node) -> result::Result<~Value,~str> {
+pub fn eval_node(node: &nodes::Node) -> Result<~Value,~str> {
     match node {
-        &nodes::Array(ref nodes) => result::Ok(eval_array(nodes)),
+        &nodes::Array(ref nodes) => Ok(eval_array(nodes)),
         _ => node.eval()
     }
 }
@@ -116,15 +116,15 @@ fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
 fn eval_number(token_string: &str) -> ~Value {
     match token_string.find('J') {
         //FIXME: This needs to handle exponents
-        option::Some(pos) => {
+        Some(pos) => {
             eval_complex(token_string.slice_to(pos), token_string.slice_from(pos + 1))
         },
-        option::None => {
+        None => {
             match token_string.find('.') {
-                option::Some(_) => {
+                Some(_) => {
                     eval_float(token_string)
                 },
-                option::None => {
+                None => {
                     eval_int(token_string)
                 }
             }
@@ -149,14 +149,14 @@ fn eval_float(token_string: &str) -> ~Value {
     let (match_string, is_negative) = get_string_and_sign(token_string);
 
     match from_str::<f64>(match_string) {
-        option::Some(fl) => {
+        Some(fl) => {
             if is_negative {
                 ~AplFloat(-fl)
             } else {
                 ~AplFloat(fl)
             }
         },
-        option::None => {
+        None => {
             fail!(format!("Bad float {}", token_string))
         }
     }
@@ -166,38 +166,38 @@ fn eval_int(token_string: &str) -> ~Value {
     let (match_string, is_negative) = get_string_and_sign(token_string);
 
     match from_str::<int>(match_string) {
-        option::Some(i) => {
+        Some(i) => {
             if is_negative {
                 ~AplInteger(-i)
             } else {
                 ~AplInteger(i)
             }
         },
-        option::None => {
+        None => {
             fail!(format!("Bad int {}", token_string))
         }
     }
 }
 
-pub fn eval_dyadic(func: extern fn(&Value, &Value) -> result::Result<~Value, ~str>, left: &nodes::Node, right: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_dyadic(func: extern fn(&Value, &Value) -> Result<~Value, ~str>, left: &nodes::Node, right: &nodes::Node) -> Result<~Value, ~str> {
     match eval_node(left) {
-        result::Ok(left) => {
+        Ok(left) => {
             match eval_node(right) {
-                result::Ok(right) => {
+                Ok(right) => {
                     func(left, right)
                 },
-                result::Err(msg) => {
-                    result::Err(msg)
+                Err(msg) => {
+                    Err(msg)
                 }
             }
         },
-        result::Err(msg) => {
-            result::Err(msg)
+        Err(msg) => {
+            Err(msg)
         }
     }
 }
 
-pub fn eval_monadic(func: extern fn(&Value) -> result::Result<~Value, ~str>, left: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_monadic(func: extern fn(&Value) -> Result<~Value, ~str>, left: &nodes::Node) -> Result<~Value, ~str> {
     eval_node(left).and_then(|result| {
         func(result)
     })
@@ -215,14 +215,14 @@ impl Evaluator {
         }
     }
 
-    pub fn eval(&mut self) -> result::Result<~Value, ~str> {
+    pub fn eval(&mut self) -> Result<~Value, ~str> {
         let tree = self.parser.parse_next_statement(); //TODO: Should loop?
         match tree {
-            result::Ok(node) => {
+            Ok(node) => {
                 eval_node(node)
             },
-            result::Err(msg) => {
-                result::Err(msg)
+            Err(msg) => {
+                Err(msg)
             }
         }
     }
