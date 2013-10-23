@@ -26,6 +26,22 @@ fn test_eval_basic_power() {
         }
     }
 
+    do test_eval(~"¯27⋆1.2") |result| {
+        match result {
+            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
+                assert_eq!(x, -42.2274);
+                assert_eq!(y, -30.68);
+            },
+            _ => {
+                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
+            }
+        }
+    }
+
+    do test_eval_fail(~"0⋆¯1") |result| {
+        //No negative powers for zero
+    }
+
     do test_eval(~"2⋆1J1") |result| {
         match result {
             ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
@@ -119,6 +135,5 @@ fn test_eval_array_power() {
     do test_eval_fail(~"1 1 1 ⋆ 1 1") |_result| {
         //Cool beanz
     }
-
 }
 
