@@ -7,10 +7,18 @@ use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple
 fn power_float(f: &f64, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            Ok(~AplFloat(num::pow(*f, val)))
+            if *f == 0.0 && val < 0.0 {
+                Err(~"Cannot take 0 to a negative power")
+            } else {
+                Ok(~AplFloat(num::pow(*f, val)))
+            }
         },
         &AplInteger(val) => {
-            Ok(~AplFloat(num::pow(*f, val as f64)))
+            if *f == 0.0 && val < 0 {
+                Err(~"Cannot take 0 to a negative power")
+            } else {
+                Ok(~AplFloat(num::pow(*f, val as f64)))
+            }
         },
         &AplComplex(ref _i, ref _j) => {
             Err(~"power is not supported on complex numbers")
@@ -24,10 +32,18 @@ fn power_float(f: &f64, other:&Value) -> Result<~Value, ~str> {
 fn power_integer(i: &int, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            Ok(~AplFloat(num::pow((*i as f64), val)))
+            if *i == 0 && val < 0.0 {
+                Err(~"Cannot take 0 to a negative power")
+            } else {
+                Ok(~AplFloat(num::pow((*i as f64), val)))
+            }
         },
         &AplInteger(val) => {
-            Ok(~AplInteger(num::pow_with_uint(*i as uint, val as uint)))
+            if *i == 0 && val < 0 {
+                Err(~"Cannot take 0 to a negative power")
+            } else {
+                Ok(~AplInteger(num::pow_with_uint(*i as uint, val as uint)))
+            }
         },
         &AplComplex(ref _i, ref _j) => {
             Err(~"power is not supported on complex numbers")

@@ -26,6 +26,10 @@ fn test_eval_basic_power() {
         }
     }
 
+    do test_eval_fail(~"0⋆¯1") |_result| {
+        //No negative powers for zero
+    }
+
     do test_eval(~"¯27⋆1.2") |result| {
         match result {
             ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
@@ -36,10 +40,6 @@ fn test_eval_basic_power() {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
             }
         }
-    }
-
-    do test_eval_fail(~"0⋆¯1") |result| {
-        //No negative powers for zero
     }
 
     do test_eval(~"2⋆1J1") |result| {
@@ -75,7 +75,7 @@ fn test_eval_array_power() {
         match result {
             ~eval::AplArray(_order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
-                    (&~eval::AplInteger(1), &~eval::AplInteger(8)) => {
+                    (&~eval::AplInteger(2), &~eval::AplInteger(8)) => {
                         //Fine
                     },
                     _ => {
@@ -93,7 +93,7 @@ fn test_eval_array_power() {
         match result {
             ~eval::AplArray(_order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
-                    (&~eval::AplInteger(1), &~eval::AplInteger(1)) => {
+                    (&~eval::AplInteger(2), &~eval::AplInteger(0)) => {
                         //Fine
                     },
                     _ => {
@@ -107,13 +107,13 @@ fn test_eval_array_power() {
         }
     }
 
-    do test_eval(~"3 3⋆2 4") |result| {
+    do test_eval(~"3 3⋆2 0") |result| {
         match result {
             ~eval::AplArray(_order, _dims, array) => {
                 match array[0] {
                     ~eval::AplInteger(9) => {
                         match array[1] {
-                            ~eval::AplInteger(81) => {
+                            ~eval::AplInteger(1) => {
                             },
                             _ => {
                                 fail!(~"Bad array power")
