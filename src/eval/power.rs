@@ -42,7 +42,7 @@ fn power_integer(i: &int, other:&Value) -> Result<~Value, ~str> {
             if *i == 0 && val < 0 {
                 Err(~"Cannot take 0 to a negative power")
             } else {
-                Ok(~AplInteger(num::pow_with_uint(*i as uint, val as uint)))
+                Ok(~AplInteger(num::pow(*i as f64, val as f64) as int))
             }
         },
         &AplComplex(ref _i, ref _j) => {
