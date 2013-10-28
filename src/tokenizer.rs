@@ -123,29 +123,23 @@ impl Tokenizer {
         match self.char_reader.current_char {
             Some(first_char) => {
                 //FIXME: Make Tokenizer a trait, turn this into two lines of code!
-                if NewlineTokenizer::is_valid_newline_start(first_char) {
-                    let mut tokenizer = NewlineTokenizer::new(self.char_reader);
-                    return tokenizer.read_next_token()
+                if is_valid_newline_start(first_char) {
+                    return newline_tokenizer(self.char_reader)
                 }
-                if DotTokenizer::is_dot(first_char) {
-                    let mut tokenizer = DotTokenizer::new(self.char_reader);
-                    return tokenizer.read_next_token()
+                if is_dot(first_char) {
+                    return dot_tokenizer(self.char_reader)
                 }
-                if NumberTokenizer::is_valid_number_start(first_char) {
-                    let mut tokenizer = NumberTokenizer::new(self.char_reader);
-                    return tokenizer.read_next_token()
+                if is_valid_number_start(first_char) {
+                    return number_tokenizer(self.char_reader)
                 }
-                if StringTokenizer::is_valid_string_start(first_char) {
-                    let mut tokenizer = StringTokenizer::new(self.char_reader);
-                    return tokenizer.read_next_token()
+                if is_valid_string_start(first_char) {
+                    return string_tokenizer(self.char_reader)
                 }
-                if PrimitiveTokenizer::is_valid_primitive_start(first_char) {
-                    let mut tokenizer = PrimitiveTokenizer::new(self.char_reader);
-                    return tokenizer.read_next_token()
+                if is_valid_primitive_start(first_char) {
+                    return primitive_tokenizer(self.char_reader)
                 }
-                if VariableTokenizer::is_valid_variable_start(first_char) {
-                    let mut tokenizer = VariableTokenizer::new(self.char_reader);
-                    return tokenizer.read_next_token()
+                if is_valid_variable_start(first_char) {
+                    return variable_tokenizer(self.char_reader)
                 }
                 Err(format!("No valid token found starting with {}", first_char))
             },
@@ -156,345 +150,261 @@ impl Tokenizer {
     }
 }
 
-struct NumberTokenizer {
-    char_reader: &CharReader,
-    period_encountered: bool,
-    complex_encountered: bool,
-    first_character: bool,
-    allowed_negative: bool
+fn is_valid_number_start(char: char) -> bool {
+    //Needs to be either upper dash, period, or 0-9
+    (char >= '0' && char <= '9') || char == '.' || char == '¯'
 }
 
-impl NumberTokenizer {
-
-    fn is_valid_number_start(char: char) -> bool {
-        //Needs to be either upper dash, period, or 0-9
-        (char >= '0' && char <= '9') || char == '.' || char == '¯'
+fn is_period(char_reader: &CharReader) -> bool {
+    match char_reader.current_char {
+        Some('.') => true,
+        _ => false
     }
+}
 
-    fn new(char_reader: &CharReader) -> NumberTokenizer {
-        NumberTokenizer {
-            char_reader: char_reader,
-            period_encountered: false,
-            complex_encountered: false,
-            first_character: true,
-            allowed_negative: false
-        }
+fn is_number(char_reader: &CharReader) -> bool {
+    match char_reader.current_char {
+        Some(maybe_number) => {
+            maybe_number >= '0' && maybe_number <= '9'
+        },
+        _ => false
     }
+}
 
-    fn is_period(&self) -> bool {
-        match self.char_reader.current_char {
-            Some('.') => true,
-            _ => false
-        }
+fn is_complex(char_reader: &CharReader) -> bool {
+    match char_reader.current_char {
+        Some('J') => true,
+        _ => false
     }
+}
 
-    fn is_number(&self) -> bool {
-        match self.char_reader.current_char {
-            Some(maybe_number) => {
-                maybe_number >= '0' && maybe_number <= '9'
-            },
-            _ => false
-        }
+fn is_negative(char_reader: &CharReader) -> bool {
+    match char_reader.current_char {
+        Some('¯') => true,
+        _ => false
     }
+}
 
-    fn is_complex(&self) -> bool {
-        match self.char_reader.current_char {
-            Some('J') => true,
-            _ => false
-        }
-    }
+fn number_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+    let mut period_encountered = false;
+    let mut complex_encountered = false;
+    let mut first_character = true;
+    let mut allowed_negative = false;
+    let mut token: ~[char] = ~[];
 
-    fn is_negative(&self) -> bool {
-        match self.char_reader.current_char {
-            Some('¯') => true,
-            _ => false
-        }
-    }
-
-    fn read_next_token(&mut self) -> Result<Token, ~str> {
-        let mut token: ~[char] = ~[];
-        loop {
-            if self.first_character {
-                self.first_character = false;
-                if self.is_period() {
-                    self.period_encountered = true;
-                }
-                token.push(self.char_reader.current_char.unwrap());
-            } else if self.is_negative() {
-                if self.allowed_negative {
-                    self.allowed_negative = false;
-                    token.push(self.char_reader.current_char.unwrap());
-                } else {
-                    return Err(~"Invalid number");
-                }
-            } else if self.is_complex() {
-                if self.complex_encountered {
-                    return Err(~"Invalid number");
-                } else {
-                    self.complex_encountered = true;
-                    self.period_encountered = false;
-                    self.allowed_negative = true;
-                    token.push(self.char_reader.current_char.unwrap());
-                }
-            } else if self.is_period() {
-                self.allowed_negative = false;
-                if self.period_encountered {
-                    return Err(~"Invalid number");
-                } else {
-                    self.period_encountered = true;
-                    token.push(self.char_reader.current_char.unwrap());
-                }
-            } else if self.is_number() {
-                self.allowed_negative = false;
-                token.push(self.char_reader.current_char.unwrap());
+    loop {
+        if first_character {
+            first_character = false;
+            if is_period(char_reader) {
+                period_encountered = true;
+            }
+            token.push(char_reader.current_char.unwrap());
+        } else if is_negative(char_reader) {
+            if allowed_negative {
+                allowed_negative = false;
+                token.push(char_reader.current_char.unwrap());
             } else {
-                if (token[token.len() - 1] == '.' ||
-                    token[token.len() - 1] == 'J' ||
-                    token[token.len() - 1] == '¯') {
-                    return Err(~"Invalid number");
-                }
-                return Ok(Number(TokenData {
-                    string: str::from_chars(token),
-                    row: 0,
-                    col: 0
-                }));
+                return Err(~"Invalid number");
             }
-            self.char_reader.read_and_stash_char();
-        }
-    }
-}
-
-struct NewlineTokenizer {
-    char_reader: &CharReader,
-    backtrack: Backtrack
-}
-
-impl NewlineTokenizer {
-
-    fn is_valid_newline_start(char: char) -> bool {
-        char == '\n' || char == '\r'
-    }
-
-    fn new(char_reader: &CharReader) -> NewlineTokenizer {
-        NewlineTokenizer {
-            char_reader: char_reader,
-            backtrack: char_reader.create_backtrack()
-        }
-    }
-
-    fn read_next_token(&mut self) -> Result<Token, ~str> {
-        match self.char_reader.current_char {
-            Some('\r') => {
-                self.char_reader.read_and_stash_char();
-                match self.char_reader.current_char {
-                    Some('\n') => {
-                        self.char_reader.read_and_stash_char();
-                        return Ok(Newline(TokenData {
-                            string: ~"\r\n",
-                            row: 0,
-                            col: 0
-                        }));
-                    },
-                    _ => {
-                        return Ok(Newline(TokenData {
-                            string: ~"\r",
-                            row: 0,
-                            col: 0
-                        }));
-                    }
-                }
-            },
-            _ => {
-                self.char_reader.read_and_stash_char();
-                return Ok(Newline(TokenData {
-                    string: ~"\n",
-                    row: 0,
-                    col: 0
-                }));
+        } else if is_complex(char_reader) {
+            if complex_encountered {
+                return Err(~"Invalid number");
+            } else {
+                complex_encountered = true;
+                period_encountered = false;
+                allowed_negative = true;
+                token.push(char_reader.current_char.unwrap());
             }
-        }
-    }
-}
-
-struct StringTokenizer {
-    char_reader: &CharReader
-}
-
-impl StringTokenizer {
-
-    fn is_valid_string_start(char: char) -> bool {
-        char == '\'' || char == '"'
-    }
-
-    fn new(char_reader: &CharReader) -> StringTokenizer {
-        StringTokenizer {
-            char_reader: char_reader
-        }
-    }
-
-    fn read_next_token(&mut self) -> Result<Token, ~str> {
-        let mut token: ~[char] = ~[];
-        let opening_character = self.char_reader.current_char.unwrap();
-        self.char_reader.read_and_stash_char();
-
-        loop {
-            match self.char_reader.current_char {
-                Some(char) if opening_character == char => {
-                    //Lookahead
-                    let backtrack = self.char_reader.create_backtrack();
-                    self.char_reader.read_and_stash_char();
-                    match self.char_reader.current_char {
-                        Some(char) if opening_character == char => {
-                            //It's a quote - continue
-                            token.push(char);
-                        },
-                        _ => {
-                            self.char_reader.backtrack(&backtrack);
-                            return Ok(String(TokenData {
-                                string: str::from_chars(token),
-                                row: 0,
-                                col: 0
-                            }));
-                        }
-                    }
-                },
-                Some(char) => {
-                    token.push(char);
-                },
-                None => {
-                    return Err(~"Unexpected end of file");
-                }
-            };
-            self.char_reader.read_and_stash_char();
-        }
-    }
-}
-
-struct VariableTokenizer {
-    char_reader: &CharReader
-}
-
-impl VariableTokenizer {
-
-    fn is_valid_variable_start(char: char) -> bool {
-        char == '∆' || char == '⍙' || (char >= 'A' && char <= 'z')
-    }
-
-    fn new(char_reader: &CharReader) -> VariableTokenizer {
-        VariableTokenizer {
-            char_reader: char_reader
-        }
-    }
-
-    fn read_next_token(&mut self) -> Result<Token, ~str> {
-        let mut token: ~[char] = ~[];
-
-        loop {
-            match self.char_reader.current_char {
-                Some(char) => {
-                    if VariableTokenizer::is_valid_variable_start(char) {
-                        token.push(char);
-                    } else {
-                        break;
-                    }
-                },
-                None => {
-                    break;
-                }
-            };
-            self.char_reader.read_and_stash_char();
-        }
-        return Ok(Variable(TokenData {
-            string: str::from_chars(token),
-            row: 0,
-            col: 0
-        }));
-    }
-}
-
-struct DotTokenizer {
-    char_reader: &CharReader
-}
-
-impl DotTokenizer {
-
-    fn is_dot(char: char) -> bool {
-        char == '.'
-    }
-
-    fn new(char_reader: &CharReader) -> DotTokenizer {
-        DotTokenizer {
-            char_reader: char_reader
-        }
-    }
-
-    fn read_next_token(&mut self) -> Result<Token, ~str> {
-        let backtrack = self.char_reader.create_backtrack();
-        self.char_reader.read_and_stash_char();
-        match self.char_reader.current_char {
-            Some(char) if char::is_digit(char) => {
-                self.char_reader.backtrack(&backtrack);
-                let mut tokenizer = NumberTokenizer::new(self.char_reader);
-                return tokenizer.read_next_token()
-            },
-            _ => {
-                Ok(Primitive(TokenData {
-                    string: ~".",
-                    row: 0,
-                    col: 0
-                }))
+        } else if is_period(char_reader) {
+            allowed_negative = false;
+            if period_encountered {
+                return Err(~"Invalid number");
+            } else {
+                period_encountered = true;
+                token.push(char_reader.current_char.unwrap());
             }
+        } else if is_number(char_reader) {
+            allowed_negative = false;
+            token.push(char_reader.current_char.unwrap());
+        } else {
+            if (token[token.len() - 1] == '.' ||
+                token[token.len() - 1] == 'J' ||
+                token[token.len() - 1] == '¯') {
+                return Err(~"Invalid number");
+            }
+            return Ok(Number(TokenData {
+                string: str::from_chars(token),
+                row: 0,
+                col: 0
+            }));
         }
+        char_reader.read_and_stash_char();
     }
 }
 
-struct PrimitiveTokenizer {
-    char_reader: &CharReader
+fn is_valid_newline_start(char: char) -> bool {
+    char == '\n' || char == '\r'
 }
 
-impl PrimitiveTokenizer {
-
-    fn is_valid_primitive_start(char: char) -> bool {
-        *(~['+','−','×','÷','⌈','⌊','∣','|','⍳','?','⋆','*','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵', '-'].contains(&char))
-    }
-
-    fn new(char_reader: &CharReader) -> PrimitiveTokenizer {
-        PrimitiveTokenizer {
-            char_reader: char_reader
-        }
-    }
-
-    fn read_next_token(&mut self) -> Result<Token, ~str> {
-        let opening_character = self.char_reader.current_char.unwrap();
-        if opening_character == '∘' {
-            let backtrack = self.char_reader.create_backtrack();
-            self.char_reader.read_and_stash_char();
-            match self.char_reader.current_char {
-                Some('.') => {
-                    self.char_reader.read_and_stash_char();
-                    Ok(Primitive(TokenData {
-                        string: ~"∘.",
+fn newline_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+    match char_reader.current_char {
+        Some('\r') => {
+            char_reader.read_and_stash_char();
+            match char_reader.current_char {
+                Some('\n') => {
+                    char_reader.read_and_stash_char();
+                    return Ok(Newline(TokenData {
+                        string: ~"\r\n",
                         row: 0,
                         col: 0
-                    }))
+                    }));
                 },
                 _ => {
-                    self.char_reader.backtrack(&backtrack);
-                    Ok(Primitive(TokenData {
-                        string: ~"∘",
+                    return Ok(Newline(TokenData {
+                        string: ~"\r",
                         row: 0,
                         col: 0
-                    }))
+                    }));
                 }
             }
-        } else {
-            self.char_reader.read_and_stash_char();
+        },
+        _ => {
+            char_reader.read_and_stash_char();
+            return Ok(Newline(TokenData {
+                string: ~"\n",
+                row: 0,
+                col: 0
+            }));
+        }
+    }
+}
+
+fn is_valid_string_start(char: char) -> bool {
+    char == '\'' || char == '"'
+}
+
+fn string_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+    let mut token: ~[char] = ~[];
+    let opening_character = char_reader.current_char.unwrap();
+    char_reader.read_and_stash_char();
+
+    loop {
+        match char_reader.current_char {
+            Some(char) if opening_character == char => {
+                //Lookahead
+                let backtrack = char_reader.create_backtrack();
+                char_reader.read_and_stash_char();
+                match char_reader.current_char {
+                    Some(char) if opening_character == char => {
+                        //It's a quote - continue
+                        token.push(char);
+                    },
+                    _ => {
+                        char_reader.backtrack(&backtrack);
+                        return Ok(String(TokenData {
+                            string: str::from_chars(token),
+                            row: 0,
+                            col: 0
+                        }));
+                    }
+                }
+            },
+            Some(char) => {
+                token.push(char);
+            },
+            None => {
+                return Err(~"Unexpected end of file");
+            }
+        };
+        char_reader.read_and_stash_char();
+    }
+}
+
+fn is_valid_variable_start(char: char) -> bool {
+    char == '∆' || char == '⍙' || (char >= 'A' && char <= 'z')
+}
+
+fn variable_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+    let mut token: ~[char] = ~[];
+
+    loop {
+        match char_reader.current_char {
+            Some(char) => {
+                if is_valid_variable_start(char) {
+                    token.push(char);
+                } else {
+                    break;
+                }
+            },
+            None => {
+                break;
+            }
+        };
+        char_reader.read_and_stash_char();
+    }
+    return Ok(Variable(TokenData {
+        string: str::from_chars(token),
+        row: 0,
+        col: 0
+    }));
+}
+
+fn is_dot(char: char) -> bool {
+    char == '.'
+}
+
+fn dot_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+    let backtrack = char_reader.create_backtrack();
+    char_reader.read_and_stash_char();
+    match char_reader.current_char {
+        Some(char) if char::is_digit(char) => {
+            char_reader.backtrack(&backtrack);
+            return number_tokenizer(char_reader);
+        },
+        _ => {
             Ok(Primitive(TokenData {
-                string: str::from_char(opening_character),
+                string: ~".",
                 row: 0,
                 col: 0
             }))
         }
     }
+}
 
+fn is_valid_primitive_start(char: char) -> bool {
+    *(~['+','−','×','÷','⌈','⌊','∣','|','⍳','?','⋆','*','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵', '-'].contains(&char))
+}
+
+
+fn primitive_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+    let opening_character = char_reader.current_char.unwrap();
+    if opening_character == '∘' {
+        let backtrack = char_reader.create_backtrack();
+        char_reader.read_and_stash_char();
+        match char_reader.current_char {
+            Some('.') => {
+                char_reader.read_and_stash_char();
+                Ok(Primitive(TokenData {
+                    string: ~"∘.",
+                    row: 0,
+                    col: 0
+                }))
+            },
+            _ => {
+                char_reader.backtrack(&backtrack);
+                Ok(Primitive(TokenData {
+                    string: ~"∘",
+                    row: 0,
+                    col: 0
+                }))
+            }
+        }
+    } else {
+        char_reader.read_and_stash_char();
+        Ok(Primitive(TokenData {
+            string: str::from_char(opening_character),
+            row: 0,
+            col: 0
+        }))
+    }
 }
