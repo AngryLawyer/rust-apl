@@ -1,22 +1,25 @@
-use std::io::ReaderUtil;
 use eval::eval::Evaluator;
 use eval::eval::Printable;
-use std::io;
+use std::rt::io;
 
 #[main]
 fn main() {
-   io::println("Rust-APL version 0.0.1");
-   let reader = io::stdin();
+   println!("Rust-APL version 0.0.1");
+   let mut reader = io::buffered::BufferedReader::new(io::stdin());
    loop {
-        let read = reader.read_line();
-        let mut eval = Evaluator::new(read);
-        match eval.eval() {
-            Ok(result) => {
-                io::println(result.to_string());
+        match reader.read_line() {
+            Some(read) => {
+                let mut eval = Evaluator::new(read);
+                match eval.eval() {
+                    Ok(result) => {
+                        println!("{}", result.to_string());
+                    },
+                    Err(msg) => {
+                        println!("Error: {}", msg);
+                    }
+                }
             },
-            Err(msg) => {
-                io::println(format!("Error: {}", msg));
-            }
+            None => ()
         }
    }
 }
