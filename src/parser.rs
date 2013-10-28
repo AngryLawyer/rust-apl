@@ -3,7 +3,7 @@ use tokenizer::Token;
 use nodes::{Zilde, Variable, Node, Array, Parseable};
 
 pub struct Parser {
-    tokenizer: @mut tokenizer::Tokenizer,
+    tokenizer: ~tokenizer::Tokenizer,
     current_token: Option<@tokenizer::Token>
 }
 
@@ -11,7 +11,7 @@ impl Parser {
 
     pub fn new(input_string: ~str) -> Parser {
         Parser {
-            tokenizer: @mut tokenizer::Tokenizer::new(input_string),
+            tokenizer: ~tokenizer::Tokenizer::new(input_string),
             current_token: None
         }
     }

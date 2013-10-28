@@ -82,12 +82,12 @@ impl Printable for Value {
 
 pub fn eval_node(node: &nodes::Node) -> Result<~Value,~str> {
     match node {
-        &nodes::Array(ref nodes) => Ok(eval_array(nodes)),
+        &nodes::Array(ref nodes) => Ok(eval_array(*nodes)),
         _ => node.eval()
     }
 }
 
-fn eval_array(tokens: &~[@tokenizer::Token]) -> ~Value {
+fn eval_array(tokens: &[@tokenizer::Token]) -> ~Value {
     if tokens.len() == 1 {
         match tokens[0] {
             @tokenizer::Number(ref token_data) => {
@@ -204,14 +204,14 @@ pub fn eval_monadic(func: extern fn(&Value) -> Result<~Value, ~str>, left: &node
 }
 
 pub struct Evaluator {
-    parser: @mut parser::Parser
+    parser: ~parser::Parser
 }
 
 impl Evaluator {
     
     pub fn new(input_string: ~str) -> Evaluator {
         Evaluator {
-            parser: @mut parser::Parser::new(input_string)
+            parser: ~parser::Parser::new(input_string)
         }
     }
 

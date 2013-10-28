@@ -105,7 +105,7 @@ impl CharReader {
 }
 
 struct Tokenizer {
-    char_reader: @mut CharReader,
+    char_reader: ~CharReader,
 }
 
 impl Tokenizer {
@@ -113,7 +113,7 @@ impl Tokenizer {
         let mut char_reader = CharReader::new(input_string);
         char_reader.read_and_stash_char();
         Tokenizer {
-            char_reader: @mut char_reader
+            char_reader: ~char_reader
         }
     }
 
@@ -157,7 +157,7 @@ impl Tokenizer {
 }
 
 struct NumberTokenizer {
-    char_reader: @mut CharReader,
+    char_reader: &CharReader,
     period_encountered: bool,
     complex_encountered: bool,
     first_character: bool,
@@ -171,7 +171,7 @@ impl NumberTokenizer {
         (char >= '0' && char <= '9') || char == '.' || char == '¯'
     }
 
-    fn new(char_reader: @mut CharReader) -> NumberTokenizer {
+    fn new(char_reader: &CharReader) -> NumberTokenizer {
         NumberTokenizer {
             char_reader: char_reader,
             period_encountered: false,
@@ -265,7 +265,7 @@ impl NumberTokenizer {
 }
 
 struct NewlineTokenizer {
-    char_reader: @mut CharReader,
+    char_reader: &CharReader,
     backtrack: Backtrack
 }
 
@@ -275,7 +275,7 @@ impl NewlineTokenizer {
         char == '\n' || char == '\r'
     }
 
-    fn new(char_reader: @mut CharReader) -> NewlineTokenizer {
+    fn new(char_reader: &CharReader) -> NewlineTokenizer {
         NewlineTokenizer {
             char_reader: char_reader,
             backtrack: char_reader.create_backtrack()
@@ -317,7 +317,7 @@ impl NewlineTokenizer {
 }
 
 struct StringTokenizer {
-    char_reader: @mut CharReader
+    char_reader: &CharReader
 }
 
 impl StringTokenizer {
@@ -326,7 +326,7 @@ impl StringTokenizer {
         char == '\'' || char == '"'
     }
 
-    fn new(char_reader: @mut CharReader) -> StringTokenizer {
+    fn new(char_reader: &CharReader) -> StringTokenizer {
         StringTokenizer {
             char_reader: char_reader
         }
@@ -371,7 +371,7 @@ impl StringTokenizer {
 }
 
 struct VariableTokenizer {
-    char_reader: @mut CharReader
+    char_reader: &CharReader
 }
 
 impl VariableTokenizer {
@@ -380,7 +380,7 @@ impl VariableTokenizer {
         char == '∆' || char == '⍙' || (char >= 'A' && char <= 'z')
     }
 
-    fn new(char_reader: @mut CharReader) -> VariableTokenizer {
+    fn new(char_reader: &CharReader) -> VariableTokenizer {
         VariableTokenizer {
             char_reader: char_reader
         }
@@ -413,7 +413,7 @@ impl VariableTokenizer {
 }
 
 struct DotTokenizer {
-    char_reader: @mut CharReader
+    char_reader: &CharReader
 }
 
 impl DotTokenizer {
@@ -422,7 +422,7 @@ impl DotTokenizer {
         char == '.'
     }
 
-    fn new(char_reader: @mut CharReader) -> DotTokenizer {
+    fn new(char_reader: &CharReader) -> DotTokenizer {
         DotTokenizer {
             char_reader: char_reader
         }
@@ -449,7 +449,7 @@ impl DotTokenizer {
 }
 
 struct PrimitiveTokenizer {
-    char_reader: @mut CharReader
+    char_reader: &CharReader
 }
 
 impl PrimitiveTokenizer {
@@ -458,7 +458,7 @@ impl PrimitiveTokenizer {
         *(~['+','−','×','÷','⌈','⌊','∣','|','⍳','?','⋆','*','⍟','○','!','⌹','<','≤','=','≥','>','≠','≡','≢','∊','⍷','∪','∩','~','∨','∧','⍱','⍲','⍴',',','⍪','⌽','⊖','⍉','↑','↓','⊂','⊃','⌷','⍋','⍒','⊤','⊥','⍺','⍕','⍎','⊣','⊢','▯','⍞','/','\\','⍀','⌿','∘','¨','[',']','⍬','⋄','∇','⍫','(',')','←', '{', '}', '⍵', '-'].contains(&char))
     }
 
-    fn new(char_reader: @mut CharReader) -> PrimitiveTokenizer {
+    fn new(char_reader: &CharReader) -> PrimitiveTokenizer {
         PrimitiveTokenizer {
             char_reader: char_reader
         }
