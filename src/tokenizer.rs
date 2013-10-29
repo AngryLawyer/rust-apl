@@ -117,7 +117,7 @@ impl Tokenizer {
         }
     }
 
-    pub fn read_next_token(&mut self) -> Result<Token, ~str> {
+    pub fn read_next_token(&mut self) -> Result<~Token, ~str> {
         self.char_reader.wind_past_whitespace();
         self.char_reader.wind_past_comments();
         match self.char_reader.current_char {
@@ -144,7 +144,7 @@ impl Tokenizer {
                 Err(format!("No valid token found starting with {}", first_char))
             },
             None => {
-                Ok(EndOfFile)
+                Ok(~EndOfFile)
             }
         }
     }
@@ -185,7 +185,7 @@ fn is_negative(char_reader: &CharReader) -> bool {
     }
 }
 
-fn number_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+fn number_tokenizer(char_reader: &mut CharReader) -> Result<~Token, ~str> {
     let mut period_encountered = false;
     let mut complex_encountered = false;
     let mut first_character = true;
@@ -232,7 +232,7 @@ fn number_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
                 token[token.len() - 1] == '¯') {
                 return Err(~"Invalid number");
             }
-            return Ok(Number(TokenData {
+            return Ok(~Number(TokenData {
                 string: str::from_chars(token),
                 row: 0,
                 col: 0
@@ -246,21 +246,21 @@ fn is_valid_newline_start(char: char) -> bool {
     char == '\n' || char == '\r'
 }
 
-fn newline_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+fn newline_tokenizer(char_reader: &mut CharReader) -> Result<~Token, ~str> {
     match char_reader.current_char {
         Some('\r') => {
             char_reader.read_and_stash_char();
             match char_reader.current_char {
                 Some('\n') => {
                     char_reader.read_and_stash_char();
-                    return Ok(Newline(TokenData {
+                    return Ok(~Newline(TokenData {
                         string: ~"\r\n",
                         row: 0,
                         col: 0
                     }));
                 },
                 _ => {
-                    return Ok(Newline(TokenData {
+                    return Ok(~Newline(TokenData {
                         string: ~"\r",
                         row: 0,
                         col: 0
@@ -270,7 +270,7 @@ fn newline_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
         },
         _ => {
             char_reader.read_and_stash_char();
-            return Ok(Newline(TokenData {
+            return Ok(~Newline(TokenData {
                 string: ~"\n",
                 row: 0,
                 col: 0
@@ -283,7 +283,7 @@ fn is_valid_string_start(char: char) -> bool {
     char == '\'' || char == '"'
 }
 
-fn string_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+fn string_tokenizer(char_reader: &mut CharReader) -> Result<~Token, ~str> {
     let mut token: ~[char] = ~[];
     let opening_character = char_reader.current_char.unwrap();
     char_reader.read_and_stash_char();
@@ -301,7 +301,7 @@ fn string_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
                     },
                     _ => {
                         char_reader.backtrack(&backtrack);
-                        return Ok(String(TokenData {
+                        return Ok(~String(TokenData {
                             string: str::from_chars(token),
                             row: 0,
                             col: 0
@@ -324,7 +324,7 @@ fn is_valid_variable_start(char: char) -> bool {
     char == '∆' || char == '⍙' || (char >= 'A' && char <= 'z')
 }
 
-fn variable_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+fn variable_tokenizer(char_reader: &mut CharReader) -> Result<~Token, ~str> {
     let mut token: ~[char] = ~[];
 
     loop {
@@ -342,7 +342,7 @@ fn variable_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
         };
         char_reader.read_and_stash_char();
     }
-    return Ok(Variable(TokenData {
+    return Ok(~Variable(TokenData {
         string: str::from_chars(token),
         row: 0,
         col: 0
@@ -353,7 +353,7 @@ fn is_dot(char: char) -> bool {
     char == '.'
 }
 
-fn dot_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+fn dot_tokenizer(char_reader: &mut CharReader) -> Result<~Token, ~str> {
     let backtrack = char_reader.create_backtrack();
     char_reader.read_and_stash_char();
     match char_reader.current_char {
@@ -362,7 +362,7 @@ fn dot_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
             return number_tokenizer(char_reader);
         },
         _ => {
-            Ok(Primitive(TokenData {
+            Ok(~Primitive(TokenData {
                 string: ~".",
                 row: 0,
                 col: 0
@@ -376,7 +376,7 @@ fn is_valid_primitive_start(char: char) -> bool {
 }
 
 
-fn primitive_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
+fn primitive_tokenizer(char_reader: &mut CharReader) -> Result<~Token, ~str> {
     let opening_character = char_reader.current_char.unwrap();
     if opening_character == '∘' {
         let backtrack = char_reader.create_backtrack();
@@ -384,7 +384,7 @@ fn primitive_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
         match char_reader.current_char {
             Some('.') => {
                 char_reader.read_and_stash_char();
-                Ok(Primitive(TokenData {
+                Ok(~Primitive(TokenData {
                     string: ~"∘.",
                     row: 0,
                     col: 0
@@ -392,7 +392,7 @@ fn primitive_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
             },
             _ => {
                 char_reader.backtrack(&backtrack);
-                Ok(Primitive(TokenData {
+                Ok(~Primitive(TokenData {
                     string: ~"∘",
                     row: 0,
                     col: 0
@@ -401,7 +401,7 @@ fn primitive_tokenizer(char_reader: &mut CharReader) -> Result<Token, ~str> {
         }
     } else {
         char_reader.read_and_stash_char();
-        Ok(Primitive(TokenData {
+        Ok(~Primitive(TokenData {
             string: str::from_char(opening_character),
             row: 0,
             col: 0

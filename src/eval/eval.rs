@@ -82,15 +82,15 @@ impl Printable for Value {
 
 pub fn eval_node(node: &nodes::Node) -> Result<~Value,~str> {
     match node {
-        &nodes::Array(ref nodes) => Ok(eval_array(*nodes)),
+        &nodes::Array(ref nodes) => Ok(eval_array(nodes)),
         _ => node.eval()
     }
 }
 
-fn eval_array(tokens: &[@tokenizer::Token]) -> ~Value {
+fn eval_array(tokens: &~[~tokenizer::Token]) -> ~Value {
     if tokens.len() == 1 {
-        match tokens[0] {
-            @tokenizer::Number(ref token_data) => {
+        match &tokens[0] {
+            &~tokenizer::Number(ref token_data) => {
                 eval_number(token_data.string)
             },
             _ => {
@@ -100,8 +100,8 @@ fn eval_array(tokens: &[@tokenizer::Token]) -> ~Value {
     } else {
         let mut array_contents: ~[~Value] = ~[];
         for token in tokens.iter() {
-            match *token {
-                @tokenizer::Number(ref token_data) => {
+            match token {
+                &~tokenizer::Number(ref token_data) => {
                     array_contents.push(eval_number(token_data.string))
                 },
                 _ => {
