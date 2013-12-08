@@ -13,11 +13,11 @@ pub fn floor(first: &Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplInteger(val))
         },
         &AplComplex(ref i, ref j) => {
-            do floor(*i).and_then |ceil_i| {
-                do floor(*j).and_then |ceil_j| {
+            floor(*i).and_then(|ceil_i| {
+                floor(*j).and_then(|ceil_j| {
                     result::Ok(~AplComplex(ceil_i.clone(), ceil_j))
-                }
-            }
+                })
+            })
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(floor, first)

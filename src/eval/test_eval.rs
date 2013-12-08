@@ -2,7 +2,7 @@ use std::result;
 use eval::eval;
 use eval::eval::Evaluator;
 
-pub fn test_eval(input: ~str, f: &fn(result: ~eval::Value)) {
+pub fn test_eval(input: ~str, f: |result: ~eval::Value|) {
 
     let mut eval = Evaluator::new(input);
     match eval.eval() {
@@ -15,7 +15,7 @@ pub fn test_eval(input: ~str, f: &fn(result: ~eval::Value)) {
     }
 }
 
-pub fn test_eval_fail(input: ~str, f: &fn(result: ~str)) {
+pub fn test_eval_fail(input: ~str, f: |result: ~str|) {
 
     let mut eval = Evaluator::new(input);
     match eval.eval() {
@@ -30,7 +30,7 @@ pub fn test_eval_fail(input: ~str, f: &fn(result: ~str)) {
 
 #[test]
 fn test_eval_int() {
-    do test_eval(~"3") |result| {
+    test_eval(~"3", |result| {
         match result {
             ~eval::AplInteger(x) => {
                 assert_eq!(x, 3);
@@ -39,9 +39,9 @@ fn test_eval_int() {
                 fail!(~"Didn't find a number");
             }
         }
-    }
+    });
 
-    do test_eval(~"¯3") |result| {
+    test_eval(~"¯3", |result| {
         match result {
             ~eval::AplInteger(x) => {
                 assert_eq!(x, -3);
@@ -50,12 +50,12 @@ fn test_eval_int() {
                 fail!(~"Didn't find a number");
             }
         }
-    }
+    })
 }
 
 #[test]
 fn test_eval_float() {
-    do test_eval(~".2") |result| {
+    test_eval(~".2", |result| {
         match result {
             ~eval::AplFloat(x) => {
                 assert_eq!(x, 0.2f64);
@@ -64,8 +64,8 @@ fn test_eval_float() {
                 fail!(~"Didn't find a number");
             }
         }
-    }
-    do test_eval(~"¯.2") |result| {
+    });
+    test_eval(~"¯.2", |result| {
         match result {
             ~eval::AplFloat(x) => {
                 assert_eq!(x, -0.2f64);
@@ -74,12 +74,12 @@ fn test_eval_float() {
                 fail!(~"Didn't find a number");
             }
         }
-    }
+    })
 }
 
 #[test]
 fn test_eval_complex() {
-    do test_eval(~"1J3") |result| {
+    test_eval(~"1J3", |result| {
         match result {
             ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
                 assert_eq!(x, 1);
@@ -89,9 +89,9 @@ fn test_eval_complex() {
                 fail!(~"Didn't find a number");
             }
         }
-    };
+    });
 
-    do test_eval(~"¯1J.2") |result| {
+    test_eval(~"¯1J.2", |result| {
         match result {
             ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplFloat(y)) => {
                 assert_eq!(x, -1);
@@ -101,5 +101,5 @@ fn test_eval_complex() {
                 fail!(~"Didn't find a number");
             }
         }
-    };
+    });
 }

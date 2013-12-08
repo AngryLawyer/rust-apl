@@ -13,11 +13,11 @@ pub fn ceiling(first: &Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplInteger(val))
         },
         &AplComplex(ref i, ref j) => {
-            do ceiling(*i).and_then |ceil_i| {
-                do ceiling(*j).and_then |ceil_j| {
+            ceiling(*i).and_then(|ceil_i| {
+                ceiling(*j).and_then(|ceil_j| {
                     result::Ok(~AplComplex(ceil_i.clone(), ceil_j))
-                }
-            }
+                })
+            })
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(ceiling, first)
