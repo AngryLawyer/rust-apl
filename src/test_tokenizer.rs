@@ -9,7 +9,7 @@ fn test_tokenize_number() {
     for number in list.iter() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Number(tokenData)) => {
+            result::Ok(~tokenizer::Number(tokenData)) => {
 
                 //Pass
                 test_assert(tokenData.string == *number, format!("Read {} expected {} ", tokenData.string, *number));
@@ -30,7 +30,7 @@ fn test_tokenize_number() {
     for number in list.iter() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Number(tokenData)) => {
+            result::Ok(~tokenizer::Number(tokenData)) => {
 
                 //Pass
                 test_assert(tokenData.string == *number, format!("Read {} expected {} ", tokenData.string, *number));
@@ -49,7 +49,7 @@ fn test_tokenize_number() {
     let mut tokenizer = Tokenizer::new(~" 123⍝ lol");
     let expected = ~"123";
     match tokenizer.read_next_token() {
-        result::Ok(tokenizer::Number(tokenData)) => {
+        result::Ok(~tokenizer::Number(tokenData)) => {
             //Pass
             test_assert(tokenData.string == expected, format!("Read {} expected {} ", tokenData.string, expected));
             /*fail_unless!(tokenData.row == 0);
@@ -68,7 +68,7 @@ fn test_tokenize_number() {
     for number in list.iter() {
         let mut tokenizer = Tokenizer::new(number.clone());
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Number(tokenData)) => {
+            result::Ok(~tokenizer::Number(tokenData)) => {
                 fail!(format!("Unexpectedly read {} from source {}",tokenData.string, *number));
             },
             result::Ok(_) => {
@@ -85,7 +85,7 @@ fn test_tokenize_newlines() {
     for newline in list.iter() {
         let mut tokenizer = Tokenizer::new(newline.clone());
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Newline(_tokenData)) => {
+            result::Ok(~tokenizer::Newline(_tokenData)) => {
                 //Pass
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
@@ -116,7 +116,7 @@ fn test_tokenize_strings() {
     for &(ref string, ref result) in list.iter() {
         let mut tokenizer = Tokenizer::new(string.clone());
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::String(tokenData)) => {
+            result::Ok(~tokenizer::String(tokenData)) => {
                 test_assert(tokenData.string == *result, format!("Read {} expected {} ", tokenData.string, *result));
 
                 //Pass
@@ -215,7 +215,7 @@ fn test_tokenize_primitives() {
         let mut tokenizer = Tokenizer::new(prim.clone());
 
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Primitive(tokenData)) => {
+            result::Ok(~tokenizer::Primitive(tokenData)) => {
                 test_assert(tokenData.string == *prim, format!("Read {} expected {} ", tokenData.string, *prim));
                 /*fail_unless!(tokenData.row == 0);
                 fail_unless!(tokenData.col == 0);*/
@@ -243,7 +243,7 @@ fn test_tokenize_variables() {
     for &(ref string, ref result) in list.iter() {
         let mut tokenizer = Tokenizer::new(string.clone());
         match tokenizer.read_next_token() {
-            result::Ok(tokenizer::Variable(tokenData)) => {
+            result::Ok(~tokenizer::Variable(tokenData)) => {
                 test_assert(tokenData.string == *result, format!("Read {} expected {} ", tokenData.string, *result));
 
                 //Pass
@@ -269,7 +269,7 @@ fn test_tokenize_multiple() {
         match tokenizer.read_next_token() {
             result::Ok(token) => {
                 match token {
-                    tokenizer::EndOfFile => {
+                    ~tokenizer::EndOfFile => {
                         break;
                     },
                     _ => {
