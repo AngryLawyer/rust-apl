@@ -10,10 +10,10 @@ fn add_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplFloat(f + val))
         },
         &AplInteger(val) => {
-            add_float(f, ~AplFloat(val as f64))
+            add_float(f, &AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
-            add_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
+            add_complex(&AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(add_float, f, other)
@@ -30,7 +30,7 @@ fn add_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplInteger(i + val))
         },
         &AplComplex(ref _i, ref _j) => {
-            add_complex(~AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
+            add_complex(&AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(add_integer, i, other)
@@ -43,7 +43,7 @@ fn add_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str> {
         &AplComplex(ref i, ref j) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    add_complex(complex, ~AplComplex(~other.clone(), ~AplInteger(0)))
+                    add_complex(complex, &AplComplex(~other.clone(), ~AplInteger(0)))
                 },
                 &AplComplex(ref a, ref bi) => {
                     match (add(*i, *a), add(*j, *bi)) {

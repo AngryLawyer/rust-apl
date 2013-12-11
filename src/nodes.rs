@@ -1,4 +1,3 @@
-use tokenizer;
 use tokenizer::Token;
 use tokenizer::TokenData;
 use eval::eval::Value;
@@ -107,17 +106,6 @@ impl EvalNode for Node {
 
             _ => Err(~"Not yet implemented")
         }
-    }
-}
-
-fn token_string(token: &Token) -> ~str {
-    match token {
-        &tokenizer::Number(ref token_data) => token_data.string.clone(),
-        &tokenizer::Newline(ref token_data) => token_data.string.clone(),
-        &tokenizer::String(ref token_data) => token_data.string.clone(),
-        &tokenizer::Primitive(ref token_data) => token_data.string.clone(),
-        &tokenizer::Variable(ref token_data) => token_data.string.clone(),
-        &tokenizer::EndOfFile() => ~"(none)"
     }
 }
 

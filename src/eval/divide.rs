@@ -15,10 +15,10 @@ fn divide_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplFloat(f / val))
         },
         &AplInteger(val) => {
-            divide_float(f, ~AplFloat(val as f64))
+            divide_float(f, &AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
-            divide_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
+            divide_complex(&AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(divide_float, f, other)
@@ -37,13 +37,13 @@ pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
         &AplInteger(val) => {
             let remainder = i % val;
             if remainder != 0 {
-                divide_float(&(*i as f64), ~AplFloat(val as f64))
+                divide_float(&(*i as f64), &AplFloat(val as f64))
             } else {
                 result::Ok(~AplInteger(i / val))
             }
         },
         &AplComplex(ref _i, ref _j) => {
-            divide_complex(~AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
+            divide_complex(&AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(divide_integer, i, other)
@@ -56,7 +56,7 @@ fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str
         &AplComplex(ref a, ref bi) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    divide_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
+                    divide_complex(complex, &AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref c, ref di) => {
                     let za = multiply(*a, *c).and_then(|ac| {

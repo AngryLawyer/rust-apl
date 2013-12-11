@@ -11,10 +11,10 @@ fn multiply_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplFloat(f * val))
         },
         &AplInteger(val) => {
-            multiply_float(f, ~AplFloat(val as f64))
+            multiply_float(f, &AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
-            multiply_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
+            multiply_complex(&AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(multiply_float, f, other)
@@ -31,7 +31,7 @@ fn multiply_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplInteger(i * val))
         },
         &AplComplex(ref _i, ref _j) => {
-            multiply_complex(~AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
+            multiply_complex(&AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(multiply_integer, i, other)
@@ -44,7 +44,7 @@ fn multiply_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~s
         &AplComplex(ref a, ref bi) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    multiply_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
+                    multiply_complex(complex, &AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref c, ref di) => {
                     //First, Outers, Inners, Lasts, negate lasts

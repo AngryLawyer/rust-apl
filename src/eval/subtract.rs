@@ -10,10 +10,10 @@ fn subtract_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplFloat(f - val))
         },
         &AplInteger(val) => {
-            subtract_float(f, ~AplFloat(val as f64))
+            subtract_float(f, &AplFloat(val as f64))
         },
         &AplComplex(ref _i, ref _j) => {
-            subtract_complex(~AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
+            subtract_complex(&AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(subtract_float, f, other)
@@ -30,7 +30,7 @@ fn subtract_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
             result::Ok(~AplInteger(i - val))
         },
         &AplComplex(ref _i, ref _j) => {
-            subtract_complex(~AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
+            subtract_complex(&AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(subtract_integer, i, other)
@@ -43,7 +43,7 @@ fn subtract_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~s
         &AplComplex(ref i, ref j) => {
             match other {
                 &AplFloat(_) | &AplInteger(_) => {
-                    subtract_complex(complex, ~AplComplex(~(other.clone()), ~AplInteger(0)))
+                    subtract_complex(complex, &AplComplex(~(other.clone()), ~AplInteger(0)))
                 },
                 &AplComplex(ref a, ref bi) => {
                     match (subtract(*i, *a), subtract(*j, *bi)) {
