@@ -1,7 +1,7 @@
 use eval::eval::{AplArray, Value};
 use std::result;
 
-pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Value, ~str>, param: &T, other: &Value) -> result::Result<~Value, ~str> {
+pub fn simple_dyadic_array<T>(func: extern fn(T, &Value) -> result::Result<~Value, ~str>, param: T, other: &Value) -> result::Result<~Value, ~str> {
     match other {
         &AplArray(ref depth, ref dimensions, ref values) => {
             let mut result_values: ~[~Value] = ~[];
@@ -34,7 +34,7 @@ pub fn simple_dyadic_array<T>(func: extern fn(&T, &Value) -> result::Result<~Val
     }
 }
 
-pub fn inverse_simple_dyadic_array<T>(func: extern fn(&Value, &T) -> result::Result<~Value, ~str>, param: &Value, other: &T) -> result::Result<~Value, ~str> {
+pub fn inverse_simple_dyadic_array<T>(func: extern fn(&Value, T) -> result::Result<~Value, ~str>, param: &Value, other: T) -> result::Result<~Value, ~str> {
     match param {
         &AplArray(ref depth, ref dimensions, ref values) => {
             let mut result_values: ~[~Value] = ~[];
