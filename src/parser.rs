@@ -90,7 +90,10 @@ impl Parser {
                     if self.end_of_source() {
                         Ok(left)
                     } else {
-                        match self.current_token {
+                        //FIXME: We should really avoid copying here
+                        let token = self.current_token.clone();
+
+                        match token {
                             Some(~tokenizer::Primitive(ref token_data)) => {
                                 token_data.dyadic(self, left)
                             },
@@ -106,7 +109,7 @@ impl Parser {
     }
 
     fn stash(&mut self) -> ~tokenizer::Token {
-        let stash = self.current_token.unwrap();
+        let stash = self.current_token.take().unwrap();
         self.read_next_token();
         stash
     }
@@ -129,7 +132,10 @@ impl Parser {
         if self.end_of_source() {
             Err(~"Unexpected end of source")
         } else {
-            match self.current_token {
+
+            //FIXME: We should really avoid copying here
+            let token = self.current_token.clone();
+            match token {
                 Some(~tokenizer::Primitive(ref token_data)) => {
                     token_data.monadic(self)
                 },
