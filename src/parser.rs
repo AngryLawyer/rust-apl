@@ -66,7 +66,11 @@ impl Parser {
         }
     }
 
+<<<<<<< HEAD
     pub fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(~Token, ~Node, ~Node) -> Node) -> Result<~Node, ~str> {
+=======
+    pub fn create_dyadic_result(&mut self, left: ~Node, kind: |@Token, ~Node, ~Node| -> Node) -> Result<~Node, ~str> {
+>>>>>>> master
         let stash = self.stash();
         match self.parse_dyadic() {
             Ok(node) => {
@@ -111,7 +115,7 @@ impl Parser {
         stash
     }
 
-    pub fn create_monadic_result(&mut self, kind: &fn(~Token, ~Node) -> Node) -> Result<~Node, ~str> {
+    pub fn create_monadic_result(&mut self, kind: |~Token, ~Node| -> Node) -> Result<~Node, ~str> {
         let stash = self.stash();
         match self.parse_dyadic() {
             Ok(node) => {

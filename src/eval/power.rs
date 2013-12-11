@@ -20,7 +20,10 @@ fn power_float(f: &f64, other:&Value) -> Result<~Value, ~str> {
                 Ok(~AplFloat(num::pow(*f, val as f64)))
             }
         },
-        &AplComplex(ref _i, ref _j) => {
+        &AplComplex(ref b, ref c) => {
+            //TODO: Make this dependant on other APL types
+            //Real is a^b(cos c ln a)
+            //Imaginary is i sin (c ln a)
             Err(~"power is not supported on complex numbers")
         },
         &AplArray(_, _, _) => {
@@ -46,7 +49,7 @@ fn power_integer(i: &int, other:&Value) -> Result<~Value, ~str> {
             }
         },
         &AplComplex(ref _i, ref _j) => {
-            Err(~"power is not supported on complex numbers")
+            power_float(&(*i as f64), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(power_integer, i, other)

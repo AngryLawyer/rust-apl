@@ -1,6 +1,6 @@
 use eval::eval::Evaluator;
 use eval::eval::Printable;
-use std::rt::io;
+use std::io;
 
 #[main]
 fn main() {
