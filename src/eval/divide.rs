@@ -1,24 +1,24 @@
+use extra::complex::{Cmplx, Complex64};
 use nodes;
-use std::result;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 use eval::add::add;
 use eval::subtract::subtract;
 use eval::multiply::multiply;
 
-fn divide_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
+fn divide_float(f: f64, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(0.0) => {
-            result::Err(~"Domain error - division by zero")
+            Err(~"Domain error - division by zero")
         },
         &AplFloat(val) => {
-            result::Ok(~AplFloat(f / val))
+            Ok(~AplFloat(f / val))
         },
         &AplInteger(val) => {
             divide_float(f, &AplFloat(val as f64))
         },
-        &AplComplex(ref _i, ref _j) => {
-            divide_complex(&AplComplex(~AplFloat(*f), ~AplInteger(0)), other)
+        &AplComplex(_val) => {
+            divide_complex(&Cmplx::new(f, 0.0), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(divide_float, f, other)
@@ -26,24 +26,24 @@ fn divide_float(f: &f64, other:&Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
+pub fn divide_integer(i: int, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(_val) => {
-            divide_float(&(*i as f64), other)
+            divide_float(i as f64, other)
         },
         &AplInteger(0) => {
-            result::Err(~"Domain error - division by zero")
+            Err(~"Domain error - division by zero")
         },
         &AplInteger(val) => {
             let remainder = i % val;
             if remainder != 0 {
-                divide_float(&(*i as f64), &AplFloat(val as f64))
+                divide_float(i as f64, &AplFloat(val as f64))
             } else {
-                result::Ok(~AplInteger(i / val))
+                Ok(~AplInteger(i / val))
             }
         },
-        &AplComplex(ref _i, ref _j) => {
-            divide_complex(&AplComplex(~AplInteger(*i), ~AplInteger(0)), other)
+        &AplComplex(_val) => {
+            divide_complex(&Cmplx::new(i as f64, 0.0), other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(divide_integer, i, other)
@@ -51,63 +51,26 @@ pub fn divide_integer(i: &int, other:&Value) -> result::Result<~Value, ~str> {
     }
 }
 
-fn divide_complex(complex: &Value, other: &Value) -> result::Result<~Value, ~str> {
-    match complex {
-        &AplComplex(ref a, ref bi) => {
-            match other {
-                &AplFloat(_) | &AplInteger(_) => {
-                    divide_complex(complex, &AplComplex(~(other.clone()), ~AplInteger(0)))
-                },
-                &AplComplex(ref c, ref di) => {
-                    let za = multiply(*a, *c).and_then(|ac| {
-                        multiply(*bi, *di).and_then(|bidi| {
-                            multiply(*c, *c).and_then(|cc| {
-                                multiply(*di, *di).and_then(|didi| {
-                                    add(ac, bidi).and_then(|left| {
-                                        add(cc, didi).and_then(|right| {
-                                            divide(left, right)
-                                        })
-                                    })
-                                })
-                            })
-                        })
-                    });
-                    let zb = multiply(*bi, *c).and_then(|bic| {
-                        multiply(*a, *di).and_then(|adi| {
-                            multiply(*c, *c).and_then(|cc| {
-                                multiply(*di, *di).and_then(|didi| {
-                                    subtract(bic, adi).and_then(|left| {
-                                        add(cc, didi).and_then(|right| {
-                                            divide(left, right)
-                                        })
-                                    })
-                                })
-                            })
-                        })
-                    });
-                    match (za, zb) {
-                        (result::Err(err), _) | (_, result::Err(err)) => {
-                            result::Err(err)
-                        },
-                        (result::Ok(left), result::Ok(right))=> {
-                            result::Ok(~AplComplex(left, right))
-                        } 
-                    }
-                    //z.a = (x.a*y.a + x.b*y.b)/(y.a*y.a+y.b*y.b);
-                    //z.b = (x.b*y.a - x.a*y.b)/(y.a*y.a + y.b*y.b);
-                },
-                &AplArray(_, _, _) => {
-                    simple_dyadic_array(divide_complex, complex, other)
-                }
-            }
+fn divide_complex(c: &Complex64, other: &Value) -> Result<~Value, ~str> {
+    match other {
+        &AplFloat(f) => {
+            divide_complex(c, &AplComplex(Cmplx::new(f, 0.0)))
         },
-        _ => fail!(~"Oh dear")
+        &AplFloat(i) => {
+            divide_complex(c, &AplComplex(Cmplx::new(i as f64, 0.0)))
+        },
+        &AplComplex(other_c) => {
+            Ok(~AplComplex(c / other_c)) //FIXME: Doesn't catch divide by zero
+        },
+        &AplArray(_, _, _) => {
+            simple_dyadic_array(divide_complex, c, other)
+        }
     }
 }
 
-fn divide_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> {
+fn divide_array(array: &Value, other: &Value) -> Result<~Value, ~str> {
     match other {
-        &AplFloat(_) |  &AplInteger(_) | &AplComplex(_, _) => {
+        &AplFloat(_) |  &AplInteger(_) | &AplComplex(_) => {
             inverse_simple_dyadic_array(divide, array, other)
         },
         &AplArray(_, _, _) => {
@@ -116,16 +79,16 @@ fn divide_array(array: &Value, other: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn divide(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
+pub fn divide(first: &Value, other: &Value) -> Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
-            divide_float(&f, other)
+            divide_float(f, other)
         },
         &AplInteger(i) => {
-            divide_integer(&i, other)
+            divide_integer(i, other)
         }
-        &AplComplex(ref _i, ref _j) => {
-            divide_complex(first, other)
+        &AplComplex(ref c) => {
+            divide_complex(c, other)
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             divide_array(first, other)
@@ -133,6 +96,6 @@ pub fn divide(first: &Value, other: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn eval_division(left: &nodes::Node, right: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_division(left: &nodes::Node, right: &nodes::Node) -> Result<~Value, ~str> {
     eval_dyadic(divide, left, right)
 }
