@@ -12,7 +12,7 @@ fn add_float(f: f64, other:&Value) -> Result<~Value, ~str> {
         &AplInteger(val) => {
             add_float(f, &AplFloat(val as f64))
         },
-        &AplComplex(val) => {
+        &AplComplex(_val) => {
             add_complex(&Cmplx::new(f, 0.0), other)
         },
         &AplArray(_, _, _) => {
@@ -29,7 +29,7 @@ fn add_integer(i: int, other:&Value) -> Result<~Value, ~str> {
         &AplInteger(val) => {
             Ok(~AplInteger(i + val))
         },
-        &AplComplex(val) => {
+        &AplComplex(_val) => {
             add_complex(&Cmplx::new(i as f64, 0.0), other)
         },
         &AplArray(_, _, _) => {
