@@ -6,7 +6,6 @@
 #[comment = "SDL bindings"];
 #[license = "LGPL"];
 #[feature(globs)];
-#[feature(managed_boxes)]; //TODO: Kill me off
 
 extern mod std;
 
