@@ -8,6 +8,7 @@
 #[feature(globs)];
 
 extern mod std;
+extern mod extra;
 
 pub mod tokenizer;
 pub mod parser;

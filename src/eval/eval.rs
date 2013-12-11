@@ -1,5 +1,6 @@
 use std::str;
 use std::from_str::from_str;
+use extra::complex::{Cmplx, Complex64};
 
 use parser;
 use nodes;
@@ -11,31 +12,12 @@ pub trait Printable {
     fn to_typed_string(&self) -> ~str;
 }
 
-#[deriving(Eq)]
+#[deriving(Eq, Clone)]
 pub enum Value {
     AplFloat(f64),
     AplInteger(int),
-    AplComplex(~Value, ~Value),
+    AplComplex(Complex64),
     AplArray(uint, ~[uint], ~[~Value])
-}
-
-impl Clone for Value {
-    fn clone(&self) -> Value {
-        match *self {
-            AplFloat(f) => {
-                AplFloat(f)
-            },
-            AplInteger(i) => {
-                AplInteger(i)
-            },
-            AplComplex(ref a, ref b) => {
-                AplComplex(a.clone(), b.clone())
-            },
-            AplArray(depth, ref dimensions, ref contents) => {
-                AplArray(depth, dimensions.clone(), contents.clone())
-            }
-        }
-    }
 }
 
 impl Printable for Value {
@@ -56,8 +38,8 @@ impl Printable for Value {
 
                 segments.connect(" ")
             },
-            &AplComplex(ref left, ref right) => {
-                left.to_string().append("J").append(right.to_string())
+            &AplComplex(j) => {
+                format!("{}J{}", j.re, j.im)
             }
         }
     }
@@ -73,7 +55,7 @@ impl Printable for Value {
             &AplArray(_, _, _) => {
                 format!("ARRAY({})", self.to_string())
             },
-            &AplComplex(_, _) => {
+            &AplComplex(_) => {
                 format!("COMPLEX({})", self.to_string())
             }
         }
@@ -142,7 +124,27 @@ fn get_string_and_sign<'r>(token_string: &'r str) -> (&'r str, bool){
 }
 
 fn eval_complex(left: &str, right: &str) -> ~Value {
-    ~AplComplex(eval_number(left), eval_number(right))
+    let (left_match_string, left_is_negative) = get_string_and_sign(left);
+    let (right_match_string, right_is_negative) = get_string_and_sign(right);
+
+    match (from_str::<f64>(left_match_string), from_str::<f64>(right_match_string)) {
+        (Some(left_float), Some(right_float)) => {
+            let left_final = if left_is_negative {
+                -left_float
+            } else {
+                left_float
+            };
+            let right_final = if right_is_negative {
+                -right_float
+            } else {
+                right_float
+            };
+            ~AplComplex(Cmplx::new(left_final, right_final))
+        },
+        _ => {
+            fail!(format!("Bad complex {} {}", left, right))
+        }
+    }
 }
 
 fn eval_float(token_string: &str) -> ~Value {
