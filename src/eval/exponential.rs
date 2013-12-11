@@ -1,23 +1,19 @@
+use extra::complex::{Cmplx, Complex64};
 use nodes;
 
-use std::result;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
 
-pub fn exponential(first: &Value) -> result::Result<~Value, ~str> {
+pub fn exponential(first: &Value) -> Result<~Value, ~str> {
     match first {
         &AplFloat(val) => {
-            result::Ok(~AplFloat(val.exp()))
+            Ok(~AplFloat(val.exp()))
         },
         &AplInteger(val) => {
-            result::Ok(~AplFloat((val as f64).exp()))
+            Ok(~AplFloat((val as f64).exp()))
         },
-        &AplComplex(ref i, ref j) => {
-            exponential(*i).and_then(|ceil_i| {
-                exponential(*j).and_then(|ceil_j| {
-                    result::Ok(~AplComplex(ceil_i.clone(), ceil_j))
-                })
-            })
+        &AplComplex(val) => {
+            Ok(~AplComplex(Cmplx::new(val.re.exp(), val.im.exp())))
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(exponential, first)
@@ -25,6 +21,6 @@ pub fn exponential(first: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn eval_exponential(left: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_exponential(left: &nodes::Node) -> Result<~Value, ~str> {
     eval_monadic(exponential, left)
 }
