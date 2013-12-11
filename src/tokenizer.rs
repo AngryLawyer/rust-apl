@@ -1,11 +1,13 @@
 use std::{str, char};
 
+#[deriving(Clone)]
 pub struct TokenData {
     string: ~str,
     row: uint,
     col: uint
 }
 
+#[deriving(Clone)]
 pub enum Token {
     Number(TokenData),
     Newline(TokenData),

@@ -144,7 +144,10 @@ impl Parser {
             Err(~"Unexpected end of source")
         } else {
             //FIXME: Better error handling
-            match self.current_token {
+            //FIXME: We should really avoid copying here
+            let token = self.current_token.clone();
+
+            match token {
                 Some(~tokenizer::Number(_)) => self.parse_array(),
                 Some(~tokenizer::Variable(_)) => self.parse_variable(),
                 Some(~tokenizer::Primitive(ref token_data)) => {
@@ -154,7 +157,6 @@ impl Parser {
                         _ => Err(~"Unexpected primitive")
                     }
                 },
-                //TODO: 
                 _ => Err(~"Unexpected token")
             }
         }
