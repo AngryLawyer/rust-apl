@@ -66,11 +66,7 @@ impl Parser {
         }
     }
 
-<<<<<<< HEAD
-    pub fn create_dyadic_result(&mut self, left: ~Node, kind: &fn(~Token, ~Node, ~Node) -> Node) -> Result<~Node, ~str> {
-=======
-    pub fn create_dyadic_result(&mut self, left: ~Node, kind: |@Token, ~Node, ~Node| -> Node) -> Result<~Node, ~str> {
->>>>>>> master
+    pub fn create_dyadic_result(&mut self, left: ~Node, kind: |~Token, ~Node, ~Node| -> Node) -> Result<~Node, ~str> {
         let stash = self.stash();
         match self.parse_dyadic() {
             Ok(node) => {
@@ -184,17 +180,4 @@ impl Parser {
         self.read_next_token();
         Ok(result)
     }
-
-    /*fn skip_expected<T>(&mut self, token_string: &str) -> Result<(), ~str> { //FIXME: This should type check
-        if self.end_of_source() {
-            Err(~"Unexpected end of source")
-        } else {
-            match self.current_token {
-                T(data) => {
-                    data.string == token_string
-                },
-                _ => fail!(~"Should never reach here!")
-            }
-        }
-    }*/
 }
