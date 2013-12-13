@@ -1,15 +1,14 @@
 use nodes;
 
-use std::result;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
 use eval::divide::divide;
 use eval::magnitude::magnitude;
 
-pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
+pub fn sign(first: &Value) -> Result<~Value, ~str> {
     match first {
         &AplFloat(val) => {
-            result::Ok(if val < 0.0 {
+            Ok(if val < 0.0 {
                 ~AplInteger(-1)
             } else if val > 0.0 {
                 ~AplInteger(1)
@@ -18,7 +17,7 @@ pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
             })
         },
         &AplInteger(val) => {
-            result::Ok(if val < 0 {
+            Ok(if val < 0 {
                 ~AplInteger(-1)
             } else if val > 0 {
                 ~AplInteger(1)
@@ -26,7 +25,7 @@ pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
                 ~AplInteger(0)
             })
         },
-        &AplComplex(ref _i, ref _j) => {
+        &AplComplex(_c) => {
             magnitude(first).and_then(|magnituded| {
                 divide(first, magnituded)
             })
@@ -37,6 +36,6 @@ pub fn sign(first: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn eval_sign(left: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_sign(left: &nodes::Node) -> Result<~Value, ~str> {
     eval_monadic(sign, left)
 }
