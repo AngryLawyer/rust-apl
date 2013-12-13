@@ -1,23 +1,19 @@
+use extra::complex::Cmplx;
 use nodes;
 
-use std::result;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
 
-pub fn floor(first: &Value) -> result::Result<~Value, ~str> {
+pub fn floor(first: &Value) -> Result<~Value, ~str> {
     match first {
         &AplFloat(val) => {
-            result::Ok(~AplInteger(val.floor() as int))
+            Ok(~AplInteger(val.floor() as int))
         },
         &AplInteger(val) => {
-            result::Ok(~AplInteger(val))
+            Ok(~AplInteger(val))
         },
-        &AplComplex(ref i, ref j) => {
-            floor(*i).and_then(|ceil_i| {
-                floor(*j).and_then(|ceil_j| {
-                    result::Ok(~AplComplex(ceil_i.clone(), ceil_j))
-                })
-            })
+        &AplComplex(c) => {
+            Ok(~AplComplex(Cmplx::new(c.re.floor() as f64, c.im.floor() as f64)))
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(floor, first)
@@ -25,6 +21,6 @@ pub fn floor(first: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn eval_floor(left: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_floor(left: &nodes::Node) -> Result<~Value, ~str> {
     eval_monadic(floor, left)
 }

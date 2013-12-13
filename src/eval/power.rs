@@ -4,23 +4,23 @@ use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
 
-fn power_float(f: &f64, other:&Value) -> Result<~Value, ~str> {
+fn power_float(f: f64, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            if *f == 0.0 && val < 0.0 {
+            if f == 0.0 && val < 0.0 {
                 Err(~"Cannot take 0 to a negative power")
             } else {
-                Ok(~AplFloat(num::pow(*f, val)))
+                Ok(~AplFloat(num::pow(f, val)))
             }
         },
         &AplInteger(val) => {
-            if *f == 0.0 && val < 0 {
+            if f == 0.0 && val < 0 {
                 Err(~"Cannot take 0 to a negative power")
             } else {
-                Ok(~AplFloat(num::pow(*f, val as f64)))
+                Ok(~AplFloat(num::pow(f, val as f64)))
             }
         },
-        &AplComplex(ref b, ref c) => {
+        &AplComplex(c) => {
             //TODO: Make this dependant on other APL types
             //Real is a^b(cos c ln a)
             //Imaginary is i sin (c ln a)
@@ -32,24 +32,24 @@ fn power_float(f: &f64, other:&Value) -> Result<~Value, ~str> {
     }
 }
 
-fn power_integer(i: &int, other:&Value) -> Result<~Value, ~str> {
+fn power_integer(i: int, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            if *i == 0 && val < 0.0 {
+            if i == 0 && val < 0.0 {
                 Err(~"Cannot take 0 to a negative power")
             } else {
-                Ok(~AplFloat(num::pow((*i as f64), val)))
+                Ok(~AplFloat(num::pow(i as f64, val)))
             }
         },
         &AplInteger(val) => {
-            if *i == 0 && val < 0 {
+            if i == 0 && val < 0 {
                 Err(~"Cannot take 0 to a negative power")
             } else {
-                Ok(~AplInteger(num::pow(*i as f64, val as f64) as int))
+                Ok(~AplInteger(num::pow(i as f64, val as f64) as int))
             }
         },
-        &AplComplex(ref _i, ref _j) => {
-            power_float(&(*i as f64), other)
+        &AplComplex(c) => {
+            power_float(i as f64, other)
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(power_integer, i, other)
@@ -59,7 +59,7 @@ fn power_integer(i: &int, other:&Value) -> Result<~Value, ~str> {
 
 fn power_array(array: &Value, other: &Value) -> Result<~Value, ~str> {
     match other {
-        &AplFloat(_) |  &AplInteger(_) | &AplComplex(_, _) => {
+        &AplFloat(_) |  &AplInteger(_) | &AplComplex(_) => {
             inverse_simple_dyadic_array(power, array, other)
         },
         &AplArray(_, _, _) => {
@@ -71,12 +71,12 @@ fn power_array(array: &Value, other: &Value) -> Result<~Value, ~str> {
 pub fn power(first: &Value, other: &Value) -> Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
-            power_float(&f, other)
+            power_float(f, other)
         },
         &AplInteger(i) => {
-            power_integer(&i, other)
+            power_integer(i, other)
         }
-        &AplComplex(ref _i, ref _j) => {
+        &AplComplex(c) => {
             Err(~"power is not supported on complex numbers")
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {

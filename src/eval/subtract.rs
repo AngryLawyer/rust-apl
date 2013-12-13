@@ -43,7 +43,7 @@ fn subtract_complex(c: &Complex64, other: &Value) -> Result<~Value, ~str> {
         &AplFloat(f) => {
             subtract_complex(c, &AplComplex(Cmplx::new(f, 0.0)))
         },
-        &AplFloat(i) => {
+        &AplInteger(i) => {
             subtract_complex(c, &AplComplex(Cmplx::new(i as f64, 0.0)))
         },
         &AplComplex(other_c) => {

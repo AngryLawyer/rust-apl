@@ -1,23 +1,19 @@
+use extra::complex::Cmplx;
 use nodes;
 
-use std::result;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
 
-pub fn ceiling(first: &Value) -> result::Result<~Value, ~str> {
+pub fn ceiling(first: &Value) -> Result<~Value, ~str> {
     match first {
         &AplFloat(val) => {
-            result::Ok(~AplInteger(val.ceil() as int))
+            Ok(~AplInteger(val.ceil() as int))
         },
         &AplInteger(val) => {
-            result::Ok(~AplInteger(val))
+            Ok(~AplInteger(val))
         },
-        &AplComplex(ref i, ref j) => {
-            ceiling(*i).and_then(|ceil_i| {
-                ceiling(*j).and_then(|ceil_j| {
-                    result::Ok(~AplComplex(ceil_i.clone(), ceil_j))
-                })
-            })
+        &AplComplex(c) => {
+            Ok(~AplComplex(Cmplx::new(c.re.ceil() as f64, c.im.ceil() as f64)))
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(ceiling, first)
@@ -25,6 +21,6 @@ pub fn ceiling(first: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn eval_ceiling(left: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_ceiling(left: &nodes::Node) -> Result<~Value, ~str> {
     eval_monadic(ceiling, left)
 }
