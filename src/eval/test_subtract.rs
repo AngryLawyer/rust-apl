@@ -28,9 +28,9 @@ fn test_eval_basic_subtraction() {
 
     test_eval(~"1−1J1", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
-                assert_eq!(x, 0);
-                assert_eq!(y, -1);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, 0.0);
+                assert_eq!(c.im, -1.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -40,9 +40,9 @@ fn test_eval_basic_subtraction() {
 
     test_eval(~"3J4−1J2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
-                assert_eq!(x, 2);
-                assert_eq!(y, 2);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, 2.0);
+                assert_eq!(c.im, 2.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -52,9 +52,9 @@ fn test_eval_basic_subtraction() {
 
     test_eval(~"5J.2−3J.2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplFloat(y)) => {
-                assert_eq!(x, 2);
-                assert_eq!(y, 0.0);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, 2.0);
+                assert_eq!(c.im, 0.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -106,9 +106,13 @@ fn test_eval_array_subtraction() {
         match result {
             ~eval::AplArray(_order, _dims, array) => {
                 match array[0] {
-                    ~eval::AplComplex(~eval::AplInteger(1), ~eval::AplInteger(1)) => {
+                    ~eval::AplComplex(c) => {
+                        assert_eq!(c.re, 1.0);
+                        assert_eq!(c.im, 1.0);
                         match array[1] {
-                            ~eval::AplComplex(~eval::AplInteger(1), ~eval::AplInteger(1)) => {
+                            ~eval::AplComplex(c) => {
+                                assert_eq!(c.re, 1.0);
+                                assert_eq!(c.im, 1.0);
                             },
                             _ => {
                                 fail!(~"Bad array subtraction")

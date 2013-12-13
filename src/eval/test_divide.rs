@@ -50,9 +50,9 @@ fn test_eval_basic_division() {
 
     test_eval(~"4÷2J2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
-                assert_eq!(x, 1);
-                assert_eq!(y, -1);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, 1.0);
+                assert_eq!(c.im, -1.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -62,9 +62,9 @@ fn test_eval_basic_division() {
 
     test_eval(~"4J5÷3J2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert!(x.approx_eq(&1.69230769));
-                assert!(y.approx_eq(&0.538462));
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, 1.69230769);
+                assert_approx_eq!(c.im, 0.538462);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -74,9 +74,9 @@ fn test_eval_basic_division() {
 
     test_eval(~"5J.2÷3J.2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert!(x.approx_eq(&1.663717));
-                assert!(y.approx_eq(&-0.0442478));
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, 1.663717);
+                assert_approx_eq!(c.im, -0.0442478);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -112,23 +112,6 @@ fn test_eval_array_division() {
                 match (&array[0], &array[1]) {
                     (&~eval::AplInteger(2), &~eval::AplInteger(2)) => {
                         //Fine
-                    },
-                    _ => {
-                        fail!(format!("Bad array division: got {}", result.to_string()))
-                    }
-                }
-            },
-            _ => {
-                fail!(format!("Didn't find a number - {}", result.to_typed_string()));
-            }
-        }
-    });
-
-    test_eval(~"2J1÷2 2", |result| {
-        match result {
-            ~eval::AplArray(ref _order, ref _dims, ref array) => {
-                match (&array[0], &array[1]) {
-                    (&~eval::AplComplex(~eval::AplInteger(1), ~eval::AplFloat(0.5)), &~eval::AplComplex(~eval::AplInteger(1), ~eval::AplFloat(0.5))) => {
                     },
                     _ => {
                         fail!(format!("Bad array division: got {}", result.to_string()))

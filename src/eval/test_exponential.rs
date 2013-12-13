@@ -39,9 +39,9 @@ fn test_eval_basic_exponential() {
 
     test_eval(~"⋆1J1", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(j)) => {
-                assert_approx_eq!(x, 1.46869);
-                assert_approx_eq!(j, 2.28736);
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, 1.46869);
+                assert_approx_eq!(c.im, 2.28736);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -51,9 +51,9 @@ fn test_eval_basic_exponential() {
 
     test_eval(~"⋆¯1J¯1.2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(j)) => {
-                assert_approx_eq!(x, 0.133304);
-                assert_approx_eq!(j, -0.342878);
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, 0.133304);
+                assert_approx_eq!(c.im, -0.342878);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -68,8 +68,8 @@ fn test_eval_array_exponential() {
         match result {
             ~eval::AplArray(ref _order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
-                    (&~eval::AplFloat(_), &~eval::AplComplex(_, ~eval::AplFloat(j))) => {
-                        assert_approx_eq!(j, 1.00493)
+                    (&~eval::AplFloat(_), &~eval::AplComplex(c)) => {
+                        assert_approx_eq!(c.im, 1.00493)
                     },
                     _ => {
                         fail!(~"Bad array exponential")

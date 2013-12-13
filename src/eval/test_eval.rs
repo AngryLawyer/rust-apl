@@ -81,9 +81,9 @@ fn test_eval_float() {
 fn test_eval_complex() {
     test_eval(~"1J3", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
-                assert_eq!(x, 1);
-                assert_eq!(y, 3);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, 1.0f64);
+                assert_eq!(c.im, 3.0f64);
             },
             _ => {
                 fail!(~"Didn't find a number");
@@ -93,9 +93,9 @@ fn test_eval_complex() {
 
     test_eval(~"¯1J.2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplFloat(y)) => {
-                assert_eq!(x, -1);
-                assert!(y == 0.2f64);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, -1.0f64);
+                assert!(c.im == 0.2f64);
             },
             _ => {
                 fail!(~"Didn't find a number");

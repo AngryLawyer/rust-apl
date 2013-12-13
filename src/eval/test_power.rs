@@ -39,9 +39,9 @@ fn test_eval_basic_power() {
 
     test_eval(~"2⋆1J1", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert_approx_eq!(x, 1.53848);
-                assert_approx_eq!(y, 1.27792);
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, 1.53848);
+                assert_approx_eq!(c.im, 1.27792);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -51,9 +51,9 @@ fn test_eval_basic_power() {
 
     test_eval(~"3J4⋆2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(y)) => {
-                assert_eq!(x, -7);
-                assert_eq!(y, 24);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, -7.0);
+                assert_eq!(c.im, 24.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -68,9 +68,9 @@ fn test_eval_basic_power() {
 
     test_eval(~"¯27⋆1.2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert_approx_eq!(x, -42.2274);
-                assert_approx_eq!(y, -30.68);
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, -42.2274);
+                assert_approx_eq!(c.im, -30.68);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -80,9 +80,9 @@ fn test_eval_basic_power() {
 
     test_eval(~"3J4⋆1J2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(y)) => {
-                assert_approx_eq!(x, -0.419813);
-                assert_approx_eq!(y, -0.660452);
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, -0.419813);
+                assert_approx_eq!(c.im, -0.660452);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));

@@ -39,9 +39,9 @@ fn test_eval_basic_sign() {
 
     test_eval(~"×1J1", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplFloat(x), ~eval::AplFloat(j)) => {
-                assert!(x.approx_eq(&0.707107));
-                assert!(j.approx_eq(&0.707107));
+            ~eval::AplComplex(c) => {
+                assert_approx_eq!(c.re, 0.707107);
+                assert_approx_eq!(c.im, 0.707107);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));

@@ -38,9 +38,9 @@ fn test_eval_basic_ceiling() {
 
     test_eval(~"⌈1J1", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(j)) => {
-                assert_eq!(x, 1);
-                assert_eq!(j, 1);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, 1.0);
+                assert_eq!(c.im, 1.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -50,9 +50,9 @@ fn test_eval_basic_ceiling() {
 
     test_eval(~"⌈¯1J¯1.2", |result| {
         match result {
-            ~eval::AplComplex(~eval::AplInteger(x), ~eval::AplInteger(j)) => {
-                assert_eq!(x, -1);
-                assert_eq!(j, -1);
+            ~eval::AplComplex(c) => {
+                assert_eq!(c.re, -1.0);
+                assert_eq!(c.im, -1.0);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
@@ -67,8 +67,8 @@ fn test_eval_array_ceiling() {
         match result {
             ~eval::AplArray(ref _order, ref _dims, ref array) => {
                 match (&array[0], &array[1]) {
-                    (&~eval::AplInteger(1), &~eval::AplComplex(~eval::AplInteger(1), ~eval::AplInteger(j))) => {
-                        assert_eq!(j, 2)
+                    (&~eval::AplInteger(1), &~eval::AplComplex(c)) => {
+                        assert_eq!(c.im, 2.0)
                     },
                     _ => {
                         fail!(~"Bad array conjugation")
