@@ -1,7 +1,7 @@
 use eval::eval::{AplArray, Value};
 use std::result;
 
-pub fn simple_dyadic_array<T>(func: extern fn(T, &Value) -> result::Result<~Value, ~str>, param: T, other: &Value) -> result::Result<~Value, ~str> {
+pub fn simple_dyadic_array<T: Clone>(func: extern fn(T, &Value) -> result::Result<~Value, ~str>, param: T, other: &Value) -> result::Result<~Value, ~str> {
     match other {
         &AplArray(ref depth, ref dimensions, ref values) => {
             let mut result_values: ~[~Value] = ~[];
@@ -10,7 +10,7 @@ pub fn simple_dyadic_array<T>(func: extern fn(T, &Value) -> result::Result<~Valu
 
             for value in values.iter() { 
                 if !errored {
-                    match func(param, *value) {
+                    match func(param.clone(), *value) {
                         result::Ok(val) => {
                             result_values.push(val);
                         },
@@ -34,7 +34,7 @@ pub fn simple_dyadic_array<T>(func: extern fn(T, &Value) -> result::Result<~Valu
     }
 }
 
-pub fn inverse_simple_dyadic_array<T>(func: extern fn(&Value, T) -> result::Result<~Value, ~str>, param: &Value, other: T) -> result::Result<~Value, ~str> {
+pub fn inverse_simple_dyadic_array<T: Clone>(func: extern fn(&Value, T) -> result::Result<~Value, ~str>, param: &Value, other: T) -> result::Result<~Value, ~str> {
     match param {
         &AplArray(ref depth, ref dimensions, ref values) => {
             let mut result_values: ~[~Value] = ~[];
@@ -42,7 +42,7 @@ pub fn inverse_simple_dyadic_array<T>(func: extern fn(&Value, T) -> result::Resu
             let mut errored = false;
             for value in values.iter() { 
                 if !errored {
-                    match func(*value, other) {
+                    match func(*value, other.clone()) {
                         result::Ok(val) => {
                             result_values.push(val);
                         },

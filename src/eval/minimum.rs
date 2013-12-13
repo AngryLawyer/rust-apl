@@ -1,6 +1,3 @@
-use std::result;
-
-use nodes;
 use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};

@@ -1,10 +1,7 @@
-use extra::complex::Cmplx;
 use nodes;
 
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
-use eval::multiply::multiply;
-use eval::add::add;
 
 pub fn magnitude(first: &Value) -> Result<~Value, ~str> {
     match first {

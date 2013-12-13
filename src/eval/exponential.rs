@@ -1,4 +1,4 @@
-use extra::complex::{Cmplx, Complex64};
+use extra::complex::Cmplx;
 use nodes;
 
 use eval::array_helpers::{simple_monadic_array};

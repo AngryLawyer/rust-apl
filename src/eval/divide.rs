@@ -2,9 +2,6 @@ use extra::complex::{Cmplx, Complex64};
 use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
 use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple_dyadic_array};
-use eval::add::add;
-use eval::subtract::subtract;
-use eval::multiply::multiply;
 
 fn divide_float(f: f64, other:&Value) -> Result<~Value, ~str> {
     match other {

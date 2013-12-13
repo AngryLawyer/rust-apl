@@ -1,4 +1,3 @@
-use extra::complex::Cmplx;
 use nodes;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
