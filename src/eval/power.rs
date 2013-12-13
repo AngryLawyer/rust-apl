@@ -1,4 +1,5 @@
 use std::num;
+use extra::complex::Cmplx;
 
 use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
@@ -8,7 +9,7 @@ fn power_float(f: f64, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
             if f == 0.0 && val < 0.0 {
-                Err(~"Cannot take 0 to a negative power")
+                Err(~"Cannot take 0 to a negative power") //FIXME: Make this a constant
             } else {
                 Ok(~AplFloat(num::pow(f, val)))
             }
@@ -20,11 +21,12 @@ fn power_float(f: f64, other:&Value) -> Result<~Value, ~str> {
                 Ok(~AplFloat(num::pow(f, val as f64)))
             }
         },
-        &AplComplex(_c) => {
-            //TODO: Make this dependant on other APL types
-            //Real is a^b(cos c ln a)
-            //Imaginary is i sin (c ln a)
-            Err(~"power is not supported on complex numbers")
+        &AplComplex(c) => {
+            let fpow = f.pow(&c.re);
+            let im_times_lnf = c.im * num::ln(f);
+            let real =  fpow * num::cos(im_times_lnf);
+            let imaginary = fpow * num::sin(im_times_lnf);
+            Ok(~AplComplex(Cmplx::new(real, imaginary)))
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(power_float, f, other)

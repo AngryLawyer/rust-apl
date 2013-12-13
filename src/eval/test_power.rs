@@ -40,8 +40,8 @@ fn test_eval_basic_power() {
     test_eval(~"2⋆1J1", |result| {
         match result {
             ~eval::AplComplex(c) => {
-                assert_approx_eq!(c.re, 1.53848);
-                assert_approx_eq!(c.im, 1.27792);
+                assert_approx_eq!(c.re, 1.5384778);
+                assert_approx_eq!(c.im, 1.27792255);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
