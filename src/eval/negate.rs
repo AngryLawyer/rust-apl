@@ -1,22 +1,18 @@
+use extra::complex::Cmplx;
 use nodes;
-use std::result;
 use eval::array_helpers::{simple_monadic_array};
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_monadic};
 
-pub fn negate(first: &Value) -> result::Result<~Value, ~str> {
+pub fn negate(first: &Value) -> Result<~Value, ~str> {
     match first{
         &AplFloat(f) => {
-            result::Ok(~AplFloat(-f))
+            Ok(~AplFloat(-f))
         },
         &AplInteger(i) => {
-            result::Ok(~AplInteger(-i))
+            Ok(~AplInteger(-i))
         }
-        &AplComplex(ref i, ref j) => {
-            negate(*i).and_then(|new_i| {
-                negate(*j).and_then(|new_j| {
-                    result::Ok(~AplComplex(new_i.clone(), new_j.clone()))
-                })
-            })
+        &AplComplex(c) => {
+            Ok(~AplComplex(-c))
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(negate, first)
@@ -24,6 +20,6 @@ pub fn negate(first: &Value) -> result::Result<~Value, ~str> {
     }
 }
 
-pub fn eval_negate(left: &nodes::Node) -> result::Result<~Value, ~str> {
+pub fn eval_negate(left: &nodes::Node) -> Result<~Value, ~str> {
     eval_monadic(negate, left)
 }
