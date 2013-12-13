@@ -1,4 +1,3 @@
-use extra::complex::Cmplx;
 use nodes;
 
 use eval::array_helpers::{simple_monadic_array};
@@ -12,8 +11,8 @@ pub fn exponential(first: &Value) -> Result<~Value, ~str> {
         &AplInteger(val) => {
             Ok(~AplFloat((val as f64).exp()))
         },
-        &AplComplex(val) => {
-            Ok(~AplComplex(Cmplx::new(val.re.exp(), val.im.exp())))
+        &AplComplex(_val) => {
+            Err(~"Exponential for complex numbers is not yet implemented")
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             simple_monadic_array(exponential, first)
