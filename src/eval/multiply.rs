@@ -6,7 +6,7 @@ use eval::array_helpers::{simple_dyadic_array, dual_dyadic_array, inverse_simple
 fn multiply_float(f: f64, other:&Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(val) => {
-            Ok(~AplFloat(f - val))
+            Ok(~AplFloat(f * val))
         },
         &AplInteger(val) => {
             multiply_float(f, &AplFloat(val as f64))
@@ -26,7 +26,7 @@ fn multiply_integer(i: int, other:&Value) -> Result<~Value, ~str> {
             multiply_float(i as f64, other)
         },
         &AplInteger(val) => {
-            Ok(~AplInteger(i - val))
+            Ok(~AplInteger(i * val))
         },
         &AplComplex(_val) => {
             multiply_complex(&Cmplx::new(i as f64, 0.0), other)
@@ -46,7 +46,7 @@ fn multiply_complex(c: &Complex64, other: &Value) -> Result<~Value, ~str> {
             multiply_complex(c, &AplComplex(Cmplx::new(i as f64, 0.0)))
         },
         &AplComplex(other_c) => {
-            Ok(~AplComplex(c - other_c))
+            Ok(~AplComplex(c * other_c))
         },
         &AplArray(_, _, _) => {
             simple_dyadic_array(multiply_complex, c, other)
