@@ -40,8 +40,8 @@ fn test_eval_basic_exponential() {
     test_eval(~"⋆1J1", |result| {
         match result {
             ~eval::AplComplex(c) => {
-                assert_approx_eq!(c.re, 1.46869);
-                assert_approx_eq!(c.im, 2.28736);
+                assert_approx_eq!(c.re, 1.468694);
+                assert_approx_eq!(c.im, 2.28735529);
             },
             _ => {
                 fail!(format!("Didn't find a number - {}", result.to_typed_string()));
