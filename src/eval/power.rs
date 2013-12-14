@@ -1,5 +1,5 @@
 use std::num;
-use extra::complex::Cmplx;
+use extra::complex::{Cmplx, Complex64};
 
 use nodes;
 use eval::eval::{AplFloat, AplInteger, AplComplex, AplArray, Value, eval_dyadic};
@@ -59,6 +59,23 @@ fn power_integer(i: int, other:&Value) -> Result<~Value, ~str> {
     }
 }
 
+fn power_complex(c: &Complex64, other:&Value) -> Result<~Value, ~str> {
+    match other {
+        &AplFloat(val) => {
+            power_complex(c, &AplComplex(Cmplx::new(val, 0.0)))
+        },
+        &AplInteger(val) => {
+            power_complex(c, &AplComplex(Cmplx::new(val as f64, 0.0)))
+        },
+        &AplComplex(_c) => {
+            Err(~"power is not supported on complex numbers")
+        },
+        &AplArray(_, _, _) => {
+            simple_dyadic_array(power_complex, c, other)
+        }
+    }
+}
+
 fn power_array(array: &Value, other: &Value) -> Result<~Value, ~str> {
     match other {
         &AplFloat(_) |  &AplInteger(_) | &AplComplex(_) => {
@@ -78,8 +95,8 @@ pub fn power(first: &Value, other: &Value) -> Result<~Value, ~str> {
         &AplInteger(i) => {
             power_integer(i, other)
         }
-        &AplComplex(_c) => {
-            Err(~"power is not supported on complex numbers")
+        &AplComplex(ref c) => {
+            power_complex(c, other)
         },
         &AplArray(ref _depth, ref _dimensions, ref _values) => {
             power_array(first, other)
